@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "z-money-tracker",
+  "private_key_id": "6fd340602fff350780db67d5d4f2c6c47208703f",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCu3jTL/ZbE+EMp\nsMPN9Dy+2vF2zk/UnQuu9D+GRJ7UanZu33R7fAG1wbx/+vDk6hfPdcQMVti1jksE\njkgK5TaNIkdybZYoqh42ZFaVOTkKzFCFT07/UYx/X0dcYuYt3rTISc6z0R8ZTZ6h\nw2ttIeV4V0/VGjfGJFk1nYeSZDZuYtIO/amRvEnad4ufwsEHelCUtz4F17OOYs+H\nI2/P8PKGm5pBIU2MRBYk6bOpAm1ABeOUaKYS9dXLQiJ8uYTfc++pacNGIH5nOm6/\nnkJG8nO3Gnbzy6g8O9yXZ+fCRB+vfgYm7Oy31d5DwI8BX0SQf9BFXZnZ/b8xxJqP\nyR3EBkGTAgMBAAECggEALC2NLyAQ8BA8f5Ld1PFoS1tq93Xl6zQF2JxyVAyQB+Ah\nrZ8cgXnxwKaCZd7S7zJI86uv7OIf+7ZIM41ym/YOkxde74TKE9nuqhUtXqPHSngV\nu6gusAg9M4yxraB6wInsKFGlO/6QGcdnVTzWrgqLO5zrWU43WwKh2w7CSnSw37AC\nq22NsOcbY6IBPAQumt5lw6TF95024N1Ei3VcxqUwnmIXMrb79eVA8wKEeW5EOTBj\njcuVIRrXFCv7pHPc7C/Xz21vteHMUJLUXq2RodR1XkrwtGD4UmiB3lXpj8GOTCCe\n1E+giqhGVeHEE8L68FuCcA3QBYna97UQd22IZDoTwQKBgQDYxEber0GkZNpTqLwq\n0cmwRJMrwioQXJC6jUd4tvDLmTq0GZjqM24gDeVYBge1WB44utMjD4BL41e+3PII\n6l1RMSmCWnOKOEALwbYjYBdk1qrdydoWFxGhCKmt1IjrWx54lgg++V9fwC6v568R\nJUrmihusARoepf1ULpbgbuqYYQKBgQDOhJV4e2YX2XHJ5HsM6KDsOsO0UBdbc3Ag\nIM8NEZRZRvvY++mR81d0q8xRL3AUDQDvkxOOmWRfkk2QSU8zmH3bamykYYxLrP0v\npqg2abT8/ccMyCNBCuH1z+b4NLbb3McpqzO8oRahq+htSzYaqMirJivtBbbzSd1S\nF5FFLN6OcwKBgQCCTrOfyFE4pxwMMKI1R3nsSb0DECzDOzIRwz5U1fy5F/sPK1ge\nah5ojJHzMWTO4hMA3WZxbC8e76Le7Ole7Kx+U4R1hTRxwdDWgHOinnBRwS5kN6Sv\npNyHJrMB+YL5oQQXT3HTkYuA/wHR4v/92aJGJn3uD5eJFxXL1loCvwqt4QKBgAwA\ntrM+8MsYDz39so0ohBnWvIMhWIovJmgnoAERcX7S2lZdJdEexIl6ZrCdQjVYICLM\neImELspDNZDaQeksxrvW7qOLK91GG50GYaZv9F3z3frHMw1XtZRU1ga9AZe7uDOa\nyLIA5tDUrfiUM3vPLYKNAGaRO3XeaCeaSQ4tMm4zAoGBAJQimQErzRc+D75aa/eO\nFeQYuU7GRI341BMB2qczOLZTMl1hvfjf8zW7QobtqATtWJe6EF1f7XON2nTtgRRn\nNpm8+om05gQyeqZlmuUSW27FMPzFo0MCzK8dU0p7dVT4eBJWnNs/N45xZB5Fj1hv\nRYTMpIRJg3iHv9a/rpqCv4Aq\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-fbsvc@z-money-tracker.iam.gserviceaccount.com",
+  "client_id": "110894975616725961433",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-fbsvc%40z-money-tracker.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
