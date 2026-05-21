@@ -1,24 +1,32 @@
 import React, { useState, useEffect, ComponentType } from 'react';
 import { Wallet, Banknote, CreditCard, LucideProps } from 'lucide-react';
-import { KBZLogo, WaveLogo, AYALogo, CashLogo } from './Logos';
+import { KBZLogo, WaveLogo, AYALogo, CashLogo, UABLogo, TrueLogo } from './Logos';
 
 interface BalanceCardsProps {
   kbz: number;
   wave: number;
   aya: number;
   cash: number;
+  uab: number;
+  trueMoney: number;
   kbzEnabled: boolean;
   waveEnabled: boolean;
   ayaEnabled: boolean;
   cashEnabled: boolean;
+  uabEnabled: boolean;
+  trueEnabled: boolean;
   language: 'MM' | 'EN';
   kbzPhone?: string;
   wavePhone?: string;
   ayaPhone?: string;
+  uabPhone?: string;
+  truePhone?: string;
   kbzLogoUrl?: string;
   waveLogoUrl?: string;
   ayaLogoUrl?: string;
   cashLogoUrl?: string;
+  uabLogoUrl?: string;
+  trueLogoUrl?: string;
 }
 
 interface StatCardProps {
@@ -90,7 +98,13 @@ const StatCard: React.FC<StatCardProps> = ({ label, value, icon: Icon, image, cu
   );
 };
 
-export default function BalanceCards({ kbz, wave, aya, cash, kbzEnabled, waveEnabled, ayaEnabled, cashEnabled, language, kbzPhone, wavePhone, ayaPhone, kbzLogoUrl, waveLogoUrl, ayaLogoUrl, cashLogoUrl }: BalanceCardsProps) {
+export default function BalanceCards({ 
+  kbz, wave, aya, cash, uab, trueMoney,
+  kbzEnabled, waveEnabled, ayaEnabled, cashEnabled, uabEnabled, trueEnabled, 
+  language, 
+  kbzPhone, wavePhone, ayaPhone, uabPhone, truePhone,
+  kbzLogoUrl, waveLogoUrl, ayaLogoUrl, cashLogoUrl, uabLogoUrl, trueLogoUrl 
+}: BalanceCardsProps) {
   const f = (n: number) => n.toLocaleString();
 
   return (
@@ -141,6 +155,38 @@ export default function BalanceCards({ kbz, wave, aya, cash, kbzEnabled, waveEna
           iconColorClass="text-red-600 dark:text-red-400" 
           labelColorClass="text-red-600 dark:text-red-400"
           borderColorClass="border-red-200 dark:border-red-900/50 group-hover:border-red-400 dark:group-hover:border-red-700"
+        />
+      )}
+      {uabEnabled && (
+        <StatCard 
+          label={language === 'MM' ? 'UAB Pay လက်ကျန်' : 'UAB Pay Balance'} 
+          value={f(uab)} 
+          image={uabLogoUrl}
+          customLogo={UABLogo}
+          phone={uabPhone}
+          enabled={uabEnabled}
+          language={language}
+          colorClass="bg-purple-50" 
+          darkColorClass="dark:bg-purple-900/20"
+          iconColorClass="text-purple-600 dark:text-purple-400" 
+          labelColorClass="text-purple-600 dark:text-purple-400"
+          borderColorClass="border-purple-200 dark:border-purple-900/50 group-hover:border-purple-400 dark:group-hover:border-purple-700"
+        />
+      )}
+      {trueEnabled && (
+        <StatCard 
+          label={language === 'MM' ? 'True Money လက်ကျန်' : 'True Money Balance'} 
+          value={f(trueMoney)} 
+          image={trueLogoUrl}
+          customLogo={TrueLogo}
+          phone={truePhone}
+          enabled={trueEnabled}
+          language={language}
+          colorClass="bg-orange-50" 
+          darkColorClass="dark:bg-orange-900/20"
+          iconColorClass="text-orange-600 dark:text-orange-400" 
+          labelColorClass="text-orange-600 dark:text-orange-400"
+          borderColorClass="border-orange-200 dark:border-orange-900/50 group-hover:border-orange-400 dark:group-hover:border-orange-700"
         />
       )}
       {cashEnabled && (

@@ -315,11 +315,13 @@ export default function App() {
 
   // Calculations
   const calculatedBalances = useMemo(() => {
-    if (!settings) return { kbz: 0, wave: 0, aya: 0, cash: 0 };
+    if (!settings) return { kbz: 0, wave: 0, aya: 0, uab: 0, trueMoney: 0, cash: 0 };
     
     let kbzDelta = 0;
     let waveDelta = 0;
     let ayaDelta = 0;
+    let uabDelta = 0;
+    let trueDelta = 0;
     let cashDelta = 0;
 
     transactions.forEach(tx => {
@@ -365,6 +367,32 @@ export default function App() {
             } else {
                 cashDelta += feeAmt;
             }
+        } else if (tx.category === 'UABPay') {
+            if (tx.type === TransactionType.IN) {
+                uabDelta -= tx.amount;
+                cashDelta += tx.amount;
+            } else {
+                uabDelta += tx.amount;
+                cashDelta -= tx.amount;
+            }
+            if (isWalletFee) {
+                uabDelta += feeAmt;
+            } else {
+                cashDelta += feeAmt;
+            }
+        } else if (tx.category === 'TrueMoney') {
+            if (tx.type === TransactionType.IN) {
+                trueDelta -= tx.amount;
+                cashDelta += tx.amount;
+            } else {
+                trueDelta += tx.amount;
+                cashDelta -= tx.amount;
+            }
+            if (isWalletFee) {
+                trueDelta += feeAmt;
+            } else {
+                cashDelta += feeAmt;
+            }
         } else if (tx.category === 'Cash') {
             if (tx.type === TransactionType.IN) {
                 cashDelta += tx.amount;
@@ -379,6 +407,8 @@ export default function App() {
         kbz: (settings.kbzInitial || 0) + kbzDelta,
         wave: (settings.waveInitial || 0) + waveDelta,
         aya: (settings.ayaInitial || 0) + ayaDelta,
+        uab: (settings.uabInitial || 0) + uabDelta,
+        trueMoney: (settings.trueInitial || 0) + trueDelta,
         cash: (settings.cashInitial || 0) + cashDelta
     };
   }, [settings, transactions]);
@@ -388,6 +418,8 @@ export default function App() {
       kbzIn: 0, kbzOut: 0,
       waveIn: 0, waveOut: 0,
       ayaIn: 0, ayaOut: 0,
+      uabIn: 0, uabOut: 0,
+      trueIn: 0, trueOut: 0,
     };
 
     transactions.forEach(tx => {
@@ -400,6 +432,12 @@ export default function App() {
       } else if (tx.category === 'AYAPay') {
         if (tx.type === TransactionType.IN) res.ayaIn += tx.amount;
         else res.ayaOut += tx.amount;
+      } else if (tx.category === 'UABPay') {
+        if (tx.type === TransactionType.IN) res.uabIn += tx.amount;
+        else res.uabOut += tx.amount;
+      } else if (tx.category === 'TrueMoney') {
+        if (tx.type === TransactionType.IN) res.trueIn += tx.amount;
+        else res.trueOut += tx.amount;
       }
     });
 
@@ -425,14 +463,14 @@ export default function App() {
         setCurrentView(view);
         setIsSidebarOpen(false);
       }}
-      className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all ${
+      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
         currentView === view 
           ? 'bg-indigo-600 text-white' 
-          : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+          : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
       }`}
     >
-      <Icon size={18} />
-      <span className="font-bold text-xs tracking-tight">{label}</span>
+      <Icon size={20} />
+      <span className="font-bold text-[15px] tracking-tight">{label}</span>
     </button>
   );
 
@@ -483,13 +521,7 @@ export default function App() {
             {/* App Logo */}
             <div className="flex items-center justify-between mb-10 px-2 lg:block">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-900/20">
-                  <Wallet className="text-white" size={20} />
-                </div>
-                <div>
-                  <h1 className="text-lg font-black text-white tracking-tight leading-none">Money Tracker</h1>
-                  <p className="text-[9px] text-slate-500 font-bold uppercase tracking-[0.15em] mt-1">POS Financial System</p>
-                </div>
+                <h1 className="text-xl font-black text-white tracking-tight">Z Money Tracker</h1>
               </div>
               <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-slate-500 p-2">
                 <X size={20} />
@@ -512,11 +544,11 @@ export default function App() {
                   className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                     currentView === View.ADMIN 
                       ? 'bg-indigo-600 text-white' 
-                      : 'text-rose-400 hover:text-rose-600 hover:bg-rose-50'
+                      : 'text-rose-400 hover:text-rose-300 hover:bg-rose-950/30'
                   }`}
                 >
                   <ShieldCheck size={20} />
-                  <span className="font-bold text-sm tracking-tight">Admin Panel</span>
+                  <span className="font-bold text-[15px] tracking-tight">Admin Panel</span>
                 </button>
               )}
 
@@ -528,11 +560,11 @@ export default function App() {
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                   currentView === View.SETTINGS 
                     ? 'bg-indigo-600 text-white' 
-                    : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                 }`}
               >
                 <Settings size={20} />
-                <span className="font-bold text-sm tracking-tight">{language === 'MM' ? 'ဆက်တင်များ' : 'Settings'}</span>
+                <span className="font-bold text-[15px] tracking-tight">{language === 'MM' ? 'ဆက်တင်များ' : 'Settings'}</span>
               </button>
             </nav>
 
@@ -726,15 +758,20 @@ export default function App() {
                         <BalanceCards 
                           kbz={calculatedBalances.kbz} wave={calculatedBalances.wave}
                           aya={calculatedBalances.aya} cash={calculatedBalances.cash}
+                          uab={calculatedBalances.uab} trueMoney={calculatedBalances.trueMoney}
                           kbzEnabled={settings?.kbzEnabled ?? true}
                           waveEnabled={settings?.waveEnabled ?? true}
                           ayaEnabled={settings?.ayaEnabled ?? true}
+                          uabEnabled={settings?.uabEnabled ?? true}
+                          trueEnabled={settings?.trueEnabled ?? true}
                           cashEnabled={settings?.cashEnabled ?? true}
                           language={language}
                           kbzPhone={settings?.kbzPhone} wavePhone={settings?.wavePhone}
-                          ayaPhone={settings?.ayaPhone}
+                          ayaPhone={settings?.ayaPhone} uabPhone={settings?.uabPhone}
+                          truePhone={settings?.truePhone}
                           kbzLogoUrl={globalSettings?.kbzLogoUrl} waveLogoUrl={globalSettings?.waveLogoUrl}
                           ayaLogoUrl={globalSettings?.ayaLogoUrl} cashLogoUrl={globalSettings?.cashLogoUrl}
+                          uabLogoUrl={globalSettings?.uabLogoUrl} trueLogoUrl={globalSettings?.trueLogoUrl}
                         />
                       </div>
 
@@ -761,6 +798,8 @@ export default function App() {
                                kbzLogoUrl={globalSettings?.kbzLogoUrl}
                                waveLogoUrl={globalSettings?.waveLogoUrl}
                                ayaLogoUrl={globalSettings?.ayaLogoUrl}
+                               uabLogoUrl={globalSettings?.uabLogoUrl}
+                               trueLogoUrl={globalSettings?.trueLogoUrl}
                                cashLogoUrl={globalSettings?.cashLogoUrl}
                             />
                           </div>
@@ -778,9 +817,15 @@ export default function App() {
                              waveOut={stats.waveOut}
                              ayaIn={stats.ayaIn}
                              ayaOut={stats.ayaOut}
+                             uabIn={stats.uabIn}
+                             uabOut={stats.uabOut}
+                             trueIn={stats.trueIn}
+                             trueOut={stats.trueOut}
                              kbzEnabled={settings?.kbzEnabled ?? true}
                              waveEnabled={settings?.waveEnabled ?? true}
                              ayaEnabled={settings?.ayaEnabled ?? true}
+                             uabEnabled={settings?.uabEnabled ?? true}
+                             trueEnabled={settings?.trueEnabled ?? true}
                              cashEnabled={settings?.cashEnabled ?? true}
                              totalFee={totalFee}
                              language={language}
@@ -788,6 +833,8 @@ export default function App() {
                              waveLogoUrl={globalSettings?.waveLogoUrl}
                              ayaLogoUrl={globalSettings?.ayaLogoUrl}
                              cashLogoUrl={globalSettings?.cashLogoUrl}
+                             uabLogoUrl={globalSettings?.uabLogoUrl}
+                             trueLogoUrl={globalSettings?.trueLogoUrl}
                           />
                         </div>
                       </div>
@@ -813,10 +860,14 @@ export default function App() {
                           kbzLogoUrl={globalSettings?.kbzLogoUrl}
                           waveLogoUrl={globalSettings?.waveLogoUrl}
                           ayaLogoUrl={globalSettings?.ayaLogoUrl}
+                          uabLogoUrl={globalSettings?.uabLogoUrl}
+                          trueLogoUrl={globalSettings?.trueLogoUrl}
                           cashLogoUrl={globalSettings?.cashLogoUrl}
                           kbzEnabled={settings?.kbzEnabled ?? true}
                           waveEnabled={settings?.waveEnabled ?? true}
                           ayaEnabled={settings?.ayaEnabled ?? true}
+                          uabEnabled={settings?.uabEnabled ?? true}
+                          trueEnabled={settings?.trueEnabled ?? true}
                           cashEnabled={settings?.cashEnabled ?? true}
                         />
                       </div>
@@ -832,6 +883,8 @@ export default function App() {
                         kbzLogoUrl={globalSettings?.kbzLogoUrl}
                         waveLogoUrl={globalSettings?.waveLogoUrl}
                         ayaLogoUrl={globalSettings?.ayaLogoUrl}
+                        uabLogoUrl={globalSettings?.uabLogoUrl}
+                        trueLogoUrl={globalSettings?.trueLogoUrl}
                         cashLogoUrl={globalSettings?.cashLogoUrl}
                       />
                     </div>

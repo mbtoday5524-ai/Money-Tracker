@@ -16,11 +16,15 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
   const [wave, setWave] = useState(currentSettings?.waveInitial?.toString() || '');
   const [aya, setAya] = useState(currentSettings?.ayaInitial?.toString() || '');
   const [cash, setCash] = useState(currentSettings?.cashInitial?.toString() || '');
+  const [uab, setUab] = useState(currentSettings?.uabInitial?.toString() || '');
+  const [trueMoney, setTrueMoney] = useState(currentSettings?.trueInitial?.toString() || '');
   
   const [kbzEnabled, setKbzEnabled] = useState(currentSettings?.kbzEnabled ?? true);
   const [waveEnabled, setWaveEnabled] = useState(currentSettings?.waveEnabled ?? true);
   const [ayaEnabled, setAyaEnabled] = useState(currentSettings?.ayaEnabled ?? true);
   const [cashEnabled, setCashEnabled] = useState(currentSettings?.cashEnabled ?? true);
+  const [uabEnabled, setUabEnabled] = useState(currentSettings?.uabEnabled ?? true);
+  const [trueEnabled, setTrueEnabled] = useState(currentSettings?.trueEnabled ?? true);
 
   const [percentIn, setPercentIn] = useState(currentSettings?.percentIn?.toString() || '0');
   const [percentOut, setPercentOut] = useState(currentSettings?.percentOut?.toString() || '0');
@@ -28,6 +32,8 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
   const [kbzPhone, setKbzPhone] = useState(currentSettings?.kbzPhone || '');
   const [wavePhone, setWavePhone] = useState(currentSettings?.wavePhone || '');
   const [ayaPhone, setAyaPhone] = useState(currentSettings?.ayaPhone || '');
+  const [uabPhone, setUabPhone] = useState(currentSettings?.uabPhone || '');
+  const [truePhone, setTruePhone] = useState(currentSettings?.truePhone || '');
   
   const [notificationsEnabled, setNotificationsEnabled] = useState(currentSettings?.notificationsEnabled || false);
   const [notificationEmail, setNotificationEmail] = useState(currentSettings?.notificationEmail || '');
@@ -45,15 +51,21 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
         waveInitial: Number(wave) || 0,
         ayaInitial: Number(aya) || 0,
         cashInitial: Number(cash) || 0,
+        uabInitial: Number(uab) || 0,
+        trueInitial: Number(trueMoney) || 0,
         kbzEnabled,
         waveEnabled,
         ayaEnabled,
         cashEnabled,
+        uabEnabled,
+        trueEnabled,
         percentIn: Number(percentIn) || 0,
         percentOut: Number(percentOut) || 0,
         kbzPhone,
         wavePhone,
         ayaPhone,
+        uabPhone,
+        truePhone,
         notificationsEnabled,
         notificationEmail,
         lowBalanceThreshold: Number(lowBalanceThreshold) || 100000
@@ -207,6 +219,84 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
                     onChange={(e) => setAyaPhone(e.target.value)}
                     placeholder="09422***789"
                     className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:border-red-500 outline-none font-semibold"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* UAB Section */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between px-1 mb-2">
+              <h3 className="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em]">UAB Pay Config</h3>
+              <button 
+                type="button"
+                onClick={() => setUabEnabled(!uabEnabled)}
+                className={`w-10 h-5 rounded-full transition-all relative ${uabEnabled ? 'bg-blue-500' : 'bg-slate-300 dark:bg-slate-700'}`}
+              >
+                <div className={`absolute top-[2px] w-4 h-4 rounded-full bg-white transition-all ${uabEnabled ? 'right-[2px]' : 'left-[2px]'}`}></div>
+              </button>
+            </div>
+            <div className={`transition-all duration-300 space-y-4 ${!uabEnabled ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">{language === 'MM' ? 'လက်ကျန်' : 'Balance'}</label>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={uab}
+                    onChange={(e) => setUab(e.target.value)}
+                    placeholder="0"
+                    className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:border-blue-500 outline-none font-semibold"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">{language === 'MM' ? 'ဖုန်းနံပါတ်' : 'Phone Number'}</label>
+                  <input
+                    type="text"
+                    value={uabPhone}
+                    onChange={(e) => setUabPhone(e.target.value)}
+                    placeholder="09422***789"
+                    className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:border-blue-500 outline-none font-semibold"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* True Money Section */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between px-1 mb-2">
+              <h3 className="text-[10px] font-black text-orange-500 uppercase tracking-[0.3em]">True Money Config</h3>
+              <button 
+                type="button"
+                onClick={() => setTrueEnabled(!trueEnabled)}
+                className={`w-10 h-5 rounded-full transition-all relative ${trueEnabled ? 'bg-orange-500' : 'bg-slate-300 dark:bg-slate-700'}`}
+              >
+                <div className={`absolute top-[2px] w-4 h-4 rounded-full bg-white transition-all ${trueEnabled ? 'right-[2px]' : 'left-[2px]'}`}></div>
+              </button>
+            </div>
+            <div className={`transition-all duration-300 space-y-4 ${!trueEnabled ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">{language === 'MM' ? 'လက်ကျန်' : 'Balance'}</label>
+                  <input
+                    type="text"
+                    inputMode="decimal"
+                    value={trueMoney}
+                    onChange={(e) => setTrueMoney(e.target.value)}
+                    placeholder="0"
+                    className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:border-orange-500 outline-none font-semibold"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">{language === 'MM' ? 'ဖုန်းနံပါတ်' : 'Phone Number'}</label>
+                  <input
+                    type="text"
+                    value={truePhone}
+                    onChange={(e) => setTruePhone(e.target.value)}
+                    placeholder="09422***789"
+                    className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:border-orange-500 outline-none font-semibold"
                   />
                 </div>
               </div>

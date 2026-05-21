@@ -67,6 +67,15 @@ input[type=number] {
   @apply bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/20 dark:border-white/5;
 }
 
+/* Hide scrollbar */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Custom transitions */
 .transition-colors {
   transition-property: background-color, border-color, color, fill, stroke;

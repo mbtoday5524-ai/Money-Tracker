@@ -1,6 +1,6 @@
 {
-  "name": "Money Tracker MM",
-  "short_name": "MT Tracker",
+  "name": "Z Money Tracker",
+  "short_name": "ZMT",
   "description": "Financial transaction tracker for MM Pay services.",
   "start_url": "/",
   "display": "standalone",

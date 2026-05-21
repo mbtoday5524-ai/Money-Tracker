@@ -40,7 +40,7 @@ service cloud.firestore {
 
     function isValidUserSettings(data) {
       let requiredFields = ['kbzInitial', 'waveInitial', 'ayaInitial', 'cashInitial', 'percentIn', 'percentOut', 'updatedAt'];
-      let optionalFields = ['kbzPhone', 'wavePhone', 'ayaPhone', 'kbzLogoUrl', 'waveLogoUrl', 'ayaLogoUrl', 'cashLogoUrl', 'notificationsEnabled', 'notificationEmail', 'lowBalanceThreshold', 'kbzEnabled', 'waveEnabled', 'ayaEnabled', 'cashEnabled'];
+      let optionalFields = ['kbzPhone', 'wavePhone', 'ayaPhone', 'kbzLogoUrl', 'waveLogoUrl', 'ayaLogoUrl', 'cashLogoUrl', 'notificationsEnabled', 'notificationEmail', 'lowBalanceThreshold', 'kbzEnabled', 'waveEnabled', 'ayaEnabled', 'cashEnabled', 'uabInitial', 'trueInitial', 'uabEnabled', 'trueEnabled', 'uabPhone', 'truePhone', 'uabLogoUrl', 'trueLogoUrl'];
       let allAllowedFields = requiredFields.concat(optionalFields);
       
       return data.keys().hasAll(requiredFields)
@@ -49,6 +49,8 @@ service cloud.firestore {
         && data.waveInitial is number
         && data.ayaInitial is number
         && data.cashInitial is number
+        && (!('uabInitial' in data) || data.uabInitial is number)
+        && (!('trueInitial' in data) || data.trueInitial is number)
         && data.percentIn is number && data.percentIn >= 0 && data.percentIn <= 100
         && data.percentOut is number && data.percentOut >= 0 && data.percentOut <= 100
         && data.updatedAt == request.time;
@@ -62,7 +64,7 @@ service cloud.firestore {
       return data.keys().hasAll(requiredFields)
         && data.keys().hasOnly(allAllowedFields)
         && data.date is string && data.date.size() <= 20
-        && data.category in ['KBZ', 'Wave', 'AYAPay', 'Cash']
+        && data.category in ['KBZ', 'Wave', 'AYAPay', 'UABPay', 'TrueMoney', 'Cash']
         && data.type in ['in', 'out']
         && data.amount is number && data.amount > 0
         && data.fee is number && data.fee >= 0

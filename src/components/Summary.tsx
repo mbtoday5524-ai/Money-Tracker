@@ -1,5 +1,5 @@
 import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
-import { KBZLogo, WaveLogo, AYALogo, CashLogo } from './Logos';
+import { KBZLogo, WaveLogo, AYALogo, CashLogo, UABLogo, TrueLogo } from './Logos';
 import { ComponentType } from 'react';
 
 interface SummaryProps {
@@ -9,9 +9,15 @@ interface SummaryProps {
   waveOut: number;
   ayaIn: number;
   ayaOut: number;
+  uabIn: number;
+  uabOut: number;
+  trueIn: number;
+  trueOut: number;
   kbzEnabled: boolean;
   waveEnabled: boolean;
   ayaEnabled: boolean;
+  uabEnabled: boolean;
+  trueEnabled: boolean;
   cashEnabled: boolean;
   totalFee: number;
   language: 'MM' | 'EN';
@@ -19,6 +25,8 @@ interface SummaryProps {
   waveLogoUrl?: string;
   ayaLogoUrl?: string;
   cashLogoUrl?: string;
+  uabLogoUrl?: string;
+  trueLogoUrl?: string;
 }
 
 export default function Summary({ 
@@ -28,21 +36,29 @@ export default function Summary({
   waveOut, 
   ayaIn, 
   ayaOut, 
+  uabIn, 
+  uabOut, 
+  trueIn, 
+  trueOut, 
   kbzEnabled,
   waveEnabled,
   ayaEnabled,
+  uabEnabled,
+  trueEnabled,
   cashEnabled,
   totalFee, 
   language,
   kbzLogoUrl,
   waveLogoUrl,
   ayaLogoUrl,
-  cashLogoUrl 
+  cashLogoUrl,
+  uabLogoUrl,
+  trueLogoUrl
 }: SummaryProps) {
   const f = (n: number) => n.toLocaleString();
 
-  const totalIn = (kbzEnabled ? kbzIn : 0) + (waveEnabled ? waveIn : 0) + (ayaEnabled ? ayaIn : 0);
-  const totalOut = (kbzEnabled ? kbzOut : 0) + (waveEnabled ? waveOut : 0) + (ayaEnabled ? ayaOut : 0);
+  const totalIn = (kbzEnabled ? kbzIn : 0) + (waveEnabled ? waveIn : 0) + (ayaEnabled ? ayaIn : 0) + (uabEnabled ? uabIn : 0) + (trueEnabled ? trueIn : 0);
+  const totalOut = (kbzEnabled ? kbzOut : 0) + (waveEnabled ? waveOut : 0) + (ayaEnabled ? ayaOut : 0) + (uabEnabled ? uabOut : 0) + (trueEnabled ? trueOut : 0);
 
 
   // Cash In = Wallet Out (we received cash)
@@ -120,7 +136,7 @@ export default function Summary({
           <div className="bg-indigo-600 rounded-xl lg:rounded-2xl p-3 lg:p-5 relative overflow-hidden group">
             <div className="absolute right-0 top-0 w-16 lg:w-24 h-16 lg:h-24 bg-white/10 rounded-full -mr-6 lg:-mr-8 -mt-6 lg:-mt-8 blur-2xl group-hover:scale-125 transition-transform duration-700"></div>
             <div className="relative z-10 flex items-center gap-3 lg:gap-4">
-              <div className="w-8 h-8 lg:w-12 lg:h-12 bg-white/20 text-white rounded-lg lg:rounded-2xl flex items-center justify-center backdrop-blur-md shrink-0">
+              <div className="w-8 h-8 lg:w-12 lg:h-12 bg-white/20 text-white rounded-lg lg:rounded-xl flex items-center justify-center backdrop-blur-md shrink-0">
                 <DollarSign size={16} className="lg:w-6 lg:h-6" />
               </div>
               <div>
@@ -143,6 +159,14 @@ export default function Summary({
         </>}
         {ayaEnabled && <>
             <AccountStat label="AYAPay Wallet" inc={ayaIn} dec={ayaOut} logoUrl={ayaLogoUrl} DefaultLogo={AYALogo} />
+            <div className="h-px bg-slate-50 dark:bg-slate-800"></div>
+        </>}
+        {uabEnabled && <>
+            <AccountStat label="UAB Wallet" inc={uabIn} dec={uabOut} logoUrl={uabLogoUrl} DefaultLogo={UABLogo} />
+            <div className="h-px bg-slate-50 dark:bg-slate-800"></div>
+        </>}
+        {trueEnabled && <>
+            <AccountStat label="True Money Wallet" inc={trueIn} dec={trueOut} logoUrl={trueLogoUrl} DefaultLogo={TrueLogo} />
             <div className="h-px bg-slate-50 dark:bg-slate-800"></div>
         </>}
         {cashEnabled && <>

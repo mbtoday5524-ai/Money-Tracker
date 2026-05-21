@@ -264,6 +264,16 @@ export default function AdminPanel({ language, globalSettings: initialGlobalSett
             setUrl={(url) => setLocalGlobalSettings(prev => ({ ...prev, ayaLogoUrl: url }))} 
           />
           <LogoUploadField 
+            provider="uab" 
+            currentUrl={globalSettings.uabLogoUrl || ''} 
+            setUrl={(url) => setLocalGlobalSettings(prev => ({ ...prev, uabLogoUrl: url }))} 
+          />
+          <LogoUploadField 
+            provider="true" 
+            currentUrl={globalSettings.trueLogoUrl || ''} 
+            setUrl={(url) => setLocalGlobalSettings(prev => ({ ...prev, trueLogoUrl: url }))} 
+          />
+          <LogoUploadField 
             provider="cash" 
             currentUrl={globalSettings.cashLogoUrl || ''} 
             setUrl={(url) => setLocalGlobalSettings(prev => ({ ...prev, cashLogoUrl: url }))} 

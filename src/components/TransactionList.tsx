@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import { Trash2, Download, Tag, Calendar, User, ArrowRightLeft, History, Wallet, FileText, Search, Filter, X, ChevronDown } from 'lucide-react';
+import { Trash2, Download, Tag, Calendar, User, ArrowRightLeft, History, Wallet, FileText, Search, Filter, X, ChevronDown, Banknote } from 'lucide-react';
 import { Transaction, TransactionType } from '../types';
-import { KBZLogo, WaveLogo, AYALogo, CashLogo } from './Logos';
+import { KBZLogo, WaveLogo, AYALogo, CashLogo, UABLogo, TrueLogo } from './Logos';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -13,6 +13,8 @@ interface TransactionListProps {
   waveLogoUrl?: string;
   ayaLogoUrl?: string;
   cashLogoUrl?: string;
+  uabLogoUrl?: string;
+  trueLogoUrl?: string;
 }
 
 export default function TransactionList({ 
@@ -22,11 +24,14 @@ export default function TransactionList({
   kbzLogoUrl,
   waveLogoUrl,
   ayaLogoUrl,
-  cashLogoUrl
+  cashLogoUrl,
+  uabLogoUrl,
+  trueLogoUrl
 }: TransactionListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterBankId, setFilterBankId] = useState<string | 'ALL'>('ALL');
   const [filterType, setFilterType] = useState<TransactionType | 'ALL'>('ALL');
+  const [filterFeeMethod, setFilterFeeMethod] = useState<'ALL' | 'Cash' | 'Wallet'>('ALL');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [showFilters, setShowFilters] = useState(false);
@@ -46,6 +51,8 @@ export default function TransactionList({
     { id: 'KBZ', name: 'KPay', logoUrl: kbzLogoUrl },
     { id: 'Wave', name: 'Wave', logoUrl: waveLogoUrl },
     { id: 'AYAPay', name: 'AYAPay', logoUrl: ayaLogoUrl },
+    { id: 'UABPay', name: 'UAB Pay', logoUrl: uabLogoUrl },
+    { id: 'TrueMoney', name: 'True Money', logoUrl: trueLogoUrl },
     { id: 'Cash', name: 'Cash', logoUrl: cashLogoUrl },
   ];
 
@@ -59,6 +66,10 @@ export default function TransactionList({
       const matchesCategory = filterBankId === 'ALL' || tx.category === filterBankId;
       const matchesType = filterType === 'ALL' || tx.type === filterType;
       
+      const matchesFeeMethod = filterFeeMethod === 'ALL' ||
+        (filterFeeMethod === 'Wallet' && tx.feePaymentMethod === 'Wallet') ||
+        (filterFeeMethod === 'Cash' && tx.feePaymentMethod !== 'Wallet');
+
       let matchesDate = true;
       if (startDate && endDate) {
         matchesDate = tx.date >= startDate && tx.date <= endDate;
@@ -68,14 +79,15 @@ export default function TransactionList({
         matchesDate = tx.date <= endDate;
       }
 
-      return matchesSearch && matchesCategory && matchesType && matchesDate;
+      return matchesSearch && matchesCategory && matchesType && matchesFeeMethod && matchesDate;
     });
-  }, [transactions, searchTerm, filterBankId, filterType, startDate, endDate]);
+  }, [transactions, searchTerm, filterBankId, filterType, filterFeeMethod, startDate, endDate]);
 
   const clearFilters = () => {
     setSearchTerm('');
     setFilterBankId('ALL');
     setFilterType('ALL');
+    setFilterFeeMethod('ALL');
     setStartDate('');
     setEndDate('');
   };
@@ -85,6 +97,8 @@ export default function TransactionList({
         case 'KBZ': return kbzLogoUrl;
         case 'Wave': return waveLogoUrl;
         case 'AYAPay': return ayaLogoUrl;
+        case 'UABPay': return uabLogoUrl;
+        case 'TrueMoney': return trueLogoUrl;
         default: return cashLogoUrl;
     }
   };
@@ -94,6 +108,8 @@ export default function TransactionList({
     if (name.includes('kbz')) return KBZLogo;
     if (name.includes('wave')) return WaveLogo;
     if (name.includes('aya')) return AYALogo;
+    if (name.includes('uab')) return UABLogo;
+    if (name.includes('true')) return TrueLogo;
     return CashLogo;
   };
 
@@ -135,7 +151,7 @@ export default function TransactionList({
     // Add Header
     doc.setFontSize(20);
     doc.setTextColor(79, 70, 229); // Indigo-600
-    doc.text('Money Tracker Report', 14, 20);
+    doc.text('Z Money Tracker Report', 14, 20);
     
     doc.setFontSize(10);
     doc.setTextColor(100);
@@ -209,7 +225,7 @@ export default function TransactionList({
           >
             <Filter size={14} />
             <span>{language === 'MM' ? 'စစ်ထုတ်ရန်' : 'Filters'}</span>
-            {(filterBankId !== 'ALL' || filterType !== 'ALL' || startDate || endDate) && (
+            {(filterBankId !== 'ALL' || filterType !== 'ALL' || filterFeeMethod !== 'ALL' || startDate || endDate) && (
               <span className="w-2 h-2 bg-rose-500 rounded-full ml-1"></span>
             )}
           </button>
@@ -242,7 +258,7 @@ export default function TransactionList({
       {/* Filter Toolbar */}
       {showFilters && (
         <div className="px-4 lg:px-8 py-4 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800 transition-all animate-in slide-in-from-top duration-300">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
@@ -282,6 +298,21 @@ export default function TransactionList({
                 <option value="ALL">{language === 'MM' ? 'အမျိုးအစားအားလုံး' : 'All Types'}</option>
                 <option value={TransactionType.IN}>{language === 'MM' ? 'ငွေသွင်း' : 'Deposit'}</option>
                 <option value={TransactionType.OUT}>{language === 'MM' ? 'ငွေထုတ်' : 'Withdraw'}</option>
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={12} />
+            </div>
+
+            {/* Fee Payment Method Filter */}
+            <div className="relative">
+              <Banknote className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+              <select 
+                value={filterFeeMethod}
+                onChange={(e) => setFilterFeeMethod(e.target.value as any)}
+                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+              >
+                <option value="ALL">{language === 'MM' ? 'ဝန်ဆောင်ခပေးစနစ်အားလုံး' : 'All Fee Methods'}</option>
+                <option value="Cash">{language === 'MM' ? 'လက်ငင်း (Cash)' : 'Cash'}</option>
+                <option value="Wallet">{language === 'MM' ? 'ဝေါလတ်ထဲမှ (Wallet)' : 'Wallet'}</option>
               </select>
               <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={12} />
             </div>
@@ -400,7 +431,7 @@ export default function TransactionList({
                     </div>
                   </td>
                   <td className="px-8 py-4 text-center">
-                    <span className="font-bold font-display text-blue-600 dark:text-blue-400 text-[13px]">
+                    <span className="font-extrabold font-display text-black dark:text-white text-[15px]">
                       {tx.phoneNumber || '-'}
                     </span>
                   </td>
@@ -447,14 +478,14 @@ export default function TransactionList({
                   </div>
                   <div className="space-y-0.5 min-w-0 flex-1">
                     <div className="flex items-center gap-1 min-w-0">
-                       <span className="font-black text-slate-900 dark:text-white text-[12px] sm:text-base font-display whitespace-nowrap leading-none">{f(tx.amount)}</span>
-                       <span className={`text-[7px] sm:text-[9px] font-black uppercase tracking-wider font-display shrink-0 ${
+                       <span className="font-black text-slate-900 dark:text-white text-[13px] sm:text-base font-display whitespace-nowrap leading-none">{f(tx.amount)}</span>
+                       <span className={`text-[8px] sm:text-[9px] font-black uppercase tracking-wider font-display shrink-0 ${
                          tx.type === TransactionType.IN ? 'text-emerald-700 dark:text-emerald-500' : 'text-rose-700 dark:text-rose-500'
                        }`}>
                          {tx.type === TransactionType.IN ? (language === 'MM' ? 'သွင်း' : 'In') : (language === 'MM' ? 'ထုတ်' : 'Out')}
                        </span>
                     </div>
-                    <div className="flex items-center gap-1 text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 font-bold font-display truncate">
+                    <div className="flex items-center gap-1 text-[10px] sm:text-[10px] text-slate-400 dark:text-slate-500 font-bold font-display truncate">
                       <span className="shrink-0">{tx.date}</span>
                       <span className="opacity-45 shrink-0">•</span>
                       <span className="uppercase truncate">{tx.category}</span>
@@ -464,7 +495,7 @@ export default function TransactionList({
 
                 <div className="col-span-3 sm:col-span-3 flex items-center justify-center min-w-0">
                   {tx.phoneNumber ? (
-                    <span className="text-[8.5px] sm:text-[11.5px] text-blue-700 dark:text-blue-400 font-bold font-mono tracking-tight bg-blue-50 dark:bg-blue-900/20 px-1 py-0.5 rounded-md whitespace-nowrap">
+                    <span className="text-[13px] sm:text-[15px] text-black dark:text-white font-extrabold font-mono tracking-tight whitespace-nowrap">
                       {tx.phoneNumber}
                     </span>
                   ) : null}
@@ -473,14 +504,14 @@ export default function TransactionList({
                 <div className="col-span-4 sm:col-span-4 flex items-center justify-end gap-1 sm:gap-2 min-w-0">
                   <div className="text-right shrink-0">
                     <div className="flex items-center justify-end gap-1 mb-0.5 leading-none">
-                      <p className="text-[7.5px] sm:text-[9px] text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest font-sans">{language === 'MM' ? 'ဝန်ဆောင်ခ' : 'fee'}</p>
+                      <p className="text-[8px] sm:text-[9px] text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest font-sans">{language === 'MM' ? 'ဝန်ဆောင်ခ' : 'fee'}</p>
                       {tx.feePaymentMethod === 'Wallet' && (
-                        <span className="text-[7px] sm:text-[8px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-normal bg-amber-50 dark:bg-amber-950/40 px-1 py-0.5 rounded border border-amber-100 dark:border-amber-900/30">
+                        <span className="text-[7.5px] sm:text-[8px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-normal bg-amber-50 dark:bg-amber-950/40 px-1 py-0.5 rounded border border-amber-100 dark:border-amber-900/30">
                           {language === 'MM' ? 'ပေါင်းလွှဲ' : 'Wallet'}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs sm:text-sm font-extrabold text-emerald-600 dark:text-emerald-400 font-sans tracking-tight leading-none">{f(tx.fee)}</p>
+                    <p className="text-[11px] sm:text-sm font-extrabold text-emerald-600 dark:text-emerald-400 font-sans tracking-tight leading-none">{f(tx.fee)}</p>
                   </div>
                   <button
                     onClick={() => tx.id && onDelete(tx.id)}

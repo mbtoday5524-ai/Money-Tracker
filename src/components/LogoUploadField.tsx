@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Image as ImageIcon, Loader2 } from 'lucide-react';
 
 interface LogoUploadFieldProps {
-  provider: 'kbz' | 'wave' | 'aya' | 'cash';
+  provider: 'kbz' | 'wave' | 'aya' | 'cash' | 'uab' | 'true';
   currentUrl: string;
   setUrl: (url: string) => void;
 }

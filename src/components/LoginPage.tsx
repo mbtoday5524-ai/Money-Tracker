@@ -42,7 +42,7 @@ export default function LoginPage({ language, setLanguage }: LoginPageProps) {
             <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-500/20">
               <Wallet className="text-white" size={18} />
             </div>
-            <span className="text-white font-bold text-sm tracking-tight whitespace-nowrap">POS Ledger</span>
+            <span className="text-white font-bold text-sm tracking-tight whitespace-nowrap">Z Money Tracker</span>
           </div>
           
           <button 

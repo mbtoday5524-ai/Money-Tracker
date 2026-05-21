@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Minus, Calendar, Sparkles, Coins, Wallet } from 'lucide-react';
 import { TransactionType } from '../types';
-import { KBZLogo, WaveLogo, AYALogo, CashLogo } from './Logos';
+import { KBZLogo, WaveLogo, AYALogo, CashLogo, UABLogo, TrueLogo } from './Logos';
 
 interface TransactionFormProps {
   onAdd: (tx: {
@@ -20,10 +20,14 @@ interface TransactionFormProps {
   waveLogoUrl?: string;
   ayaLogoUrl?: string;
   cashLogoUrl?: string;
+  uabLogoUrl?: string;
+  trueLogoUrl?: string;
   kbzEnabled: boolean;
   waveEnabled: boolean;
   ayaEnabled: boolean;
   cashEnabled: boolean;
+  uabEnabled: boolean;
+  trueEnabled: boolean;
 }
 
 export default function TransactionForm({ 
@@ -35,15 +39,21 @@ export default function TransactionForm({
   waveLogoUrl,
   ayaLogoUrl,
   cashLogoUrl,
+  uabLogoUrl,
+  trueLogoUrl,
   kbzEnabled,
   waveEnabled,
   ayaEnabled,
-  cashEnabled
+  cashEnabled,
+  uabEnabled,
+  trueEnabled
 }: TransactionFormProps) {
   const banks = [
     { id: 'KBZ', name: 'KBZ Pay', logo: kbzLogoUrl, CustomLogo: KBZLogo, enabled: kbzEnabled },
     { id: 'Wave', name: 'Wave', logo: waveLogoUrl, CustomLogo: WaveLogo, enabled: waveEnabled },
     { id: 'AYAPay', name: 'AYAPay', logo: ayaLogoUrl, CustomLogo: AYALogo, enabled: ayaEnabled },
+    { id: 'UABPay', name: 'UAB Pay', logo: uabLogoUrl, CustomLogo: UABLogo, enabled: uabEnabled },
+    { id: 'TrueMoney', name: 'True Money', logo: trueLogoUrl, CustomLogo: TrueLogo, enabled: trueEnabled },
     { id: 'Cash', name: 'Cash', logo: cashLogoUrl, CustomLogo: CashLogo, enabled: cashEnabled },
   ].filter(b => b.enabled);
 
@@ -54,7 +64,7 @@ export default function TransactionForm({
     if (banks.length > 0 && !banks.some(b => b.id === categoryId)) {
       setCategoryId(banks[0].id);
     }
-  }, [kbzEnabled, waveEnabled, ayaEnabled, cashEnabled, categoryId]);
+  }, [kbzEnabled, waveEnabled, ayaEnabled, cashEnabled, uabEnabled, trueEnabled, categoryId]);
   
   const [type, setType] = useState<TransactionType>(TransactionType.IN);
   const [amount, setAmount] = useState('');
