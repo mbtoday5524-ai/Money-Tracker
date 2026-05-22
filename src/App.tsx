@@ -11,7 +11,8 @@ import {
   checkActivation,
   syncUserProfile,
   getAllGlobalTransactions,
-  getGlobalSettings
+  getGlobalSettings,
+  subscribeGlobalSettings
 } from './services/transactionService';
 import { UserSettings, GlobalSettings, Transaction, TransactionType } from './types';
 import AuthStatus from './components/AuthStatus';
@@ -220,6 +221,7 @@ export default function App() {
   // Load data when user is authenticated
   useEffect(() => {
     if (user) {
+      const unsubscribeGlobalSettings = subscribeGlobalSettings(setGlobalSettings);
       const fetchData = async () => {
         setLoading(true);
         try {
@@ -230,15 +232,13 @@ export default function App() {
             photoURL: user.photoURL
           });
           
-          // Fetch critical access and settings in parallel
-          const [activated, gs] = await Promise.all([
+          // Fetch critical access in parallel
+          const [activated] = await Promise.all([
             checkActivation(user.uid),
-            getGlobalSettings()
           ]);
           
           const adminCheck = user.email === 'mbtoday5524@gmail.com';
           setIsAdmin(adminCheck);
-          setGlobalSettings(gs);
           
           const finalActive = activated || adminCheck;
           setIsActivated(finalActive);
@@ -266,6 +266,9 @@ export default function App() {
         }
       };
       fetchData();
+      return () => {
+        unsubscribeGlobalSettings();
+      };
     } else {
       setSettings(null);
       setIsActivated(null);

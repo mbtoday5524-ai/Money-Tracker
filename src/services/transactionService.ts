@@ -8,7 +8,8 @@ import {
   where, 
   orderBy, 
   serverTimestamp,
-  deleteDoc
+  deleteDoc,
+  onSnapshot
 } from 'firebase/firestore';
 import { db, auth } from '../lib/firebase';
 import { Transaction, UserSettings, OperationType, FirestoreErrorInfo } from '../types';
@@ -134,6 +135,13 @@ export const getGlobalSettings = async (): Promise<any> => {
     console.error("Error fetching global settings:", error);
     return {};
   }
+};
+
+export const subscribeGlobalSettings = (callback: (settings: any) => void) => {
+  const path = `settings/global`;
+  return onSnapshot(doc(db, path), (snap) => {
+    callback(snap.exists() ? snap.data() : {});
+  });
 };
 
 export const saveGlobalSettings = async (settings: any) => {
