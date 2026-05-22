@@ -594,7 +594,7 @@ export default function App() {
         <LoginPage 
           language={language} 
           setLanguage={setLanguage} 
-          adBannerUrls={globalSettings?.adBannerUrls}
+          adBannerUrls={globalSettings?.adBannerUrls || []}
         />
       ) : isActivated === false ? (
         showActivation ? (
@@ -1095,7 +1095,7 @@ export default function App() {
                   {currentView === View.ADMIN && isAdmin && (
                     <AdminPanel 
                       language={language}
-                      globalSettings={globalSettings || {}}
+                      globalSettings={globalSettings || { adBannerUrls: [] } as any}
                       onUpdateGlobalSettings={setGlobalSettings}
                     />
                   )}
