@@ -12,7 +12,9 @@ import {
   Database,
   BarChart4,
   ImageIcon,
-  Save
+  Save,
+  PlusCircle,
+  X
 } from 'lucide-react';
 import { getAllUsers, updateUserActivation, getAllGlobalTransactions, getGlobalSettings, saveGlobalSettings } from '../services/transactionService';
 import { motion } from 'motion/react';
@@ -406,6 +408,47 @@ export default function AdminPanel({ language, globalSettings: initialGlobalSett
                 onChange={(e) => setLocalGlobalSettings(prev => ({ ...prev, adminContactNote: e.target.value }))}
                 className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white resize-none"
               />
+            </div>
+
+            <div className="space-y-1.5 md:col-span-2 pt-4 border-t border-slate-100 dark:border-slate-800/40">
+              <label className="text-[10px] font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-wider block mb-4">Advertisement Banners (Slideshow)</label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {(globalSettings.adBannerUrls || []).map((url, index) => (
+                  <div key={index} className="group relative aspect-[16/9] rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 shadow-sm">
+                    <img src={url} alt={`Ad ${index + 1}`} className="w-full h-full object-cover" />
+                    <button
+                      onClick={() => {
+                        const newUrls = [...(globalSettings.adBannerUrls || [])];
+                        newUrls.splice(index, 1);
+                        setLocalGlobalSettings(prev => ({ ...prev, adBannerUrls: newUrls }));
+                      }}
+                      className="absolute top-2 right-2 w-8 h-8 rounded-full bg-rose-500 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ))}
+                <label className="aspect-[16/9] rounded-xl border-2 border-dashed border-slate-200 dark:border-slate-800 hover:border-indigo-500 transition-colors flex flex-col items-center justify-center gap-2 cursor-pointer bg-slate-50/50 dark:bg-slate-900/30 text-slate-400 hover:text-indigo-500">
+                  <PlusCircle size={24} />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-center px-2">Add New Ad</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      const reader = new FileReader();
+                      reader.onloadend = () => {
+                        const newUrls = [...(globalSettings.adBannerUrls || []), reader.result as string];
+                        setLocalGlobalSettings(prev => ({ ...prev, adBannerUrls: newUrls }));
+                      };
+                      reader.readAsDataURL(file);
+                    }}
+                  />
+                </label>
+              </div>
+              <p className="text-[10px] text-slate-500 font-medium mt-3">These images will be displayed in the carousel on the login screen. Recommended aspect ratio: 21:9 or 16:9.</p>
             </div>
 
             <div className="space-y-1.5 md:col-span-2 pt-4 border-t border-slate-100 dark:border-slate-800/40">

@@ -3,13 +3,15 @@ import { motion } from 'motion/react';
 import { Wallet, Globe, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import AuthStatus from './AuthStatus';
 import { KBZLogo, WaveLogo, AYALogo } from './Logos';
+import AdBanner from './AdBanner';
 
 interface LoginPageProps {
   language: 'MM' | 'EN';
   setLanguage: (lang: 'MM' | 'EN') => void;
+  adBannerUrls?: string[];
 }
 
-export default function LoginPage({ language, setLanguage }: LoginPageProps) {
+export default function LoginPage({ language, setLanguage, adBannerUrls }: LoginPageProps) {
   const features = [
     {
       mm: 'နေ့စဉ် ငွေအဝင်/အထွက် စာရင်းများကို စနစ်တကျ မှတ်တမ်းတင်နိုင်ခြင်း',
@@ -55,14 +57,33 @@ export default function LoginPage({ language, setLanguage }: LoginPageProps) {
         </div>
       </nav>
 
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-center p-4 md:p-12 overflow-hidden">
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-start md:justify-center px-4 md:px-12 pt-0 md:pt-12 pb-4 md:pb-12 overflow-y-auto md:overflow-hidden">
+        {/* Mobile Ad Banner - at the top of content */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full md:hidden pt-4 pb-2"
+        >
+          <AdBanner customImages={adBannerUrls} />
+        </motion.div>
+
         <div className="w-full max-w-5xl flex flex-col md:flex-row items-center md:items-stretch justify-center gap-6 md:gap-20 py-2 md:py-0">
-          {/* Left Column: Branding & Features */}
+          {/* Left Column: Branding & Features (Desktop Ad here) */}
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="w-full max-w-[320px] md:max-w-none md:flex-1 flex flex-col gap-4 md:gap-10 justify-center"
+            className="w-full max-w-[340px] md:max-w-none md:flex-1 flex flex-col gap-6 md:gap-10 justify-center"
           >
+            {/* Desktop Advertisement Carousel */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 }}
+              className="hidden md:block"
+            >
+              <AdBanner customImages={adBannerUrls} />
+            </motion.div>
+
             <div className="text-center md:text-left space-y-4 md:space-y-6">
               {/* Payment Systems Icons */}
               <div className="flex items-center justify-center md:justify-start gap-5">

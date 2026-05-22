@@ -34,6 +34,7 @@ export interface GlobalSettings {
   messengerIconUrl?: string;
   telegramIconUrl?: string;
   viberIconUrl?: string;
+  adBannerUrls?: string[];
 }
 
 export interface UserSettings {

@@ -588,7 +588,11 @@ export default function App() {
   return (
     <div className="h-screen flex bg-slate-50 dark:bg-[#020617] overflow-hidden text-slate-800 dark:text-slate-200 transition-colors duration-300" lang={language === 'MM' ? 'my' : 'en'}>
       {!user ? (
-        <LoginPage language={language} setLanguage={setLanguage} />
+        <LoginPage 
+          language={language} 
+          setLanguage={setLanguage} 
+          adBannerUrls={globalSettings?.adBannerUrls}
+        />
       ) : isActivated === false ? (
         showActivation ? (
           <AccountActivation 
