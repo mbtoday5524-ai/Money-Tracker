@@ -57,22 +57,62 @@ export default function LoginPage({ language, setLanguage, adBannerUrls }: Login
         </div>
       </nav>
 
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-start md:justify-center px-4 md:px-12 pt-0 md:pt-12 pb-4 md:pb-12 overflow-y-auto md:overflow-hidden">
-        {/* Mobile Ad Banner - at the top of content */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-full md:hidden pt-4 pb-2"
-        >
-          <AdBanner customImages={adBannerUrls} />
-        </motion.div>
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-start md:justify-center px-4 md:px-12 pt-4 md:pt-12 pb-4 md:pb-12 overflow-y-auto md:overflow-hidden">
+        <div className="w-full max-w-5xl flex flex-col md:flex-row items-center md:items-stretch justify-center gap-6 md:gap-20">
+          {/* Mobile Ad Banner & Branding Header */}
+          <div className="w-full md:hidden flex flex-col gap-4">
+             <motion.div
+               initial={{ opacity: 0, scale: 0.95 }}
+               animate={{ opacity: 1, scale: 1 }}
+               className="w-full"
+             >
+               <AdBanner customImages={adBannerUrls} />
+             </motion.div>
+             <div className="text-center space-y-1">
+                <h1 className={`text-white font-bold tracking-tight ${language === 'MM' ? 'text-xl' : 'text-2xl'}`}>
+                  {language === 'MM' ? 'လုပ်ငန်းစာရင်းများကို စနစ်တကျ စီမံပါ' : 'Manage Business Professionally'}
+                </h1>
+                <p className="text-slate-400 text-[10px] font-medium">
+                  {language === 'MM' ? 'စနစ်တကျ စီမံခန့်ခွဲလိုက်ပါ။' : 'Manage your finances professionally.'}
+                </p>
+             </div>
+          </div>
 
-        <div className="w-full max-w-5xl flex flex-col md:flex-row items-center md:items-stretch justify-center gap-6 md:gap-20 py-2 md:py-0">
-          {/* Left Column: Branding & Features (Desktop Ad here) */}
+          {/* Login Card (Appears second on mobile, Right on Desktop) */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="w-full max-w-[320px] md:w-[400px] flex flex-col gap-4 md:gap-10 justify-center order-2 md:order-2"
+          >
+            <div className="bg-white/[0.04] backdrop-blur-3xl p-6 md:p-12 rounded-[2rem] md:rounded-[2.5rem] border border-white/10 shadow-2xl relative space-y-6 md:space-y-10 group">
+              <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/5 to-transparent rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute -top-px left-1/2 -translate-x-1/2 w-1/3 h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent" />
+              
+              <div className="text-center space-y-2 md:space-y-4 relative z-10">
+                <h2 className={`text-white font-bold tracking-tight ${language === 'MM' ? 'text-[12px] md:text-[16px]' : 'text-[10px] md:text-[13px] md:tracking-[0.3em]'}`}>
+                  {language === 'MM' ? 'စတင်ရန် အကောင့်ဝင်ပါ' : 'SIGN IN TO CONTINUE'}
+                </h2>
+                <div className="h-0.5 w-8 bg-indigo-500/40 mx-auto rounded-full" />
+              </div>
+              
+              <div className="relative z-10">
+                <AuthStatus />
+              </div>
+            </div>
+
+            <div className="hidden md:block text-center space-y-4 pt-2 md:pt-4">
+              <p className="text-[9px] md:text-[10px] text-slate-500 font-bold uppercase tracking-[0.25em]">
+                Developed By <span className="text-indigo-500/90 font-extrabold">Zin Ko Ko Aung</span>
+              </p>
+            </div>
+          </motion.div>
+
+          {/* Branding & Features (Appears third on mobile, Left on Desktop) */}
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="w-full max-w-[340px] md:max-w-none md:flex-1 flex flex-col gap-6 md:gap-10 justify-center"
+            className="w-full max-w-[340px] md:max-w-none md:flex-1 flex flex-col gap-6 md:gap-10 justify-center order-3 md:order-1"
           >
             {/* Desktop Advertisement Carousel */}
             <motion.div
@@ -84,7 +124,7 @@ export default function LoginPage({ language, setLanguage, adBannerUrls }: Login
               <AdBanner customImages={adBannerUrls} />
             </motion.div>
 
-            <div className="text-center md:text-left space-y-4 md:space-y-6">
+            <div className="hidden md:block text-center md:text-left space-y-4 md:space-y-6">
               {/* Payment Systems Icons */}
               <div className="flex items-center justify-center md:justify-start gap-5">
                 <motion.div whileHover={{ scale: 1.05 }} className="p-0.5 md:p-1 bg-white/5 rounded-xl border border-white/10 shadow-2xl">
@@ -99,7 +139,7 @@ export default function LoginPage({ language, setLanguage, adBannerUrls }: Login
               </div>
 
               <div className="space-y-2 md:space-y-4">
-                <h1 className={`text-white font-bold tracking-tight hidden md:block ${language === 'MM' ? 'text-2xl leading-snug' : 'text-3xl'}`}>
+                <h1 className={`text-white font-bold tracking-tight ${language === 'MM' ? 'text-2xl leading-snug' : 'text-3xl'}`}>
                   {language === 'MM' ? 'လုပ်ငန်းစာရင်းများကို စနစ်တကျ စီမံခန့်ခွဲပါ' : 'Manage Business Professionally'}
                 </h1>
                 <p className={`text-slate-400 text-xs md:text-sm font-medium px-4 md:px-0 pt-1 ${language === 'MM' ? 'leading-relaxed' : 'leading-tight'}`}>
@@ -108,6 +148,13 @@ export default function LoginPage({ language, setLanguage, adBannerUrls }: Login
                     : 'Manage your business finances professionally and securely.'}
                 </p>
               </div>
+            </div>
+
+            {/* Mobile Branding Icons (Compact) */}
+            <div className="flex md:hidden items-center justify-center gap-3 py-2">
+              <KBZLogo className="w-8 h-8 rounded-lg" />
+              <WaveLogo className="w-8 h-8 rounded-lg" />
+              <AYALogo className="w-8 h-8 rounded-lg" />
             </div>
 
             {/* Quick Info / Features */}
@@ -120,40 +167,16 @@ export default function LoginPage({ language, setLanguage, adBannerUrls }: Login
                   transition={{ delay: 0.1 * idx }}
                   className="flex gap-3 md:gap-4 items-center bg-white/[0.03] p-3 md:p-4 rounded-2xl md:rounded-3xl border border-white/[0.08] shadow-sm hover:bg-white/[0.05] transition-colors"
                 >
-                  <CheckCircle2 size={16} className="text-emerald-500 shrink-0 md:w-5 md:h-5" />
-                  <p className={`text-slate-300 text-[11.5px] md:text-[13px] font-medium ${language === 'MM' ? 'leading-relaxed py-0.5' : 'leading-tight'}`}>
+                  <CheckCircle2 size={14} className="text-emerald-500 shrink-0 md:w-5 md:h-5" />
+                  <p className={`text-slate-300 text-[10px] md:text-[13px] font-medium ${language === 'MM' ? 'leading-relaxed' : 'leading-tight'}`}>
                     {language === 'MM' ? feature.mm : feature.en}
                   </p>
                 </motion.div>
               ))}
             </div>
-          </motion.div>
 
-          {/* Right Column: Login Card */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="w-full max-w-[320px] md:w-[400px] flex flex-col gap-4 md:gap-10 justify-center"
-          >
-            <div className="bg-white/[0.04] backdrop-blur-3xl p-6 md:p-12 rounded-[2rem] md:rounded-[2.5rem] border border-white/10 shadow-2xl relative space-y-6 md:space-y-10 group">
-              <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/5 to-transparent rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="absolute -top-px left-1/2 -translate-x-1/2 w-1/3 h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent" />
-              
-              <div className="text-center space-y-2 md:space-y-4 relative z-10">
-                <h2 className={`text-white font-bold tracking-tight ${language === 'MM' ? 'text-[13px] md:text-[16px]' : 'text-xs md:text-[13px] md:tracking-[0.3em]'}`}>
-                  {language === 'MM' ? 'စတင်ရန် အကောင့်ဝင်ပါ' : 'SIGN IN TO CONTINUE'}
-                </h2>
-                <div className="h-0.5 w-10 bg-indigo-500/40 mx-auto rounded-full" />
-              </div>
-              
-              <div className="relative z-10">
-                <AuthStatus />
-              </div>
-            </div>
-
-            <div className="text-center space-y-4 pt-2 md:pt-4">
-              <p className="text-[9px] md:text-[10px] text-slate-500 font-bold uppercase tracking-[0.25em]">
+            <div className="md:hidden text-center pt-8 pb-4">
+              <p className="text-[9px] text-slate-500 font-bold uppercase tracking-[0.25em]">
                 Developed By <span className="text-indigo-500/90 font-extrabold">Zin Ko Ko Aung</span>
               </p>
             </div>

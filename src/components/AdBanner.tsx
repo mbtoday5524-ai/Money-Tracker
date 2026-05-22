@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import adBanner1 from '../assets/images/ad_banner_1_1779421245691.png';
+import adBanner2 from '../assets/images/ad_banner_2_1779421264881.png';
+import adBanner3 from '../assets/images/ad_banner_3_1779421280771.png';
 
 interface AdBannerProps {
   customImages?: string[];
 }
 
 const defaultImages = [
-  '/src/assets/images/ad_banner_1_1779421245691.png',
-  '/src/assets/images/ad_banner_2_1779421264881.png',
-  '/src/assets/images/ad_banner_3_1779421280771.png'
+  adBanner1,
+  adBanner2,
+  adBanner3
 ];
 
 export default function AdBanner({ customImages }: AdBannerProps) {
