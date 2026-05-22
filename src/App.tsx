@@ -538,7 +538,7 @@ export default function App() {
             {/* Main Round Logo Container */}
             <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(0,176,255,0.3)] relative z-10 overflow-hidden bg-black border-2 border-cyan-400/30">
               <img 
-                src="/logo.png" 
+                src="/logo-round.png" 
                 alt="Z Money Tracker Logo" 
                 className="w-full h-full object-cover scale-[1.01]" 
               />
@@ -642,7 +642,7 @@ export default function App() {
             <div className="flex items-center justify-between mb-10 px-2 lg:block">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-xl flex items-center justify-center overflow-hidden shrink-0 shadow-lg shadow-black/30 border border-slate-700/50">
-                  <img src="/logo.png" alt="Logo" className="w-full h-full object-cover" />
+                  <img src="/logo-round.png" alt="Logo" className="w-full h-full object-cover" />
                 </div>
                 <h1 className="text-xl font-black text-white tracking-tight">Z Money Tracker</h1>
               </div>

@@ -41,7 +41,7 @@ export default function LoginPage({ language, setLanguage, adBannerUrls }: Login
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(99,102,241,0.6),inset_0_4px_8px_rgba(255,255,255,0.3)] border-t-[2px] border-b-[1px] border-l-[2px] border-r-[1px] border-indigo-400/80 bg-gradient-to-br from-[#1e293b] to-[#030712] p-1 relative overflow-hidden group">
               <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-white/20 to-transparent transition-opacity duration-500 opacity-50 group-hover:opacity-100 pointer-events-none" />
-              <img src="/logo.png" alt="Logo" className="w-full h-full object-contain drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)] relative z-10" />
+              <img src="/logo-round.png" alt="Logo" className="w-full h-full object-contain drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)] relative z-10" />
             </div>
             <span className="text-white font-black text-xl md:text-2xl tracking-tighter whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-200 to-slate-500 drop-shadow-[0_3px_3px_rgba(0,0,0,0.8)] font-sans">
               Z Money Tracker
@@ -58,8 +58,8 @@ export default function LoginPage({ language, setLanguage, adBannerUrls }: Login
         </div>
       </nav>
 
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-start md:justify-start px-4 md:px-12 pt-4 md:pt-12 lg:pt-16 pb-4 md:pb-8 overflow-y-auto md:overflow-hidden select-none">
-        <div className="w-full h-auto md:h-full max-w-6xl flex flex-col md:flex-row items-center md:items-start justify-start md:justify-start gap-6 md:gap-16 lg:gap-24">
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-start md:justify-start px-4 md:px-12 pt-4 md:pt-12 lg:pt-16 pb-4 md:pb-8 overflow-y-auto select-none">
+        <div className="w-full h-auto md:my-auto max-w-6xl flex flex-col md:flex-row items-center md:items-start justify-start md:justify-start gap-6 md:gap-16 lg:gap-24 shrink-0">
           {/* Mobile Unified Layout (Only visible on small screens) */}
           <div className="w-full md:hidden flex flex-col items-center gap-5 shrink-0">
              {/* Ad Banner on Top */}
@@ -209,7 +209,7 @@ export default function LoginPage({ language, setLanguage, adBannerUrls }: Login
             </div>
 
             {/* Right Column - Visual Showcase & Banks */}
-            <div className="flex flex-col flex-1 w-full relative items-center justify-center h-full gap-8 lg:gap-10 xl:gap-12 mt-8 xl:mt-0">
+            <div className="flex flex-col flex-1 w-full relative items-center justify-center h-auto gap-8 lg:gap-10 xl:gap-12 mt-8 xl:mt-0 shrink-0 pb-12">
               
               {/* Simple AdBanner Showcase */}
               <motion.div

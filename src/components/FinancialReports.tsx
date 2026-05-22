@@ -62,6 +62,7 @@ export default function FinancialReports({ transactions, language }: FinancialRe
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [activeBarIdx, setActiveBarIdx] = useState<number | null>(null);
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
 
   const getBrandColor = (category: string) => {
     const normalized = category.trim();
@@ -556,6 +557,7 @@ export default function FinancialReports({ transactions, language }: FinancialRe
                     height="100%" 
                     viewBox="0 0 160 160" 
                     className="transform -rotate-90 select-none"
+                    onMouseMove={(e) => setTooltipPos({ x: e.clientX, y: e.clientY })}
                   >
                     {/* Ring placeholder backing */}
                     <circle 
@@ -601,6 +603,22 @@ export default function FinancialReports({ transactions, language }: FinancialRe
                       );
                     })}
                   </svg>
+                  
+                  {hoveredIdx !== null && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="fixed z-[100] bg-slate-900 text-white p-2 rounded-lg text-[10px] pointer-events-none shadow-xl"
+                      style={{
+                        top: tooltipPos.y + 10,
+                        left: tooltipPos.x + 10,
+                      }}
+                    >
+                      <p className="font-bold">{getCategoryLabel(pieData[hoveredIdx].category)}</p>
+                      <p>{f(pieData[hoveredIdx].value)}</p>
+                      <p>{((pieData[hoveredIdx].percent) * 100).toFixed(1)}%</p>
+                    </motion.div>
+                  )}
 
                   {/* Centered contextual stats readout */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none p-4">

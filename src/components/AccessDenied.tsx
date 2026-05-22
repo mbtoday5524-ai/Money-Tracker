@@ -83,12 +83,12 @@ export default function AccessDenied({
         <div className="absolute bottom-[-10%] left-[-10%] w-[500px] md:w-[1000px] h-[500px] md:h-[1000px] bg-blue-500/10 md:bg-blue-500/15 rounded-full blur-[120px] md:blur-[160px]" />
       </div>
 
-      <main className="relative z-10 w-full h-full flex flex-col items-center justify-center p-4 md:p-8 overflow-hidden">
+      <main className="relative z-10 w-full h-full p-4 md:p-8 overflow-y-auto flex flex-col items-center">
         <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-full h-full md:h-auto max-w-[420px] bg-white/[0.02] backdrop-blur-3xl rounded-[2rem] p-6 md:p-10 border border-white/5 shadow-2xl flex flex-col relative group overflow-hidden"
-        >
+           initial={{ opacity: 0, scale: 0.98 }}
+           animate={{ opacity: 1, scale: 1 }}
+           className="w-full h-auto my-auto max-w-[420px] bg-white/[0.02] backdrop-blur-3xl rounded-[2rem] p-6 md:p-10 border border-white/5 shadow-2xl flex flex-col relative group shrink-0"
+         >
           {/* Top highlight gradient */}
           <div className="absolute -top-px left-1/2 -translate-x-1/2 w-1/3 h-px bg-gradient-to-r from-transparent via-rose-500/50 to-transparent" />
           

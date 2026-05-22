@@ -70,11 +70,11 @@ export default function AccountActivation({
         <div className="absolute bottom-[-10%] left-[-10%] w-[500px] md:w-[1000px] h-[500px] md:h-[1000px] bg-blue-500/10 md:bg-blue-500/15 rounded-full blur-[120px] md:blur-[160px]" />
       </div>
 
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-center p-6 pt-10 pb-20 md:p-12 md:pt-16 md:pb-24">
+      <main className="relative z-10 flex-1 flex flex-col items-center p-6 pt-10 pb-20 md:p-12 md:pt-16 md:pb-24">
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="max-w-[400px] w-full bg-white/[0.04] backdrop-blur-3xl rounded-[2rem] md:rounded-[2.5rem] p-8 md:p-10 border border-white/10 shadow-2xl flex flex-col gap-6 relative overflow-hidden"
+          className="max-w-[400px] w-full my-auto bg-white/[0.04] backdrop-blur-3xl rounded-[2rem] md:rounded-[2.5rem] p-8 md:p-10 border border-white/10 shadow-2xl flex flex-col gap-6 relative shrink-0"
         >
           {/* Top highlight gradient */}
           <div className="absolute -top-px left-1/2 -translate-x-1/2 w-1/3 h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent" />

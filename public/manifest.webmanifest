@@ -4,11 +4,11 @@
   "description": "Financial transaction tracker for MM Pay services.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#020617",
   "theme_color": "#4f46e5",
   "icons": [
     {
-      "src": "/logo.png",
+      "src": "/logo-round.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
