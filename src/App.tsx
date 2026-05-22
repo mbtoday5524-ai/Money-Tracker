@@ -218,10 +218,15 @@ export default function App() {
     }
   }, [isDarkMode]);
 
+  // Always subscribe to global settings, even if unauthenticated
+  useEffect(() => {
+    const unsubscribeGlobalSettings = subscribeGlobalSettings(setGlobalSettings);
+    return () => unsubscribeGlobalSettings();
+  }, []);
+
   // Load data when user is authenticated
   useEffect(() => {
     if (user) {
-      const unsubscribeGlobalSettings = subscribeGlobalSettings(setGlobalSettings);
       const fetchData = async () => {
         setLoading(true);
         try {
@@ -266,9 +271,6 @@ export default function App() {
         }
       };
       fetchData();
-      return () => {
-        unsubscribeGlobalSettings();
-      };
     } else {
       setSettings(null);
       setIsActivated(null);
