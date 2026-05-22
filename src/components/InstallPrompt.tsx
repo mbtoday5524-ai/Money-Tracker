@@ -28,17 +28,7 @@ export default function InstallPrompt({ language }: { language: 'MM' | 'EN' }) {
 
       if (!dismissedAt || (now - parseInt(dismissedAt)) > oneDay) {
         // Delay a bit before showing to not overwhelm the user
-        const timer = setTimeout(() => setShowPrompt(true), 3000);
-        return () => clearTimeout(timer);
-      }
-    } else {
-      // Also show on non-iOS manually after 5s if prompt hasn't fired yet
-      const dismissedAt = localStorage.getItem('pwa-prompt-dismissed-at');
-      const now = Date.now();
-      const oneDay = 24 * 60 * 60 * 1000;
-
-      if (!dismissedAt || (now - parseInt(dismissedAt)) > oneDay) {
-        const timer = setTimeout(() => setShowPrompt(true), 5000);
+        const timer = setTimeout(() => setShowPrompt(true), 15000); // 15s delay for iOS manual instructions
         return () => clearTimeout(timer);
       }
     }
@@ -49,9 +39,9 @@ export default function InstallPrompt({ language }: { language: 'MM' | 'EN' }) {
       
       const dismissedAt = localStorage.getItem('pwa-prompt-dismissed-at');
       const now = Date.now();
-      const oneHour = 60 * 60 * 1000;
+      const oneDay = 24 * 60 * 60 * 1000; // Increase to 1 day for native prompt dismiss
 
-      if (!dismissedAt || (now - parseInt(dismissedAt)) > oneHour) {
+      if (!dismissedAt || (now - parseInt(dismissedAt)) > oneDay) {
         setShowPrompt(true);
       }
     };
