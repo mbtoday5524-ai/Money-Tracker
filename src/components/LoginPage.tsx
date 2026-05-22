@@ -9,9 +9,10 @@ interface LoginPageProps {
   language: 'MM' | 'EN';
   setLanguage: (lang: 'MM' | 'EN') => void;
   adBannerUrls?: string[];
+  appLogoUrl?: string;
 }
 
-export default function LoginPage({ language, setLanguage, adBannerUrls }: LoginPageProps) {
+export default function LoginPage({ language, setLanguage, adBannerUrls, appLogoUrl }: LoginPageProps) {
   const features = [
     {
       mm: 'နေ့စဉ် ငွေအဝင်/အထွက် စာရင်းများကို စနစ်တကျ မှတ်တမ်းတင်နိုင်ခြင်း',
@@ -41,7 +42,7 @@ export default function LoginPage({ language, setLanguage, adBannerUrls }: Login
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(99,102,241,0.6),inset_0_4px_8px_rgba(255,255,255,0.3)] border-t-[2px] border-b-[1px] border-l-[2px] border-r-[1px] border-indigo-400/80 bg-gradient-to-br from-[#1e293b] to-[#030712] p-1 relative overflow-hidden group">
               <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-white/20 to-transparent transition-opacity duration-500 opacity-50 group-hover:opacity-100 pointer-events-none" />
-              <img src="/logo-round.png" alt="Logo" className="w-full h-full object-contain drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)] relative z-10" />
+              <img src={appLogoUrl || "/logo-round.png"} alt="Logo" className="w-full h-full object-contain drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)] relative z-10 rounded-full" />
             </div>
             <span className="text-white font-black text-xl md:text-2xl tracking-tighter whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-200 to-slate-500 drop-shadow-[0_3px_3px_rgba(0,0,0,0.8)] font-sans">
               Z Money Tracker

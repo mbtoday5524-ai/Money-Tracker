@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Minus, Calendar, Sparkles, Coins, Wallet } from 'lucide-react';
-import { TransactionType } from '../types';
+import { Plus, Minus, Calendar, Sparkles, Coins, Wallet, History } from 'lucide-react';
+import { TransactionType, Transaction } from '../types';
 import { KBZLogo, WaveLogo, AYALogo, CashLogo, UABLogo, TrueLogo } from './Logos';
 
 interface TransactionFormProps {
@@ -13,6 +13,7 @@ interface TransactionFormProps {
     phoneNumber?: string;
     feePaymentMethod?: 'Cash' | 'Wallet';
   }) => void;
+  transactions?: Transaction[];
   percentIn: number;
   percentOut: number;
   language: 'MM' | 'EN';
@@ -32,6 +33,7 @@ interface TransactionFormProps {
 
 export default function TransactionForm({ 
   onAdd, 
+  transactions = [],
   percentIn, 
   percentOut, 
   language,
@@ -73,6 +75,18 @@ export default function TransactionForm({
 
   const getCleanAmount = (val: string) => {
     return Number(val.replace(/,/g, '')) || 0;
+  };
+
+  const handleAutoFill = () => {
+    // Find the most recent transaction matching the currently selected category (wallet)
+    const lastMatchingTx = transactions.find(t => t.category === categoryId);
+    if (lastMatchingTx) {
+      setAmount(lastMatchingTx.amount.toString());
+      setPhoneNumber(lastMatchingTx.phoneNumber || '');
+      if (lastMatchingTx.feePaymentMethod && categoryId !== 'Cash') {
+        setFeePaymentMethod(lastMatchingTx.feePaymentMethod);
+      }
+    }
   };
 
   const handleSubmit = (e: React.FormEvent, selectedType?: TransactionType) => {
@@ -151,8 +165,25 @@ export default function TransactionForm({
         </div>
 
         {/* Amount, Phone Number Inputs */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Amount Input */}
+        <div className="space-y-3 pt-2">
+          {/* Action Row */}
+          <div className="flex justify-between items-center px-1">
+            <span className="text-[10px] sm:text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest font-display">
+               {language === 'MM' ? 'အသေးစိတ်အချက်အလက်' : 'Details'}
+            </span>
+            <button
+               type="button"
+               onClick={handleAutoFill}
+               disabled={!transactions.some(t => t.category === categoryId)}
+               className="text-[10px] sm:text-[11px] font-bold text-indigo-500 hover:text-indigo-600 dark:text-indigo-400 dark:hover:text-indigo-300 flex items-center gap-1.5 transition-all bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-900/50 px-2.5 py-1 sm:py-1.5 rounded-lg active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
+            >
+               <History size={13} />
+               {language === 'MM' ? 'နောက်ဆုံးစာရင်း ဖြည့်ရန်' : 'Auto-fill from last'}
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Amount Input */}
           <div className="space-y-1.5">
             <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.25em] px-1 flex items-center gap-2 font-display">
               <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
@@ -190,6 +221,7 @@ export default function TransactionForm({
               />
             </div>
           </div>
+        </div>
         </div>
 
         {/* Fee Payment Method Selection */}

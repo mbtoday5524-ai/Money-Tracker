@@ -463,6 +463,52 @@ export default function AdminPanel({ language, globalSettings: initialGlobalSett
             </div>
 
             <div className="space-y-1.5 md:col-span-2 pt-4 border-t border-slate-100 dark:border-slate-800/40">
+              <label className="text-[10px] font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-wider block">App Logo (Top Left & Login)</label>
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-full border border-slate-200 dark:border-slate-800 overflow-hidden bg-white dark:bg-slate-900 flex-shrink-0 flex items-center justify-center relative shadow-sm">
+                  {globalSettings.appLogoUrl ? (
+                    <img src={globalSettings.appLogoUrl} alt="App Logo" className="w-full h-full object-cover" />
+                  ) : (
+                    <img src="/logo-round.png" alt="App Logo Default" className="w-full h-full object-cover" />
+                  )}
+                </div>
+                <div className="flex-1 space-y-2">
+                  <div className="flex gap-2">
+                    <label className="flex-1 h-10 px-4 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 text-indigo-600 dark:text-indigo-400 hover:border-indigo-500 transition-all flex items-center justify-center gap-2 cursor-pointer text-[10px] uppercase font-black tracking-widest">
+                      <PlusCircle size={14} />
+                      Upload Logo
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          
+                          try {
+                            const base64 = await compressImage(file, 400, 400, 0.7);
+                            setLocalGlobalSettings(prev => ({ ...prev, appLogoUrl: base64 }));
+                          } catch (err) {
+                            console.error('Error compressing image', err);
+                          }
+                        }}
+                      />
+                    </label>
+                    {globalSettings.appLogoUrl && (
+                      <button
+                        onClick={() => setLocalGlobalSettings(prev => ({ ...prev, appLogoUrl: undefined }))}
+                        className="w-10 h-10 rounded-xl bg-rose-50 text-rose-500 hover:bg-rose-100 flex items-center justify-center transition-colors dark:bg-rose-500/10 dark:hover:bg-rose-500/20"
+                      >
+                        <X size={16} />
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-slate-500 font-medium">This logo is displayed at the top left of the main app and on the login screen. Recommended: Square image, transparent background.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-1.5 md:col-span-2 pt-4 border-t border-slate-100 dark:border-slate-800/40">
               <label className="text-[10px] font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-wider block">Restricted Access Logo (App Branding)</label>
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-white dark:bg-slate-900 flex-shrink-0 flex items-center justify-center relative shadow-sm">
