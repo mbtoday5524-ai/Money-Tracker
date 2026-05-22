@@ -22,25 +22,36 @@ export default function InstallPrompt({ language }: { language: 'MM' | 'EN' }) {
 
     if (isIosDevice) {
       // iOS doesn't support beforeinstallprompt, so we might want to manually show instructions
-      const hasSeenPrompt = localStorage.getItem('pwa-prompt-dismissed');
-      if (!hasSeenPrompt) {
+      const dismissedAt = localStorage.getItem('pwa-prompt-dismissed-at');
+      const now = Date.now();
+      const oneDay = 24 * 60 * 60 * 1000;
+
+      if (!dismissedAt || (now - parseInt(dismissedAt)) > oneDay) {
         // Delay a bit before showing to not overwhelm the user
-        setTimeout(() => setShowPrompt(true), 3000);
+        const timer = setTimeout(() => setShowPrompt(true), 3000);
+        return () => clearTimeout(timer);
       }
     } else {
-      // Also show on non-iOS manually after 3s if prompt hasn't fired yet
-      const hasSeenPrompt = localStorage.getItem('pwa-prompt-dismissed');
-      if (!hasSeenPrompt) {
-        setTimeout(() => setShowPrompt(true), 3000);
+      // Also show on non-iOS manually after 5s if prompt hasn't fired yet
+      const dismissedAt = localStorage.getItem('pwa-prompt-dismissed-at');
+      const now = Date.now();
+      const oneDay = 24 * 60 * 60 * 1000;
+
+      if (!dismissedAt || (now - parseInt(dismissedAt)) > oneDay) {
+        const timer = setTimeout(() => setShowPrompt(true), 5000);
+        return () => clearTimeout(timer);
       }
     }
 
-    const handler = (e: Event) => {
+    const handler = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
       
-      const hasSeenPrompt = localStorage.getItem('pwa-prompt-dismissed');
-      if (!hasSeenPrompt) {
+      const dismissedAt = localStorage.getItem('pwa-prompt-dismissed-at');
+      const now = Date.now();
+      const oneHour = 60 * 60 * 1000;
+
+      if (!dismissedAt || (now - parseInt(dismissedAt)) > oneHour) {
         setShowPrompt(true);
       }
     };
@@ -75,7 +86,7 @@ export default function InstallPrompt({ language }: { language: 'MM' | 'EN' }) {
 
   const handleDismiss = () => {
     setShowPrompt(false);
-    localStorage.setItem('pwa-prompt-dismissed', 'true');
+    localStorage.setItem('pwa-prompt-dismissed-at', Date.now().toString());
   };
 
   if (isStandalone || !showPrompt) return null;

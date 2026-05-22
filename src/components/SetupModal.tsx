@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Wallet, Settings2, ArrowRight, CreditCard, X, Loader2, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Wallet, Settings2, ArrowRight, CreditCard, X, Loader2, CheckCircle2, AlertTriangle, Download, Info } from 'lucide-react';
 import { UserSettings } from '../types';
 
 interface SetupModalProps {
@@ -435,6 +435,26 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
                 />
               </div>
             </div>
+          </div>
+
+          <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800 text-center">
+             <div className="bg-indigo-50 dark:bg-indigo-900/10 rounded-2xl p-6 border border-indigo-100 dark:border-indigo-900/30">
+                <div className="w-12 h-12 bg-indigo-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-indigo-600/20">
+                  <Download size={24} />
+                </div>
+                <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest mb-2">
+                  {language === 'MM' ? 'App ကို ဖုန်းထဲသို့ထည့်သွင်းရန်' : 'Install App'}
+                </h3>
+                <p className="text-[11px] font-bold text-slate-500 dark:text-slate-400 leading-relaxed mb-4">
+                  {language === 'MM' 
+                    ? 'Chrome browser ၏ Menu (အစက် ၃ စက်) ကိုနှိပ်ပြီး "Add to Home Screen" သို့မဟုတ် "Install App" ကို ရွေးချယ်နိုင်ပါသည်။ App အဖြစ်သွင်းထားပါက ပိုမိုမြန်ဆန်ပြီး လွယ်ကူစွာ အသုံးပြုနိုင်ပါသည်။' 
+                    : 'Tap the browser menu (three dots) and select "Add to Home screen" or "Install App". Installing as an app provides a faster and more reliable experience.'}
+                </p>
+                <div className="flex items-center justify-center gap-2 text-indigo-600 dark:text-indigo-400 text-[10px] font-black uppercase tracking-widest">
+                  <Info size={14} />
+                  <span>{language === 'MM' ? 'ပိုမိုမြန်ဆန်စွာ အသုံးပြုနိုင်သည်' : 'Optimized for mobile use'}</span>
+                </div>
+             </div>
           </div>
 
           <button

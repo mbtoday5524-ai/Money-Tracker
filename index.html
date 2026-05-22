@@ -6,11 +6,15 @@
     <title>Z Money Tracker</title>
     <link rel="icon" type="image/png" href="/logo-round.png" />
     <link rel="apple-touch-icon" href="/logo-round.png" />
-    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="manifest" href="/manifest.webmanifest" crossorigin="use-credentials" />
     <meta name="theme-color" content="#4f46e5" />
     <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="ZMT" />
+    <meta name="application-name" content="Z Money Tracker" />
+    <meta name="msapplication-TileColor" content="#4f46e5" />
+    <meta name="msapplication-tap-highlight" content="no" />
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
