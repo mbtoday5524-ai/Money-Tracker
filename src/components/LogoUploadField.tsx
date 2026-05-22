@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Image as ImageIcon, Loader2 } from 'lucide-react';
+import { compressImage } from '../utils/imageCompressor';
 
 interface LogoUploadFieldProps {
   provider: 'kbz' | 'wave' | 'aya' | 'cash' | 'uab' | 'true';
@@ -11,30 +12,21 @@ export default function LogoUploadField({ provider, currentUrl, setUrl }: LogoUp
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 1024 * 1024) {
-      alert('Image must be less than 1MB');
-      return;
-    }
-
     setUploading(true);
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const base64Data = reader.result as string;
+    try {
+      const base64Data = await compressImage(file, 200, 200, 0.7);
       setUrl(base64Data);
+    } catch (error) {
+      console.error('Failed to process image', error);
+      alert('Failed to process image');
+    } finally {
       setUploading(false);
-    };
-
-    reader.onerror = () => {
-      alert('Failed to read file');
-      setUploading(false);
-    };
-
-    reader.readAsDataURL(file);
+    }
   };
 
   const handleClearLogo = () => {

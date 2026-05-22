@@ -17,6 +17,7 @@ import {
   X
 } from 'lucide-react';
 import { getAllUsers, updateUserActivation, getAllGlobalTransactions, getGlobalSettings, saveGlobalSettings } from '../services/transactionService';
+import { compressImage } from '../utils/imageCompressor';
 import { motion } from 'motion/react';
 import FinancialReports from './FinancialReports';
 import LogoUploadField from './LogoUploadField';
@@ -309,12 +310,15 @@ export default function AdminPanel({ language, globalSettings: initialGlobalSett
                   ) : (
                     <ImageIcon size={18} className="text-slate-400" />
                   )}
-                  <input type="file" className="hidden" accept="image/*" onChange={(e) => {
+                  <input type="file" className="hidden" accept="image/*" onChange={async (e) => {
                     const file = e.target.files?.[0];
                     if (file) {
-                      const reader = new FileReader();
-                      reader.onloadend = () => setLocalGlobalSettings(prev => ({ ...prev, messengerIconUrl: reader.result as string }));
-                      reader.readAsDataURL(file);
+                      try {
+                        const base64 = await compressImage(file, 200, 200, 0.7);
+                        setLocalGlobalSettings(prev => ({ ...prev, messengerIconUrl: base64 }));
+                      } catch (err) {
+                        console.error('Error compressing image', err);
+                      }
                     }
                   }} />
                 </label>
@@ -337,12 +341,15 @@ export default function AdminPanel({ language, globalSettings: initialGlobalSett
                   ) : (
                     <ImageIcon size={18} className="text-slate-400" />
                   )}
-                  <input type="file" className="hidden" accept="image/*" onChange={(e) => {
+                  <input type="file" className="hidden" accept="image/*" onChange={async (e) => {
                     const file = e.target.files?.[0];
                     if (file) {
-                      const reader = new FileReader();
-                      reader.onloadend = () => setLocalGlobalSettings(prev => ({ ...prev, telegramIconUrl: reader.result as string }));
-                      reader.readAsDataURL(file);
+                      try {
+                        const base64 = await compressImage(file, 200, 200, 0.7);
+                        setLocalGlobalSettings(prev => ({ ...prev, telegramIconUrl: base64 }));
+                      } catch (err) {
+                        console.error('Error compressing image', err);
+                      }
                     }
                   }} />
                 </label>
@@ -365,12 +372,15 @@ export default function AdminPanel({ language, globalSettings: initialGlobalSett
                   ) : (
                     <ImageIcon size={18} className="text-slate-400" />
                   )}
-                  <input type="file" className="hidden" accept="image/*" onChange={(e) => {
+                  <input type="file" className="hidden" accept="image/*" onChange={async (e) => {
                     const file = e.target.files?.[0];
                     if (file) {
-                      const reader = new FileReader();
-                      reader.onloadend = () => setLocalGlobalSettings(prev => ({ ...prev, viberIconUrl: reader.result as string }));
-                      reader.readAsDataURL(file);
+                      try {
+                        const base64 = await compressImage(file, 200, 200, 0.7);
+                        setLocalGlobalSettings(prev => ({ ...prev, viberIconUrl: base64 }));
+                      } catch (err) {
+                        console.error('Error compressing image', err);
+                      }
                     }
                   }} />
                 </label>
@@ -435,15 +445,16 @@ export default function AdminPanel({ language, globalSettings: initialGlobalSett
                     type="file"
                     accept="image/*"
                     className="hidden"
-                    onChange={(e) => {
+                    onChange={async (e) => {
                       const file = e.target.files?.[0];
                       if (!file) return;
-                      const reader = new FileReader();
-                      reader.onloadend = () => {
-                        const newUrls = [...(globalSettings.adBannerUrls || []), reader.result as string];
+                      try {
+                        const base64 = await compressImage(file, 1200, 800, 0.6);
+                        const newUrls = [...(globalSettings.adBannerUrls || []), base64];
                         setLocalGlobalSettings(prev => ({ ...prev, adBannerUrls: newUrls }));
-                      };
-                      reader.readAsDataURL(file);
+                      } catch (err) {
+                        console.error('Error compressing image', err);
+                      }
                     }}
                   />
                 </label>
@@ -472,15 +483,16 @@ export default function AdminPanel({ language, globalSettings: initialGlobalSett
                         type="file"
                         accept="image/*"
                         className="hidden"
-                        onChange={(e) => {
+                        onChange={async (e) => {
                           const file = e.target.files?.[0];
                           if (!file) return;
-                          if (file.size > 2 * 1024 * 1024) return alert("Logo must be less than 2MB");
-                          const reader = new FileReader();
-                          reader.onloadend = () => {
-                            setLocalGlobalSettings(prev => ({ ...prev, restrictedLogoUrl: reader.result as string }));
-                          };
-                          reader.readAsDataURL(file);
+                          
+                          try {
+                            const base64 = await compressImage(file, 400, 400, 0.7);
+                            setLocalGlobalSettings(prev => ({ ...prev, restrictedLogoUrl: base64 }));
+                          } catch (err) {
+                            console.error('Error compressing image', err);
+                          }
                         }}
                       />
                     </label>

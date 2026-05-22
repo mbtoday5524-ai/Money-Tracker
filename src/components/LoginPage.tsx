@@ -31,8 +31,6 @@ export default function LoginPage({ language, setLanguage, adBannerUrls }: Login
     <div className="h-screen w-full flex flex-col bg-[#030712] relative overflow-hidden">
       {/* Background Atmosphere */}
       <div className="fixed inset-0 z-0">
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] brightness-100 contrast-150 pointer-events-none" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
         <div className="absolute top-[-10%] right-[-10%] w-[500px] md:w-[1000px] h-[500px] md:h-[1000px] bg-indigo-500/10 md:bg-indigo-500/15 rounded-full blur-[120px] md:blur-[160px]" />
         <div className="absolute bottom-[-10%] left-[-10%] w-[500px] md:w-[1000px] h-[500px] md:h-[1000px] bg-blue-500/10 md:bg-blue-500/15 rounded-full blur-[120px] md:blur-[160px]" />
       </div>
@@ -40,11 +38,12 @@ export default function LoginPage({ language, setLanguage, adBannerUrls }: Login
       {/* Navigation */}
       <nav className="relative z-20 flex items-center justify-center border-b border-white/5 backdrop-blur-md shrink-0">
         <div className="w-full max-w-7xl flex items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-[0_0_15px_rgba(99,102,241,0.5)] border-2 border-indigo-500/80 bg-[#090d16] p-[2px]">
-              <img src="/logo.png" alt="Logo" className="w-full h-full object-cover rounded-full" />
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(99,102,241,0.6),inset_0_4px_8px_rgba(255,255,255,0.3)] border-t-[2px] border-b-[1px] border-l-[2px] border-r-[1px] border-indigo-400/80 bg-gradient-to-br from-[#1e293b] to-[#030712] p-1 relative overflow-hidden group">
+              <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-white/20 to-transparent transition-opacity duration-500 opacity-50 group-hover:opacity-100 pointer-events-none" />
+              <img src="/logo.png" alt="Logo" className="w-full h-full object-contain drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)] relative z-10" />
             </div>
-            <span className="text-white font-extrabold text-lg tracking-tight whitespace-nowrap bg-gradient-to-r from-white via-slate-100 to-indigo-200 bg-clip-text text-transparent">
+            <span className="text-white font-black text-xl md:text-2xl tracking-tighter whitespace-nowrap text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-200 to-slate-500 drop-shadow-[0_3px_3px_rgba(0,0,0,0.8)] font-sans">
               Z Money Tracker
             </span>
           </div>
@@ -59,163 +58,201 @@ export default function LoginPage({ language, setLanguage, adBannerUrls }: Login
         </div>
       </nav>
 
-      <main className="relative z-10 flex-1 flex flex-col items-center justify-between md:justify-center px-4 md:px-12 pt-3 md:pt-12 pb-3 md:pb-12 overflow-hidden select-none">
-        <div className="w-full h-full max-w-5xl flex flex-col md:flex-row items-center md:items-stretch justify-between md:justify-center gap-2.5 md:gap-20">
-          {/* Mobile Ad Banner & Branding Header */}
-          <div className="w-full md:hidden flex flex-col gap-2 shrink-0">
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-start md:justify-start px-4 md:px-12 pt-4 md:pt-12 lg:pt-16 pb-4 md:pb-8 overflow-y-auto md:overflow-hidden select-none">
+        <div className="w-full h-auto md:h-full max-w-6xl flex flex-col md:flex-row items-center md:items-start justify-start md:justify-start gap-6 md:gap-16 lg:gap-24">
+          {/* Mobile Unified Layout (Only visible on small screens) */}
+          <div className="w-full md:hidden flex flex-col items-center gap-5 shrink-0">
+             {/* Ad Banner on Top */}
              <motion.div
                initial={{ opacity: 0, scale: 0.95 }}
                animate={{ opacity: 1, scale: 1 }}
-               className="w-full shadow-lg shadow-indigo-505/5"
+               className="w-full max-w-[400px] rounded-2xl overflow-hidden"
              >
                <AdBanner customImages={adBannerUrls} />
              </motion.div>
-             <div className="text-center space-y-1">
-                <h1 className="text-white font-extrabold tracking-tight text-base bg-gradient-to-r from-white via-slate-100 to-indigo-200 bg-clip-text text-transparent drop-shadow-sm">
-                  {language === 'MM' ? 'စာရင်းများကိုစနစ်တကျစီမံခန့်ခွဲလိုက်ပါ။' : 'Manage Business Professionally'}
-                </h1>
-                {language === 'EN' && (
-                  <p className="text-slate-400 text-[10px] font-medium tracking-wide">
-                    Manage your finances professionally and securely.
-                  </p>
-                )}
+
+             {/* Branding Text */}
+             <div className="text-center space-y-2 max-w-[340px]">
+                <p className="text-slate-400 text-[11px] font-medium leading-relaxed px-4">
+                  {language === 'MM' 
+                    ? 'သင်၏လုပ်ငန်းငွေစာရင်းများကို စနစ်တကျ မှတ်တမ်းတင်ပြီး အချိန်မရွေး လွယ်ကူစွာ စီမံခန့်ခွဲလိုက်ပါ။' 
+                    : 'Manage your business finances professionally and securely with our intuitive tracking system.'}
+                </p>
+             </div>
+
+             {/* Features & Login (Compact Vertical Stack) */}
+             <div className="w-full max-w-[340px] space-y-5">
+                <div className="flex flex-col gap-2.5">
+                  {features.map((feature, idx) => (
+                    <motion.div 
+                      key={idx} 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.1 * idx }}
+                      className="flex gap-3 items-center bg-white/[0.03] p-2.5 rounded-xl border border-white/5 shadow-sm"
+                    >
+                      <div className="w-6 h-6 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0 border border-emerald-500/20">
+                        <CheckCircle2 size={14} className="text-emerald-500" />
+                      </div>
+                      <p className={`text-slate-200 text-[11px] font-medium leading-normal`}>
+                        {language === 'MM' ? feature.mm : feature.en}
+                      </p>
+                    </motion.div>
+                  ))}
+                </div>
+
+                <div className="space-y-4 pt-1">
+                   <div className="text-center space-y-1.5">
+                      <h2 className={`text-white font-black text-[10px] uppercase opacity-70 ${language === 'MM' ? 'tracking-normal' : 'tracking-[0.2em]'}`}>
+                        {language === 'MM' ? 'စတင်ရန် အကောင့်ဝင်ပါ' : 'SIGN IN TO CONTINUE'}
+                      </h2>
+                      <div className="h-[2px] w-8 bg-indigo-500/40 mx-auto rounded-full" />
+                   </div>
+                   <AuthStatus />
+                </div>
+             </div>
+
+             {/* Mobile Branding Icons Footer */}
+             <div className="flex flex-col items-center justify-center gap-3 mt-2 pb-2">
+                <span className={`text-[8px] text-slate-500 font-bold uppercase ${language === 'MM' ? 'tracking-normal' : 'tracking-[0.2em]'}`}>
+                  {language === 'MM' ? 'အသုံးပြုနိုင်သော ငွေပေးချေမှုပုံစံများ' : 'Supported Wallets & Banks'}
+                </span>
+                <div className="flex items-center justify-center gap-3">
+                  <KBZLogo className="w-7 h-7 rounded-lg opacity-80" />
+                  <WaveLogo className="w-7 h-7 rounded-lg opacity-80" />
+                  <AYALogo className="w-7 h-7 rounded-lg opacity-80" />
+                  <UABLogo className="w-7 h-7 rounded-lg opacity-80" />
+                  <TrueLogo className="w-7 h-7 rounded-lg opacity-80" />
+                </div>
+                <p className="text-[8px] text-slate-600 font-bold uppercase tracking-widest mt-1">
+                   Developed By <span className="text-indigo-400/60">Zin Ko Ko Aung</span>
+                </p>
              </div>
           </div>
 
-          {/* Login Card (Appears second on mobile, Right on Desktop) */}
+          {/* Desktop Layout - Floating Glass Panels Design */}
           <motion.div 
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="w-full max-w-[340px] md:w-[420px] flex flex-col justify-center order-2 md:order-2 shrink-0"
+            className="hidden md:flex flex-row items-center lg:items-start justify-between w-full max-w-7xl mx-auto gap-8 lg:gap-16 xl:gap-24 order-1 pt-8 lg:pt-16"
           >
-            <div className="bg-white/[0.03] backdrop-blur-3xl p-4 md:p-12 rounded-[1.75rem] md:rounded-[2.5rem] border border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.4)] relative space-y-3.5 md:space-y-8 group overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/10 to-transparent rounded-[1.75rem] opacity-30 pointer-events-none" />
-              <div className="absolute -top-px left-1/2 -translate-x-1/2 w-1/2 h-px bg-gradient-to-r from-transparent via-indigo-400/80 to-transparent" />
+            {/* Left Column - Copy, Features & Auth */}
+            <div className="flex flex-col w-[50%] shrink-0 space-y-10 lg:space-y-16">
               
-              {/* Trust/Secure Badge to satisfy visual design */}
-              <div className="flex items-center justify-center gap-1.5 px-2.5 py-0.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full w-fit mx-auto relative z-10">
-                <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
-                <span className="text-[8px] md:text-[10px] text-indigo-200 font-bold tracking-wider uppercase">
-                  {language === 'MM' ? 'လုံခြုံစိတ်ချရသော စနစ်' : 'Secure Platform'}
-                </span>
+              {/* Branding Header */}
+              <div className="space-y-8 lg:space-y-10">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-indigo-500/10 border border-indigo-500/20 rounded-full w-fit">
+                  <ShieldCheck className="w-4 h-4 text-indigo-400" />
+                  <span className="text-[10px] xl:text-xs text-indigo-200 font-bold tracking-widest uppercase">
+                    {language === 'MM' ? 'လုံခြုံစိတ်ချရသော စနစ်' : 'Secure Platform'}
+                  </span>
+                </div>
+
+                <div className="space-y-6">
+                   <p className="text-slate-400 font-medium leading-relaxed max-w-[90%] text-[13px] lg:text-base xl:text-lg border-l-4 border-indigo-500/30 pl-5 py-2">
+                     {language === 'MM' 
+                       ? 'သင်၏လုပ်ငန်းငွေစာရင်းများကို စနစ်တကျ မှတ်တမ်းတင်ပြီး အချိန်မရွေး လွယ်ကူစွာ စီမံခန့်ခွဲလိုက်ပါ။' 
+                       : 'Manage your business finances professionally and securely with our intuitive tracking system.'}
+                   </p>
+                </div>
               </div>
 
-              {/* Quick Info / Features */}
-              <div className="flex flex-col gap-2 relative z-10">
+              {/* Minimal Features List */}
+              <div className="flex flex-col gap-5 xl:gap-6 py-2">
                 {features.map((feature, idx) => (
                   <motion.div 
-                    key={idx} 
+                    key={idx}
                     initial={{ opacity: 0, x: -10 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.15 * idx }}
-                    className="flex gap-2.5 items-center bg-white/[0.02] py-2 px-3 rounded-xl border border-white/[0.04] shadow-sm hover:bg-white/[0.04] hover:border-white/[0.1] transition-all duration-300"
+                    className="flex gap-4 items-center group"
                   >
-                    <CheckCircle2 size={13} className="text-emerald-500 shrink-0" />
-                    <p className={`text-slate-200 text-[10px] sm:text-[11px] md:text-[13px] font-medium leading-relaxed`}>
+                    <div className="w-6 h-6 xl:w-7 xl:h-7 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0 border border-emerald-500/20 transition-colors group-hover:bg-emerald-500/20">
+                      <CheckCircle2 className="w-3.5 h-3.5 xl:w-4 xl:h-4 text-emerald-500" />
+                    </div>
+                    <p className={`text-slate-200 ${language === 'MM' ? 'text-[13px] xl:text-[15px]' : 'text-xs xl:text-sm'} font-medium`}>
                       {language === 'MM' ? feature.mm : feature.en}
                     </p>
                   </motion.div>
                 ))}
               </div>
+
+              {/* Supported Banks Row */}
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="flex flex-col items-start gap-4 w-full mt-4 lg:mt-8"
+              >
+                <span className={`text-[9px] xl:text-[10px] text-slate-500 font-bold uppercase ${language === 'MM' ? 'tracking-normal' : 'tracking-[0.2em]'}`}>
+                  {language === 'MM' ? 'အသုံးပြုနိုင်သော ငွေပေးချေမှုပုံစံများ' : 'Supported Wallets & Banks'}
+                </span>
+                <div className="flex items-center justify-start gap-4 xl:gap-5">
+                  <motion.div whileHover={{ scale: 1.1, y: -2 }} className="p-1 px-1.5 bg-white/5 rounded-xl border border-white/10 shadow-lg cursor-pointer">
+                    <KBZLogo className="w-7 h-7 xl:w-9 xl:h-9 rounded-lg" />
+                  </motion.div>
+                  <motion.div whileHover={{ scale: 1.1, y: -2 }} className="p-1 px-1.5 bg-white/5 rounded-xl border border-white/10 shadow-lg cursor-pointer">
+                    <WaveLogo className="w-7 h-7 xl:w-9 xl:h-9 rounded-lg" />
+                  </motion.div>
+                  <motion.div whileHover={{ scale: 1.1, y: -2 }} className="p-1 px-1.5 bg-white/5 rounded-xl border border-white/10 shadow-lg cursor-pointer">
+                    <AYALogo className="w-7 h-7 xl:w-9 xl:h-9 rounded-lg" />
+                  </motion.div>
+                  <motion.div whileHover={{ scale: 1.1, y: -2 }} className="p-1 px-1.5 bg-white/5 rounded-xl border border-white/10 shadow-lg cursor-pointer">
+                    <UABLogo className="w-7 h-7 xl:w-9 xl:h-9 rounded-lg" />
+                  </motion.div>
+                  <motion.div whileHover={{ scale: 1.1, y: -2 }} className="p-1 px-1.5 bg-white/5 rounded-xl border border-white/10 shadow-lg cursor-pointer">
+                    <TrueLogo className="w-7 h-7 xl:w-9 xl:h-9 rounded-lg" />
+                  </motion.div>
+                </div>
+              </motion.div>
+
+            </div>
+
+            {/* Right Column - Visual Showcase & Banks */}
+            <div className="flex flex-col flex-1 w-full relative items-center justify-center h-full gap-8 lg:gap-10 xl:gap-12 mt-8 xl:mt-0">
               
-              <div className="text-center space-y-1 relative z-10 pt-1">
-                <h2 className="text-white font-black tracking-wider text-[11px] md:text-sm bg-gradient-to-r from-slate-200 to-white bg-clip-text text-transparent">
-                  {language === 'MM' ? 'စတင်ရန် အကောင့်ဝင်ပါ' : 'SIGN IN TO CONTINUE'}
-                </h2>
-                <div className="h-[1.5px] w-8 bg-indigo-500/60 mx-auto rounded-full mt-0.5" />
+              {/* Simple AdBanner Showcase */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, ease: "easeOut", delay: 0.1 }} 
+                className="w-full max-w-[650px] xl:max-w-[750px] relative z-10"
+              >
+                 <div className="rounded-[1.5rem] xl:rounded-[2rem] overflow-hidden relative z-10">
+                   <AdBanner customImages={adBannerUrls} />
+                 </div>
+              </motion.div>
+
+              {/* Login Area */}
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="w-full max-w-[380px] bg-[#0a0f1d]/80 backdrop-blur-3xl border border-white/5 p-6 lg:p-8 rounded-[2rem] shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)] relative overflow-hidden group hover:border-indigo-500/20 transition-colors duration-500"
+              >
+                 <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/5 to-transparent pointer-events-none" />
+                 <div className="relative z-10 space-y-5">
+                    <div className="text-center space-y-2">
+                       <h2 className={`text-white font-black text-[10px] xl:text-xs uppercase bg-gradient-to-r from-slate-200 to-white bg-clip-text text-transparent opacity-90 ${language === 'MM' ? 'tracking-normal' : 'tracking-[0.2em]'}`}>
+                         {language === 'MM' ? 'စတင်ရန် အကောင့်ဝင်ပါ' : 'SIGN IN TO CONTINUE'}
+                       </h2>
+                       <div className="h-[2px] w-12 bg-indigo-500/60 mx-auto rounded-full" />
+                    </div>
+                    <AuthStatus />
+                 </div>
+              </motion.div>
+
+              {/* Developer Attribution */}
+              <div className="absolute -bottom-6 xl:-bottom-10 w-full text-center">
+                 <p className="text-[9px] xl:text-[10px] text-slate-600 font-black uppercase tracking-[0.4em]">
+                    Developed By <span className="text-indigo-400 text-opacity-80">Zin Ko Ko Aung</span>
+                 </p>
               </div>
 
-              <div className="relative z-10">
-                <AuthStatus />
-               </div>
-            </div>
-
-            <div className="hidden md:block text-center space-y-4 pt-2 md:pt-4">
-              <p className="text-[9px] md:text-[10px] text-slate-500 font-bold uppercase tracking-[0.25em]">
-                Developed By <span className="text-indigo-400 font-extrabold shadow-indigo-500/10">Zin Ko Ko Aung</span>
-              </p>
             </div>
           </motion.div>
 
-          {/* Branding & Features (Appears third on mobile, Left on Desktop) */}
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="w-full max-w-[340px] md:max-w-none md:flex-1 flex flex-col justify-center order-3 md:order-1 shrink-0"
-          >
-            {/* Desktop Advertisement Carousel */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1 }}
-              className="hidden md:block"
-            >
-              <AdBanner customImages={adBannerUrls} />
-            </motion.div>
 
-            <div className="hidden md:block text-center md:text-left space-y-4 md:space-y-6">
-              {/* Payment Systems Icons */}
-              <div className="flex items-center justify-center md:justify-start gap-4">
-                <motion.div whileHover={{ scale: 1.08 }} className="p-1 bg-white/5 rounded-2xl border border-white/10 shadow-2xl">
-                  <KBZLogo className="w-12 h-12 md:w-16 md:h-16 rounded-xl" />
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.08 }} className="p-1 bg-white/5 rounded-2xl border border-white/10 shadow-2xl">
-                  <WaveLogo className="w-12 h-12 md:w-16 md:h-16 rounded-xl" />
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.08 }} className="p-1 bg-white/5 rounded-2xl border border-white/10 shadow-2xl">
-                  <AYALogo className="w-12 h-12 md:w-16 md:h-16 rounded-xl" />
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.08 }} className="p-1 bg-white/5 rounded-2xl border border-white/10 shadow-2xl">
-                  <UABLogo className="w-12 h-12 md:w-16 md:h-16 rounded-xl" />
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.08 }} className="p-1 bg-white/5 rounded-2xl border border-white/10 shadow-2xl">
-                  <TrueLogo className="w-12 h-12 md:w-16 md:h-16 rounded-xl" />
-                </motion.div>
-              </div>
-
-              <div className="space-y-2 md:space-y-4">
-                <h1 className="text-white font-extrabold tracking-tight text-xl md:text-3xl bg-gradient-to-r from-white via-slate-100 to-slate-200 bg-clip-text text-transparent">
-                  {language === 'MM' ? 'စာရင်းများကိုစနစ်တကျစီမံခန့်ခွဲလိုက်ပါ။' : 'Manage Business Professionally'}
-                </h1>
-                {language === 'EN' && (
-                  <p className="text-slate-400 text-xs md:text-sm font-medium px-4 md:px-0 pt-1 leading-tight">
-                    Manage your business finances professionally and securely.
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Mobile Branding Icons (Compact with UAB Pay and True Money added!) */}
-            <div className="flex md:hidden flex-col items-center justify-center gap-1.5 mt-1">
-              <span className="text-[8.5px] text-slate-500 font-bold uppercase tracking-[0.2em] mb-0.5">
-                {language === 'MM' ? 'အသုံးပြုနိုင်သော ငွေပေးချေမှုပုံစံများ' : 'Supported Wallets & Banks'}
-              </span>
-              <div className="flex items-center justify-center gap-3">
-                <motion.div whileTap={{ scale: 0.9 }} className="p-0.5 bg-white/5 rounded-xl border border-white/10 shadow-md">
-                  <KBZLogo className="w-7 h-7 rounded-lg" />
-                </motion.div>
-                <motion.div whileTap={{ scale: 0.9 }} className="p-0.5 bg-white/5 rounded-xl border border-white/10 shadow-md">
-                  <WaveLogo className="w-7 h-7 rounded-lg" />
-                </motion.div>
-                <motion.div whileTap={{ scale: 0.9 }} className="p-0.5 bg-white/5 rounded-xl border border-white/10 shadow-md">
-                  <AYALogo className="w-7 h-7 rounded-lg" />
-                </motion.div>
-                <motion.div whileTap={{ scale: 0.9 }} className="p-0.5 bg-white/5 rounded-xl border border-white/10 shadow-md">
-                  <UABLogo className="w-7 h-7 rounded-lg" />
-                </motion.div>
-                <motion.div whileTap={{ scale: 0.9 }} className="p-0.5 bg-white/5 rounded-xl border border-white/10 shadow-md">
-                  <TrueLogo className="w-7 h-7 rounded-lg" />
-                </motion.div>
-              </div>
-            </div>
-
-            <div className="md:hidden text-center pt-2 pb-1">
-              <p className="text-[8px] text-slate-500 font-bold uppercase tracking-[0.25em]">
-                Developed By <span className="text-indigo-400 font-extrabold">Zin Ko Ko Aung</span>
-              </p>
-            </div>
-          </motion.div>
         </div>
       </main>
     </div>
