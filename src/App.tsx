@@ -21,12 +21,14 @@ import BalanceCards from './components/BalanceCards';
 import TransactionForm from './components/TransactionForm';
 import TransactionList from './components/TransactionList';
 import Summary from './components/Summary';
+import DailyGoalTracker from './components/DailyGoalTracker';
 import AccessDenied from './components/AccessDenied';
 import AdminPanel from './components/AdminPanel';
 import FinancialReports from './components/FinancialReports';
 import LoginPage from './components/LoginPage';
 import AccountActivation from './components/AccountActivation';
 import InstallPrompt from './components/InstallPrompt';
+import Documentation from './components/Documentation';
 import { 
   Wallet, 
   Loader2, 
@@ -45,7 +47,8 @@ import {
   Moon,
   Sun,
   Globe,
-  ShieldCheck
+  ShieldCheck,
+  FileText
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -55,7 +58,8 @@ enum View {
   HISTORY = 'HISTORY',
   SETTINGS = 'SETTINGS',
   ADMIN = 'ADMIN',
-  REPORTS = 'REPORTS'
+  REPORTS = 'REPORTS',
+  DOCS = 'DOCS'
 }
 
 export default function App() {
@@ -520,6 +524,21 @@ export default function App() {
 
   const totalFee = useMemo(() => transactions.reduce((sum, tx) => sum + tx.fee, 0), [transactions]);
 
+  const todayStats = useMemo(() => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const todayTxs = transactions.filter(tx => {
+      const txDate = new Date(tx.date || tx.createdAt?.toDate?.() || tx.createdAt);
+      return txDate >= today;
+    });
+
+    return {
+      revenue: todayTxs.reduce((sum, tx) => sum + (tx.fee || 0), 0),
+      count: todayTxs.length
+    };
+  }, [transactions]);
+
   if (authLoading || (user && isActivated === null)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black overflow-hidden relative">
@@ -559,10 +578,6 @@ export default function App() {
               />
             </div>
             
-            {/* Spinning loader badge matching logo neon vibe */}
-            <div className="absolute -bottom-1 -right-1 bg-black border-2 border-cyan-400 rounded-full p-2.5 shadow-[0_0_20px_rgba(0,176,255,0.5)] z-20">
-              <Loader2 className="animate-spin text-cyan-400" size={24} />
-            </div>
           </motion.div>
           
           <div className="flex flex-col items-center gap-2 text-center">
@@ -574,14 +589,34 @@ export default function App() {
             >
               {globalSettings?.appName || "Z MONEY TRACKER"}
             </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              className="text-[10px] text-cyan-400/80 font-mono font-black uppercase tracking-[0.4em] pl-[0.4em] animate-pulse"
-            >
-              Initializing System..
-            </motion.p>
+            <div className="flex flex-col items-center gap-2">
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+                className="text-[10px] text-cyan-400/80 font-mono font-black uppercase tracking-[0.4em] pl-[0.4em]"
+              >
+                Initializing System..
+              </motion.p>
+              <div className="flex gap-2">
+                {[0, 1, 2].map((i) => (
+                  <motion.div
+                    key={i}
+                    animate={{ 
+                      y: [0, -3, 0],
+                      opacity: [0.3, 1, 0.3]
+                    }}
+                    transition={{ 
+                      repeat: Infinity, 
+                      duration: 0.8, 
+                      delay: i * 0.15,
+                      ease: "easeInOut"
+                    }}
+                    className="w-1 h-1 rounded-full bg-cyan-400 shadow-[0_0_8px_rgba(34,211,238,0.6)]"
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -694,6 +729,21 @@ export default function App() {
 
               <button
                 onClick={() => {
+                  setCurrentView(View.DOCS);
+                  setIsSidebarOpen(false);
+                }}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                  currentView === View.DOCS 
+                    ? 'bg-indigo-600 text-white' 
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                }`}
+              >
+                <FileText size={20} />
+                <span className="font-bold text-[15px] tracking-tight">{language === 'MM' ? 'လမ်းညွှန်မှတ်တမ်း' : 'Documentation'}</span>
+              </button>
+
+              <button
+                onClick={() => {
                   setCurrentView(View.SETTINGS);
                   setIsSidebarOpen(false);
                 }}
@@ -751,6 +801,7 @@ export default function App() {
                     {currentView === View.NEW_TRANSACTION && (language === 'MM' ? 'စာရင်းသစ်သွင်းရန်' : 'New Transaction')}
                     {currentView === View.HISTORY && (language === 'MM' ? 'လုပ်ငန်းမှတ်တမ်း' : 'History')}
                     {currentView === View.SETTINGS && (language === 'MM' ? 'ဆက်တင်များ' : 'Settings')}
+                    {currentView === View.DOCS && (language === 'MM' ? 'လမ်းညွှန်မှတ်တမ်း' : 'System Documentation')}
                     {currentView === View.REPORTS && (language === 'MM' ? 'ဘဏ္ဍာရေး အစီရင်ခံစာ' : 'Financial Reports')}
                     {currentView === View.ADMIN && 'Admin Control Panel'}
                   </h2>
@@ -961,6 +1012,23 @@ export default function App() {
 
                         {/* Summary / Stats Card */}
                         <div className="space-y-4 lg:space-y-6 lg:sticky lg:top-0">
+                          <DailyGoalTracker 
+                            language={language}
+                            currentRevenue={todayStats.revenue}
+                            currentCount={todayStats.count}
+                            revenueGoal={settings?.dailyRevenueGoal || 5000}
+                            transactionGoal={settings?.dailyTransactionGoal || 10}
+                            onUpdateGoals={async (rev, txs) => {
+                              if (!user || !settings) return;
+                              await saveUserSettings(user.uid, {
+                                ...settings,
+                                dailyRevenueGoal: rev,
+                                dailyTransactionGoal: txs
+                              });
+                              const s = await getUserSettings(user.uid);
+                              setSettings(s);
+                            }}
+                          />
                           <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest px-1">
                             {language === 'MM' ? 'စာရင်းချုပ်' : 'Current Ledger'}
                           </h3>
@@ -1126,6 +1194,10 @@ export default function App() {
                       language={language} 
                     />
                   )}
+
+                  {currentView === View.DOCS && (
+                    <Documentation language={language} />
+                  )}
                 </motion.div>
               </AnimatePresence>
             </div>
@@ -1148,20 +1220,6 @@ export default function App() {
         />
       )}
       
-
-      <AnimatePresence>
-        {loading && (
-          <motion.div 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            className="fixed bottom-10 right-10 p-4 bg-indigo-600 text-white rounded-2xl shadow-2xl z-50 flex items-center gap-3 border border-indigo-400"
-          >
-             <Loader2 className="animate-spin" size={18} />
-             <span className="text-[10px] font-bold uppercase tracking-[0.2em] px-1">Processing..</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <InstallPrompt language={language} />
     </div>

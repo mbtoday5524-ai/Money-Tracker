@@ -69,6 +69,8 @@ export interface UserSettings {
   notificationsEnabled: boolean;
   notificationEmail?: string;
   lowBalanceThreshold: number;
+  dailyRevenueGoal?: number;
+  dailyTransactionGoal?: number;
   updatedAt: any;
 }
 

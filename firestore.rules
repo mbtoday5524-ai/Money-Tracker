@@ -40,7 +40,7 @@ service cloud.firestore {
 
     function isValidUserSettings(data) {
       let requiredFields = ['kbzInitial', 'waveInitial', 'ayaInitial', 'cashInitial', 'percentIn', 'percentOut', 'updatedAt'];
-      let optionalFields = ['kbzPhone', 'wavePhone', 'ayaPhone', 'kbzLogoUrl', 'waveLogoUrl', 'ayaLogoUrl', 'cashLogoUrl', 'notificationsEnabled', 'notificationEmail', 'lowBalanceThreshold', 'kbzEnabled', 'waveEnabled', 'ayaEnabled', 'cashEnabled', 'uabInitial', 'trueInitial', 'uabEnabled', 'trueEnabled', 'uabPhone', 'truePhone', 'uabLogoUrl', 'trueLogoUrl'];
+      let optionalFields = ['kbzPhone', 'wavePhone', 'ayaPhone', 'kbzLogoUrl', 'waveLogoUrl', 'ayaLogoUrl', 'cashLogoUrl', 'notificationsEnabled', 'notificationEmail', 'lowBalanceThreshold', 'kbzEnabled', 'waveEnabled', 'ayaEnabled', 'cashEnabled', 'uabInitial', 'trueInitial', 'uabEnabled', 'trueEnabled', 'uabPhone', 'truePhone', 'uabLogoUrl', 'trueLogoUrl', 'dailyRevenueGoal', 'dailyTransactionGoal'];
       let allAllowedFields = requiredFields.concat(optionalFields);
       
       return data.keys().hasAll(requiredFields)
@@ -51,6 +51,8 @@ service cloud.firestore {
         && data.cashInitial is number
         && (!('uabInitial' in data) || data.uabInitial is number)
         && (!('trueInitial' in data) || data.trueInitial is number)
+        && (!('dailyRevenueGoal' in data) || data.dailyRevenueGoal is number)
+        && (!('dailyTransactionGoal' in data) || data.dailyTransactionGoal is number)
         && data.percentIn is number && data.percentIn >= 0 && data.percentIn <= 100
         && data.percentOut is number && data.percentOut >= 0 && data.percentOut <= 100
         && data.updatedAt == request.time;
