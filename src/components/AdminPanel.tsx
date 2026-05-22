@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { getAllUsers, updateUserActivation, getAllGlobalTransactions, getGlobalSettings, saveGlobalSettings } from '../services/transactionService';
 import { compressImage } from '../utils/imageCompressor';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import FinancialReports from './FinancialReports';
 import LogoUploadField from './LogoUploadField';
 import { Transaction, GlobalSettings } from '../types';
@@ -36,6 +36,14 @@ export default function AdminPanel({ language, globalSettings: initialGlobalSett
   
   const [globalSettings, setLocalGlobalSettings] = useState<GlobalSettings>(initialGlobalSettings || {});
   const [settingsLoading, setSettingsLoading] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  useEffect(() => {
+    if (saveStatus !== 'idle') {
+      const timer = setTimeout(() => setSaveStatus('idle'), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [saveStatus]);
 
   useEffect(() => {
     setLocalGlobalSettings(initialGlobalSettings || {});
@@ -77,10 +85,10 @@ export default function AdminPanel({ language, globalSettings: initialGlobalSett
 
       await saveGlobalSettings(cleanSettings);
       onUpdateGlobalSettings(cleanSettings);
-      alert('Global settings saved successfully.');
+      setSaveStatus('success');
     } catch (err: any) {
       console.error(err);
-      alert(`Error saving settings: ${err.message}`);
+      setSaveStatus('error');
     } finally {
       setSettingsLoading(false);
     }
@@ -249,6 +257,26 @@ export default function AdminPanel({ language, globalSettings: initialGlobalSett
             {settingsLoading ? 'Saving...' : 'Save Settings'}
           </button>
         </div>
+
+        <AnimatePresence>
+          {saveStatus !== 'idle' && (
+            <motion.div 
+              initial={{ opacity: 0, y: 50, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.9 }}
+              className={`fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 rounded-2xl flex items-center gap-3 shadow-2xl z-[100] border backdrop-blur-md ${
+                saveStatus === 'success' 
+                  ? 'bg-emerald-500/90 border-emerald-400 text-white' 
+                  : 'bg-rose-500/90 border-rose-400 text-white'
+              }`}
+            >
+              {saveStatus === 'success' ? <ShieldCheck size={18} /> : <ShieldAlert size={18} />}
+              <span className="font-bold text-xs uppercase tracking-widest whitespace-nowrap">
+                {saveStatus === 'success' ? 'Saved Successfully!' : 'Save Failed!'}
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <LogoUploadField 
@@ -463,9 +491,65 @@ export default function AdminPanel({ language, globalSettings: initialGlobalSett
             </div>
 
             <div className="space-y-1.5 md:col-span-2 pt-4 border-t border-slate-100 dark:border-slate-800/40">
+              <label className="text-[10px] font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-wider block">App Branding (Name)</label>
+              <input
+                type="text"
+                placeholder="e.g. Z MONEY TRACKER"
+                value={globalSettings.appName || ''}
+                onChange={(e) => setLocalGlobalSettings(prev => ({ ...prev, appName: e.target.value }))}
+                className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white"
+              />
+              <p className="text-[10px] text-slate-500 font-medium mt-1 mb-4">This name replaces "Z MONEY TRACKER" across the app.</p>
+
+              <label className="text-[10px] font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-wider block">Startup Splash Screen Logo</label>
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-16 h-16 rounded-full border border-slate-200 overflow-hidden bg-white flex-shrink-0 flex items-center justify-center relative shadow-sm">
+                  {globalSettings.splashLogoUrl ? (
+                    <img src={globalSettings.splashLogoUrl} alt="Splash Logo" className="w-full h-full object-cover" />
+                  ) : globalSettings.appLogoUrl ? (
+                    <img src={globalSettings.appLogoUrl} alt="Splash Logo" className="w-full h-full object-cover" />
+                  ) : (
+                    <img src="/logo-round.png" alt="Splash Logo Default" className="w-full h-full object-cover" />
+                  )}
+                </div>
+                <div className="flex-1 space-y-2">
+                  <div className="flex gap-2">
+                    <label className="flex-1 h-10 px-4 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 text-indigo-600 dark:text-indigo-400 hover:border-indigo-500 transition-all flex items-center justify-center gap-2 cursor-pointer text-[10px] uppercase font-black tracking-widest">
+                      <PlusCircle size={14} />
+                      Upload Splash Logo
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          try {
+                            const compressedBase64 = await compressImage(file, 800, 800, 0.9); // higher quality for splash
+                            setLocalGlobalSettings(prev => ({ ...prev, splashLogoUrl: compressedBase64 }));
+                          } catch (err) {
+                            console.error('Error compressing image', err);
+                          }
+                        }}
+                      />
+                    </label>
+                    {globalSettings.splashLogoUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setLocalGlobalSettings(prev => ({ ...prev, splashLogoUrl: '' }))}
+                        className="h-10 w-10 flex-shrink-0 flex items-center justify-center rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors"
+                      >
+                        <X size={16} />
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-slate-500 font-medium">This logo is displayed in the center of the loading screen on startup. Recommended: large square, transparent.</p>
+                </div>
+              </div>
+
               <label className="text-[10px] font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-wider block">App Logo (Top Left & Login)</label>
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full border border-slate-200 dark:border-slate-800 overflow-hidden bg-white dark:bg-slate-900 flex-shrink-0 flex items-center justify-center relative shadow-sm">
+                <div className="w-16 h-16 rounded-full border border-slate-200 overflow-hidden bg-white flex-shrink-0 flex items-center justify-center relative shadow-sm">
                   {globalSettings.appLogoUrl ? (
                     <img src={globalSettings.appLogoUrl} alt="App Logo" className="w-full h-full object-cover" />
                   ) : (
@@ -486,7 +570,7 @@ export default function AdminPanel({ language, globalSettings: initialGlobalSett
                           if (!file) return;
                           
                           try {
-                            const base64 = await compressImage(file, 400, 400, 0.7);
+                            const base64 = await compressImage(file, 800, 800, 0.9);
                             setLocalGlobalSettings(prev => ({ ...prev, appLogoUrl: base64 }));
                           } catch (err) {
                             console.error('Error compressing image', err);
@@ -511,9 +595,9 @@ export default function AdminPanel({ language, globalSettings: initialGlobalSett
             <div className="space-y-1.5 md:col-span-2 pt-4 border-t border-slate-100 dark:border-slate-800/40">
               <label className="text-[10px] font-black text-indigo-500 dark:text-indigo-400 uppercase tracking-wider block">Restricted Access Logo (App Branding)</label>
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden bg-white dark:bg-slate-900 flex-shrink-0 flex items-center justify-center relative shadow-sm">
+                <div className="w-16 h-16 rounded-2xl border border-slate-200 overflow-hidden bg-white flex-shrink-0 flex items-center justify-center relative shadow-sm">
                   {globalSettings.restrictedLogoUrl ? (
-                    <img src={globalSettings.restrictedLogoUrl} alt="Restricted Logo" className="w-full h-full object-cover" />
+                    <img src={globalSettings.restrictedLogoUrl} alt="Restricted Logo" className="w-full h-full object-contain p-1" />
                   ) : (
                     <div className="flex flex-col items-center gap-1 opacity-20">
                       <ImageIcon size={24} className="text-slate-400" />
@@ -534,7 +618,7 @@ export default function AdminPanel({ language, globalSettings: initialGlobalSett
                           if (!file) return;
                           
                           try {
-                            const base64 = await compressImage(file, 400, 400, 0.7);
+                            const base64 = await compressImage(file, 800, 800, 0.9);
                             setLocalGlobalSettings(prev => ({ ...prev, restrictedLogoUrl: base64 }));
                           } catch (err) {
                             console.error('Error compressing image', err);

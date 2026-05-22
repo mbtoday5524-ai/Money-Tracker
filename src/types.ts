@@ -35,6 +35,8 @@ export interface GlobalSettings {
   telegramIconUrl?: string;
   viberIconUrl?: string;
   appLogoUrl?: string;
+  splashLogoUrl?: string;
+  appName?: string;
   adBannerUrls?: string[];
 }
 

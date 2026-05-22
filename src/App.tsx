@@ -26,6 +26,7 @@ import AdminPanel from './components/AdminPanel';
 import FinancialReports from './components/FinancialReports';
 import LoginPage from './components/LoginPage';
 import AccountActivation from './components/AccountActivation';
+import InstallPrompt from './components/InstallPrompt';
 import { 
   Wallet, 
   Loader2, 
@@ -61,7 +62,14 @@ export default function App() {
   const [user, authLoading] = useAuthState(auth);
   const [isAdmin, setIsAdmin] = useState(false);
   const [globalTransactions, setGlobalTransactions] = useState<Transaction[]>([]);
-  const [globalSettings, setGlobalSettings] = useState<GlobalSettings | null>(null);
+  const [globalSettings, setGlobalSettings] = useState<GlobalSettings | null>(() => {
+    try {
+      const cached = localStorage.getItem('globalSettingsCache');
+      return cached ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  });
   const [settings, setSettings] = useState<UserSettings | null>(null);
   const [isActivated, setIsActivated] = useState<boolean | null>(null);
   const [showActivation, setShowActivation] = useState(false);
@@ -220,7 +228,14 @@ export default function App() {
 
   // Always subscribe to global settings, even if unauthenticated
   useEffect(() => {
-    const unsubscribeGlobalSettings = subscribeGlobalSettings(setGlobalSettings);
+    const unsubscribeGlobalSettings = subscribeGlobalSettings((settings) => {
+      setGlobalSettings(settings);
+      try {
+        localStorage.setItem('globalSettingsCache', JSON.stringify(settings));
+      } catch (err) {
+        console.error('Failed to cache settings', err);
+      }
+    });
     return () => unsubscribeGlobalSettings();
   }, []);
 
@@ -536,11 +551,11 @@ export default function App() {
             <div className="absolute -inset-0.5 rounded-full bg-gradient-to-tr from-cyan-400 via-sky-400 to-blue-600 opacity-90" />
             
             {/* Main Round Logo Container */}
-            <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(0,176,255,0.3)] relative z-10 overflow-hidden bg-black border-2 border-cyan-400/30">
+            <div className="w-48 h-48 sm:w-56 sm:h-56 rounded-full flex items-center justify-center shadow-[0_0_50px_rgba(0,176,255,0.3)] relative z-10 overflow-hidden bg-white border-2 border-cyan-400/30">
               <img 
-                src={globalSettings?.appLogoUrl || "/logo-round.png"} 
+                src={globalSettings?.splashLogoUrl || globalSettings?.appLogoUrl || "/logo-round.png"} 
                 alt="Z Money Tracker Logo" 
-                className="w-full h-full object-cover scale-[1.01] rounded-full" 
+                className="w-full h-full object-cover rounded-full" 
               />
             </div>
             
@@ -557,7 +572,7 @@ export default function App() {
               transition={{ delay: 0.2, duration: 0.5 }}
               className="font-sans font-black text-xl tracking-[0.2em] bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(0,176,255,0.2)]"
             >
-              Z MONEY TRACKER
+              {globalSettings?.appName || "Z MONEY TRACKER"}
             </motion.h1>
             <motion.p 
               initial={{ opacity: 0 }}
@@ -598,6 +613,7 @@ export default function App() {
           setLanguage={setLanguage} 
           adBannerUrls={globalSettings?.adBannerUrls || []}
           appLogoUrl={globalSettings?.appLogoUrl}
+          appName={globalSettings?.appName}
         />
       ) : isActivated === false ? (
         showActivation ? (
@@ -642,10 +658,10 @@ export default function App() {
             {/* App Logo */}
             <div className="flex items-center justify-between mb-10 px-2 lg:block">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 flex items-center justify-center overflow-hidden shrink-0 shadow-lg shadow-black/30 border border-slate-700/50 rounded-full bg-slate-900">
+                <div className="w-9 h-9 flex items-center justify-center overflow-hidden shrink-0 shadow-lg shadow-black/30 border border-slate-700/50 rounded-full bg-white">
                   <img src={globalSettings?.appLogoUrl || "/logo-round.png"} alt="Logo" className="w-full h-full object-cover rounded-full" />
                 </div>
-                <h1 className="text-xl font-black text-white tracking-tight">Z Money Tracker</h1>
+                <h1 className="text-sm font-black text-white tracking-tight uppercase">{globalSettings?.appName || "Z MONEY TRACKER"}</h1>
               </div>
               <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-slate-500 p-2 mt-2">
                 <X size={20} />
@@ -1146,6 +1162,8 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <InstallPrompt language={language} />
     </div>
   );
 }

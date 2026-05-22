@@ -95,8 +95,8 @@ export default function AccessDenied({
           <div className="flex-1 flex flex-col justify-center overflow-y-auto hide-scrollbar">
             <div className="text-center space-y-6 md:space-y-8">
               {globalSettings.restrictedLogoUrl ? (
-                <div className="mx-auto w-24 h-24 md:w-32 md:h-32 border border-white/10 rounded-full overflow-hidden flex items-center justify-center shrink-0 shadow-2xl bg-white/5">
-                  <img src={globalSettings.restrictedLogoUrl} alt="Logo" className="w-full h-full object-cover scale-105" />
+                <div className="mx-auto w-24 h-24 md:w-32 md:h-32 border border-slate-200 rounded-full overflow-hidden flex items-center justify-center shrink-0 shadow-2xl bg-white">
+                  <img src={globalSettings.restrictedLogoUrl} alt="Logo" className="w-full h-full object-cover" />
                 </div>
               ) : (
                 <div className="mx-auto w-20 h-20 md:w-24 md:h-24 bg-rose-500/10 border border-rose-500/20 text-rose-500 rounded-full flex items-center justify-center shadow-lg shadow-rose-500/20 shrink-0">

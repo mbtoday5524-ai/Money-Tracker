@@ -94,8 +94,8 @@ export default function AccountActivation({
 
           <div className="text-center space-y-3">
             {globalSettings.restrictedLogoUrl ? (
-              <div className="mx-auto w-24 h-24 p-2 bg-white/5 border border-white/10 rounded-[2rem] overflow-hidden flex items-center justify-center">
-                <img src={globalSettings.restrictedLogoUrl} alt="Logo" className="max-w-full max-h-full object-contain rounded-[1.5rem]" />
+              <div className="mx-auto w-24 h-24 bg-white border border-slate-200 rounded-full overflow-hidden flex items-center justify-center shadow-lg">
+                <img src={globalSettings.restrictedLogoUrl} alt="Logo" className="w-full h-full object-cover" />
               </div>
             ) : (
               <div className="mx-auto w-16 h-16 bg-indigo-500/10 border border-indigo-500/20 text-indigo-500 rounded-[1.5rem] flex items-center justify-center shadow-lg shadow-indigo-500/20">
