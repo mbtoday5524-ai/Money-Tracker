@@ -69,12 +69,14 @@ export default function LoginPage({ language, setLanguage, adBannerUrls }: Login
                <AdBanner customImages={adBannerUrls} />
              </motion.div>
              <div className="text-center space-y-1">
-                <h1 className={`text-white font-bold tracking-tight ${language === 'MM' ? 'text-xl' : 'text-2xl'}`}>
-                  {language === 'MM' ? 'လုပ်ငန်းစာရင်းများကို စနစ်တကျ စီမံပါ' : 'Manage Business Professionally'}
+                <h1 className={`text-white font-bold tracking-tight ${language === 'MM' ? 'text-base' : 'text-2xl'}`}>
+                  {language === 'MM' ? 'စာရင်းများကိုစနစ်တကျစီမံခန့်ခွဲလိုက်ပါ။' : 'Manage Business Professionally'}
                 </h1>
-                <p className="text-slate-400 text-[10px] font-medium">
-                  {language === 'MM' ? 'စနစ်တကျ စီမံခန့်ခွဲလိုက်ပါ။' : 'Manage your finances professionally.'}
-                </p>
+                {language === 'EN' && (
+                  <p className="text-slate-400 text-[10px] font-medium">
+                    Manage your finances professionally.
+                  </p>
+                )}
              </div>
           </div>
 
@@ -85,17 +87,35 @@ export default function LoginPage({ language, setLanguage, adBannerUrls }: Login
             transition={{ delay: 0.1 }}
             className="w-full max-w-[320px] md:w-[400px] flex flex-col gap-4 md:gap-10 justify-center order-2 md:order-2"
           >
-            <div className="bg-white/[0.04] backdrop-blur-3xl p-6 md:p-12 rounded-[2rem] md:rounded-[2.5rem] border border-white/10 shadow-2xl relative space-y-6 md:space-y-10 group">
+            <div className="bg-white/[0.04] backdrop-blur-3xl p-4 md:p-12 rounded-[2rem] md:rounded-[2.5rem] border border-white/10 shadow-2xl relative space-y-4 md:space-y-10 group">
               <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/5 to-transparent rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="absolute -top-px left-1/2 -translate-x-1/2 w-1/3 h-px bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent" />
               
-              <div className="text-center space-y-2 md:space-y-4 relative z-10">
-                <h2 className={`text-white font-bold tracking-tight ${language === 'MM' ? 'text-[12px] md:text-[16px]' : 'text-[10px] md:text-[13px] md:tracking-[0.3em]'}`}>
-                  {language === 'MM' ? 'စတင်ရန် အကောင့်ဝင်ပါ' : 'SIGN IN TO CONTINUE'}
-                </h2>
-                <div className="h-0.5 w-8 bg-indigo-500/40 mx-auto rounded-full" />
+              {/* Quick Info / Features */}
+              <div className="flex flex-col gap-2 md:gap-4">
+                {features.map((feature, idx) => (
+                  <motion.div 
+                    key={idx} 
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 * idx }}
+                    className="flex gap-2 md:gap-4 items-center bg-white/[0.03] p-2 md:p-4 rounded-xl md:rounded-3xl border border-white/[0.08] shadow-sm hover:bg-white/[0.05] transition-colors"
+                  >
+                    <CheckCircle2 size={12} className="text-emerald-500 shrink-0 md:w-5 md:h-5" />
+                    <p className={`text-slate-300 text-[9px] md:text-[13px] font-medium ${language === 'MM' ? 'leading-relaxed' : 'leading-tight'}`}>
+                      {language === 'MM' ? feature.mm : feature.en}
+                    </p>
+                  </motion.div>
+                ))}
               </div>
               
+              <div className="text-center space-y-1 md:space-y-4 relative z-10">
+                <h2 className={`text-white font-bold tracking-tight ${language === 'MM' ? 'text-[11px] md:text-[16px]' : 'text-[9px] md:text-[13px] md:tracking-[0.3em]'}`}>
+                  {language === 'MM' ? 'စတင်ရန် အကောင့်ဝင်ပါ' : 'SIGN IN TO CONTINUE'}
+                </h2>
+                <div className="h-0.5 w-6 bg-indigo-500/40 mx-auto rounded-full" />
+              </div>
+
               <div className="relative z-10">
                 <AuthStatus />
               </div>
@@ -139,14 +159,14 @@ export default function LoginPage({ language, setLanguage, adBannerUrls }: Login
               </div>
 
               <div className="space-y-2 md:space-y-4">
-                <h1 className={`text-white font-bold tracking-tight ${language === 'MM' ? 'text-2xl leading-snug' : 'text-3xl'}`}>
-                  {language === 'MM' ? 'လုပ်ငန်းစာရင်းများကို စနစ်တကျ စီမံခန့်ခွဲပါ' : 'Manage Business Professionally'}
+                <h1 className={`text-white font-bold tracking-tight ${language === 'MM' ? 'text-lg leading-snug' : 'text-3xl'}`}>
+                  {language === 'MM' ? 'စာရင်းများကိုစနစ်တကျစီမံခန့်ခွဲလိုက်ပါ။' : 'Manage Business Professionally'}
                 </h1>
-                <p className={`text-slate-400 text-xs md:text-sm font-medium px-4 md:px-0 pt-1 ${language === 'MM' ? 'leading-relaxed' : 'leading-tight'}`}>
-                  {language === 'MM' 
-                    ? 'သင်၏လုပ်ငန်းငွေစာရင်းများကို စနစ်တကျ စီမံခန့်ခွဲလိုက်ပါ။' 
-                    : 'Manage your business finances professionally and securely.'}
-                </p>
+                {language === 'EN' && (
+                  <p className={`text-slate-400 text-xs md:text-sm font-medium px-4 md:px-0 pt-1 leading-tight`}>
+                    Manage your business finances professionally and securely.
+                  </p>
+                )}
               </div>
             </div>
 
@@ -155,24 +175,6 @@ export default function LoginPage({ language, setLanguage, adBannerUrls }: Login
               <KBZLogo className="w-8 h-8 rounded-lg" />
               <WaveLogo className="w-8 h-8 rounded-lg" />
               <AYALogo className="w-8 h-8 rounded-lg" />
-            </div>
-
-            {/* Quick Info / Features */}
-            <div className="flex flex-col gap-2.5 md:gap-4">
-              {features.map((feature, idx) => (
-                <motion.div 
-                  key={idx} 
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 * idx }}
-                  className="flex gap-3 md:gap-4 items-center bg-white/[0.03] p-3 md:p-4 rounded-2xl md:rounded-3xl border border-white/[0.08] shadow-sm hover:bg-white/[0.05] transition-colors"
-                >
-                  <CheckCircle2 size={14} className="text-emerald-500 shrink-0 md:w-5 md:h-5" />
-                  <p className={`text-slate-300 text-[10px] md:text-[13px] font-medium ${language === 'MM' ? 'leading-relaxed' : 'leading-tight'}`}>
-                    {language === 'MM' ? feature.mm : feature.en}
-                  </p>
-                </motion.div>
-              ))}
             </div>
 
             <div className="md:hidden text-center pt-8 pb-4">
