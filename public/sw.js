@@ -1,9 +1,10 @@
-const CACHE_NAME = 'mt-tracker-v2';
+const CACHE_NAME = 'mt-tracker-v3';
 const ASSETS = [
   '/',
   '/index.html',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap',
-  'https://cdn-icons-png.flaticon.com/512/2489/2489756.png'
+  '/manifest.webmanifest',
+  '/logo-round.png',
+  'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap'
 ];
 
 self.addEventListener('install', (event) => {
