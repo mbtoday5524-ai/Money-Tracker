@@ -218,7 +218,8 @@ export default function App() {
   const [showSetupOverlay, setShowSetupOverlay] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [showInstallBtn, setShowInstallBtn] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
+  const [showInstallDialog, setShowInstallDialog] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') === 'dark';
@@ -242,12 +243,14 @@ export default function App() {
     localStorage.setItem('language', language);
   }, [language]);
 
-  // PWA Install Prompt
+  // PWA Install Prompt & Standalone tracking
   useEffect(() => {
+    if (window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone) {
+      setIsStandalone(true);
+    }
     const handler = (e: any) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      setShowInstallBtn(true);
     };
     window.addEventListener('beforeinstallprompt', handler);
     return () => window.removeEventListener('beforeinstallprompt', handler);
@@ -346,13 +349,16 @@ export default function App() {
   }, [user, isActivated]);
 
   const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setShowInstallBtn(false);
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setIsStandalone(true);
+      }
+      setDeferredPrompt(null);
+    } else {
+      setShowInstallDialog(true);
     }
-    setDeferredPrompt(null);
   };
 
   const handleStart = async (newSettings: Omit<UserSettings, 'updatedAt'>) => {
@@ -870,7 +876,7 @@ export default function App() {
               </div>
               
               <div className="flex items-center gap-2 lg:gap-4">
-                {showInstallBtn && (
+                {!isStandalone && (
                   <button
                     onClick={handleInstallClick}
                     className="flex items-center bg-indigo-600 hover:bg-indigo-700 text-white gap-1.5 px-3 py-1.5 rounded-xl transition-all mr-1 shadow-md shadow-indigo-200 dark:shadow-none active:scale-95 animate-pulse"
@@ -1290,6 +1296,61 @@ export default function App() {
           currentSettings={settings}
           userId={user?.uid}
         />
+      )}
+
+      {showInstallDialog && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[150] flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 w-full max-w-md shadow-2xl relative border border-slate-100 dark:border-slate-800">
+            <button 
+              onClick={() => setShowInstallDialog(false)}
+              className="absolute top-4 right-4 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            >
+              <X size={20} className="text-slate-500" />
+            </button>
+            <div className="text-center mb-6">
+              <div className="w-16 h-16 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Download size={32} />
+              </div>
+              <h2 className="text-xl font-bold mb-2">
+                {language === 'MM' ? 'App ကို ဘယ်လိုသွင်းမလဲ' : 'How to install this app'}
+              </h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                {language === 'MM' 
+                  ? 'သင့်ဖုန်းထဲသို့ app ကို ထည့်သွင်းရန် အောက်ပါအတိုင်းလုပ်ဆောင်ပါ' 
+                  : 'Follow these steps to install the app on your device'}
+              </p>
+            </div>
+            
+            <div className="space-y-4 text-left">
+              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-800">
+                <h3 className="font-bold flex items-center gap-2 mb-2">
+                  <span className="text-indigo-600">🍎</span> iOS (Safari)
+                </h3>
+                <ol className="text-sm space-y-2 text-slate-600 dark:text-slate-300 ml-4 list-decimal">
+                  <li>Tap the <strong>Share</strong> button at the bottom.</li>
+                  <li>Scroll down and tap <strong>"Add to Home Screen"</strong>.</li>
+                </ol>
+              </div>
+              
+              <div className="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-800">
+                <h3 className="font-bold flex items-center gap-2 mb-2">
+                  <span className="text-indigo-600">🤖</span> Android (Chrome)
+                </h3>
+                <ol className="text-sm space-y-2 text-slate-600 dark:text-slate-300 ml-4 list-decimal">
+                  <li>Tap the <strong>Menu</strong> (3 dots) at the top right.</li>
+                  <li>Tap <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong>.</li>
+                </ol>
+              </div>
+            </div>
+            
+            <button 
+              onClick={() => setShowInstallDialog(false)}
+              className="w-full mt-6 bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-3 rounded-xl font-bold active:scale-95 transition-all"
+            >
+              {language === 'MM' ? 'နားလည်ပါပြီ' : 'Got it'}
+            </button>
+          </div>
+        </div>
       )}
       
     </div>
