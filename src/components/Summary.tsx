@@ -1,6 +1,8 @@
-import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, Download } from 'lucide-react';
 import { KBZLogo, WaveLogo, AYALogo, CashLogo, UABLogo, TrueLogo } from './Logos';
 import { ComponentType } from 'react';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface SummaryProps {
   kbzIn: number;
@@ -66,6 +68,56 @@ export default function Summary({
   const cashIn = totalOut;
   const cashOut = totalIn;
 
+  const handleExportPDF = () => {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.width;
+    
+    // Header
+    doc.setFontSize(20);
+    doc.text('ZMT - Ledger Summary', pageWidth / 2, 20, { align: 'center' });
+    
+    doc.setFontSize(10);
+    doc.text(`Generated: ${new Date().toLocaleString()}`, pageWidth / 2, 28, { align: 'center' });
+    
+    // Totals Section
+    doc.setFontSize(14);
+    doc.text('Overall Dashboard', 14, 40);
+    
+    autoTable(doc, {
+      startY: 45,
+      head: [['Category', 'Amount']],
+      body: [
+        ['Total Inflow', f(totalIn)],
+        ['Total Outflow', f(totalOut)],
+        ['Total Revenue (Fee)', f(totalFee)],
+      ],
+      theme: 'grid',
+      headStyles: { fillColor: [79, 70, 229] }
+    });
+    
+    // Wallet Breakdown
+    const finalY = (doc as any).lastAutoTable.finalY || 45;
+    doc.text('Wallet Breakdown', 14, finalY + 15);
+    
+    const walletData = [];
+    if (kbzEnabled) walletData.push(['KPay Wallet', f(kbzIn), f(kbzOut)]);
+    if (waveEnabled) walletData.push(['Wave Wallet', f(waveIn), f(waveOut)]);
+    if (ayaEnabled) walletData.push(['AYAPay Wallet', f(ayaIn), f(ayaOut)]);
+    if (uabEnabled) walletData.push(['UAB Wallet', f(uabIn), f(uabOut)]);
+    if (trueEnabled) walletData.push(['True Money Wallet', f(trueIn), f(trueOut)]);
+    if (cashEnabled) walletData.push(['Cash on Hand', f(cashIn), f(cashOut)]);
+    
+    autoTable(doc, {
+      startY: finalY + 20,
+      head: [['Wallet', 'Total In', 'Total Out']],
+      body: walletData,
+      theme: 'grid',
+      headStyles: { fillColor: [79, 70, 229] }
+    });
+    
+    doc.save(`zmt-ledger-summary-${new Date().getTime()}.pdf`);
+  };
+
   const AccountStat = ({ label, inc, dec, logoUrl, DefaultLogo }: { 
     label: string, 
     inc: number, 
@@ -106,7 +158,16 @@ export default function Summary({
   return (
     <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 sleek-shadow overflow-hidden flex flex-col h-full transition-colors">
       <div className="p-3 sm:p-4 lg:p-8 border-b border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/30 transition-colors">
-        <h3 className="text-[10px] sm:text-xs lg:text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest mb-3 lg:mb-6">{language === 'MM' ? 'စာရင်းချုပ်' : 'Current Ledger'}</h3>
+        <div className="flex justify-between items-center mb-3 lg:mb-6">
+          <h3 className="text-[10px] sm:text-xs lg:text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">{language === 'MM' ? 'စာရင်းချုပ်' : 'Current Ledger'}</h3>
+          <button
+            onClick={handleExportPDF}
+            className="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 hover:text-indigo-700 dark:hover:text-indigo-300 rounded-xl text-[10px] sm:text-xs font-bold uppercase transition-all duration-300 active:scale-95"
+          >
+            <Download size={14} className="sm:w-4 sm:h-4" />
+            <span>{language === 'MM' ? 'ထုတ်ယူရန် (PDF)' : 'Export PDF'}</span>
+          </button>
+        </div>
         
         <div className="space-y-2 lg:space-y-4">
           <div className="bg-emerald-50/50 dark:bg-emerald-900/10 border border-emerald-100/50 dark:border-emerald-800/50 rounded-xl lg:rounded-2xl p-2.5 lg:p-4 flex items-center justify-between">

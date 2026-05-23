@@ -9,7 +9,9 @@ import {
   orderBy, 
   serverTimestamp,
   deleteDoc,
-  onSnapshot
+  onSnapshot,
+  collectionGroup,
+  limit
 } from 'firebase/firestore';
 import { db, auth } from '../lib/firebase';
 import { Transaction, UserSettings, OperationType, FirestoreErrorInfo } from '../types';
@@ -26,8 +28,13 @@ function handleFirestoreError(error: unknown, operationType: OperationType, path
     operationType,
     path
   };
-  console.error('Firestore Error: ', JSON.stringify(errInfo));
-  throw new Error(JSON.stringify(errInfo));
+  console.error('Firestore Error: ', errInfo);
+  
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('firestore-error', { detail: errInfo }));
+  }
+  
+  throw new Error(errInfo.error);
 }
 
 const notifySyncing = () => {
@@ -103,23 +110,18 @@ export const validateActivationCode = async (userId: string, code: string): Prom
 
 export const getAllGlobalTransactions = async (): Promise<Transaction[]> => {
   try {
-    const users = await getAllUsers();
-    let allTx: Transaction[] = [];
+    const q = query(
+      collectionGroup(db, 'transactions'),
+      orderBy('createdAt', 'desc'),
+      limit(200)
+    );
+    const snap = await getDocs(q);
+    const allTx = snap.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    })) as Transaction[];
     
-    for (const user of users) {
-      const q = query(
-        collection(db, `users/${user.uid}/transactions`),
-        orderBy('date', 'desc')
-      );
-      const snap = await getDocs(q);
-      const userTxs = snap.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as Transaction[];
-      allTx = [...allTx, ...userTxs];
-    }
-    
-    return allTx.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return allTx;
   } catch (error) {
     console.error("Error fetching global transactions:", error);
     return [];
@@ -141,6 +143,13 @@ export const subscribeGlobalSettings = (callback: (settings: any) => void) => {
   const path = `settings/global`;
   return onSnapshot(doc(db, path), (snap) => {
     callback(snap.exists() ? snap.data() : {});
+  }, (error) => {
+    console.error("Error subscribing to global settings:", error.message);
+    if (typeof window !== 'undefined' && error.code === 'resource-exhausted') {
+      window.dispatchEvent(new CustomEvent('firestore-error', { 
+        detail: { error: error.message, operationType: OperationType.GET, path } 
+      }));
+    }
   });
 };
 

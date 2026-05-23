@@ -51,14 +51,18 @@ export default function AdminPanel({ language, globalSettings: initialGlobalSett
 
   const fetchUsersAndSettings = async () => {
     setLoading(true);
-    const userData = await getAllUsers();
-    setUsers(userData);
-    
-    // We already have global settings correctly passed, but can refresh if needed.
-    // Const settings = await getGlobalSettings();
-    // setLocalGlobalSettings(settings || {});
-    
-    setLoading(false);
+    try {
+      const userData = await getAllUsers();
+      setUsers(userData);
+      
+      // We already have global settings correctly passed, but can refresh if needed.
+      // Const settings = await getGlobalSettings();
+      // setLocalGlobalSettings(settings || {});
+    } catch (error) {
+      console.error("Failed to fetch users and settings:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
 
@@ -67,8 +71,13 @@ export default function AdminPanel({ language, globalSettings: initialGlobalSett
   }, []);
 
   const handleToggleActive = async (uid: string, currentActive: boolean) => {
-    await updateUserActivation(uid, !currentActive);
-    setUsers(users.map(u => u.uid === uid ? { ...u, active: !currentActive } : u));
+    try {
+      await updateUserActivation(uid, !currentActive);
+      setUsers(users.map(u => u.uid === uid ? { ...u, active: !currentActive } : u));
+    } catch (error) {
+      console.error("Failed to update user activation:", error);
+      alert("Failed to update user status. Please check your quota/permissions.");
+    }
   };
   
   const handleSaveSettings = async () => {

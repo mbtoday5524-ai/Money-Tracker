@@ -36,6 +36,7 @@ import {
   History, 
   Settings, 
   LogOut,
+  Download,
   ChevronRight,
   TrendingDown,
   TrendingUp,
@@ -80,6 +81,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [initialFetchDone, setInitialFetchDone] = useState(false);
+  const [quotaExceeded, setQuotaExceeded] = useState(false);
   const [syncState, setSyncState] = useState<'synced' | 'syncing'>('synced');
 
   // Handle connection state and syncing state in real-time
@@ -104,8 +106,16 @@ export default function App() {
       setSyncState('syncing');
     };
 
+    const handleFirestoreError = (e: Event) => {
+      const errDetail = (e as CustomEvent).detail;
+      if (errDetail && errDetail.error && errDetail.error.includes('Quota limit exceeded')) {
+        setQuotaExceeded(true);
+      }
+    };
+
     window.addEventListener('firestore-syncing', handleSyncing);
     window.addEventListener('firestore-synced', handleSynced);
+    window.addEventListener('firestore-error', handleFirestoreError);
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
@@ -115,18 +125,30 @@ export default function App() {
     }
 
     // Subscribe to Firestore's snapshot-in-sync events to know when local writes sync to cloud
-    const unsubscribe = onSnapshotsInSync(db, () => {
-      if (navigator.onLine) {
-        setSyncState('synced');
-        window.dispatchEvent(new CustomEvent('firestore-synced'));
-      } else {
-        setSyncState('syncing');
+    const unsubscribe = onSnapshotsInSync(
+      db, 
+      {
+        next: () => {
+          if (navigator.onLine) {
+            setSyncState('synced');
+            window.dispatchEvent(new CustomEvent('firestore-synced'));
+          } else {
+            setSyncState('syncing');
+          }
+        },
+        error: (error) => {
+          console.error("onSnapshotsInSync error:", error);
+          if (error.code === 'resource-exhausted') {
+            setQuotaExceeded(true);
+          }
+        }
       }
-    });
+    );
 
     return () => {
       window.removeEventListener('firestore-syncing', handleSyncing);
       window.removeEventListener('firestore-synced', handleSynced);
+      window.removeEventListener('firestore-error', handleFirestoreError);
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
       unsubscribe();
@@ -195,6 +217,8 @@ export default function App() {
   }, [currentView]);
   const [showSetupOverlay, setShowSetupOverlay] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallBtn, setShowInstallBtn] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       return localStorage.getItem('theme') === 'dark';
@@ -217,6 +241,17 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem('language', language);
   }, [language]);
+
+  // PWA Install Prompt
+  useEffect(() => {
+    const handler = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallBtn(true);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
 
   // Sync theme to body class
   useEffect(() => {
@@ -309,6 +344,16 @@ export default function App() {
       if (interval) clearInterval(interval);
     };
   }, [user, isActivated]);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setShowInstallBtn(false);
+    }
+    setDeferredPrompt(null);
+  };
 
   const handleStart = async (newSettings: Omit<UserSettings, 'updatedAt'>) => {
     if (!user) return;
@@ -641,6 +686,23 @@ export default function App() {
 
   return (
     <div className="h-screen flex bg-slate-50 dark:bg-[#020617] overflow-hidden text-slate-800 dark:text-slate-200 transition-colors duration-300" lang={language === 'MM' ? 'my' : 'en'}>
+      {quotaExceeded && (
+        <div className="absolute top-0 left-0 right-0 bg-rose-500 text-white shadow-md z-[100] px-4 py-3 flex text-sm items-start sm:items-center justify-between pointer-events-auto">
+          <div className="flex items-center gap-3">
+            <div className="bg-rose-600/50 p-1.5 rounded-full shrink-0">
+              <LogOut size={16} />
+            </div>
+            <p className="font-medium">
+              <strong className="block sm:inline font-bold uppercase tracking-wide mr-2">Quota Exceeded.</strong>
+              Database limits have been reached for today. The application may be running in offline mode. Please contact the administrator.
+            </p>
+          </div>
+          <button onClick={() => setQuotaExceeded(false)} className="bg-rose-400/30 hover:bg-rose-400/50 p-1.5 rounded-full transition-colors shrink-0 m-1">
+            <X size={16} />
+          </button>
+        </div>
+      )}
+
       {!user ? (
         <LoginPage 
           language={language} 
@@ -808,6 +870,17 @@ export default function App() {
               </div>
               
               <div className="flex items-center gap-2 lg:gap-4">
+                {showInstallBtn && (
+                  <button
+                    onClick={handleInstallClick}
+                    className="flex items-center bg-indigo-600 hover:bg-indigo-700 text-white gap-1.5 px-3 py-1.5 rounded-xl transition-all mr-1 shadow-md shadow-indigo-200 dark:shadow-none active:scale-95 animate-pulse"
+                  >
+                    <Download size={14} className="animate-bounce" />
+                    <span className="text-xs font-bold whitespace-nowrap">
+                      {language === 'MM' ? 'App သွင်းရန်' : 'Install App'}
+                    </span>
+                  </button>
+                )}
                  {/* Language Toggle in Header */}
                  <button
                     onClick={() => setLanguage(prev => prev === 'MM' ? 'EN' : 'MM')}
