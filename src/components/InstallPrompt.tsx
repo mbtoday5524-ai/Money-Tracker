@@ -12,7 +12,6 @@ export default function InstallPrompt({ language }: { language: 'MM' | 'EN' }) {
     // Check if already installed
     const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
     if (isStandaloneMode) {
-      console.log('App is in standalone mode');
       setIsStandalone(true);
       return;
     }
@@ -22,26 +21,26 @@ export default function InstallPrompt({ language }: { language: 'MM' | 'EN' }) {
     const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
     setIsIOS(isIosDevice);
 
-    const dismissedAt = localStorage.getItem('pwa-prompt-dismissed-at');
-    const now = Date.now();
-    const oneDay = 24 * 60 * 60 * 1000;
-    const shouldShow = !dismissedAt || (now - parseInt(dismissedAt)) > oneDay;
+    const checkShouldShow = () => {
+      const dismissedAt = localStorage.getItem('pwa-prompt-dismissed-at');
+      const now = Date.now();
+      const oneDay = 24 * 60 * 60 * 1000;
+      return !dismissedAt || (now - parseInt(dismissedAt)) > oneDay;
+    };
 
-    if (isIosDevice && shouldShow) {
-      // Delay a bit before showing to not overwhelm the user
+    if (isIosDevice && checkShouldShow()) {
       const timer = setTimeout(() => {
-        console.log('Showing iOS manual install instructions');
         setShowPrompt(true);
-      }, 10000); 
+      }, 3000); 
       return () => clearTimeout(timer);
     }
 
     const handler = (e: any) => {
-      console.log('beforeinstallprompt event fired');
+      console.log('PWA: beforeinstallprompt caught');
       e.preventDefault();
       setDeferredPrompt(e);
       
-      if (shouldShow) {
+      if (checkShouldShow()) {
         setShowPrompt(true);
       }
     };
@@ -51,7 +50,7 @@ export default function InstallPrompt({ language }: { language: 'MM' | 'EN' }) {
     return () => {
       window.removeEventListener('beforeinstallprompt', handler);
     };
-  }, [deferredPrompt]);
+  }, []);
 
   const handleInstall = async () => {
     if (!deferredPrompt) {
