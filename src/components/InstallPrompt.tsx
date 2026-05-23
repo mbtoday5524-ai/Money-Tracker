@@ -10,7 +10,9 @@ export default function InstallPrompt({ language }: { language: 'MM' | 'EN' }) {
 
   useEffect(() => {
     // Check if already installed
-    if (window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone) {
+    const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+    if (isStandaloneMode) {
+      console.log('App is in standalone mode');
       setIsStandalone(true);
       return;
     }
@@ -20,38 +22,54 @@ export default function InstallPrompt({ language }: { language: 'MM' | 'EN' }) {
     const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
     setIsIOS(isIosDevice);
 
-    if (isIosDevice) {
-      // iOS doesn't support beforeinstallprompt, so we might want to manually show instructions
-      const dismissedAt = localStorage.getItem('pwa-prompt-dismissed-at');
-      const now = Date.now();
-      const oneDay = 24 * 60 * 60 * 1000;
+    const dismissedAt = localStorage.getItem('pwa-prompt-dismissed-at');
+    const now = Date.now();
+    const oneDay = 24 * 60 * 60 * 1000;
+    const shouldShow = !dismissedAt || (now - parseInt(dismissedAt)) > oneDay;
 
-      if (!dismissedAt || (now - parseInt(dismissedAt)) > oneDay) {
-        // Delay a bit before showing to not overwhelm the user
-        const timer = setTimeout(() => setShowPrompt(true), 15000); // 15s delay for iOS manual instructions
-        return () => clearTimeout(timer);
-      }
+    if (isIosDevice && shouldShow) {
+      // Delay a bit before showing to not overwhelm the user
+      const timer = setTimeout(() => {
+        console.log('Showing iOS manual install instructions');
+        setShowPrompt(true);
+      }, 10000); 
+      return () => clearTimeout(timer);
     }
 
     const handler = (e: any) => {
+      console.log('beforeinstallprompt event fired');
       e.preventDefault();
       setDeferredPrompt(e);
       
-      const dismissedAt = localStorage.getItem('pwa-prompt-dismissed-at');
-      const now = Date.now();
-      const oneDay = 24 * 60 * 60 * 1000; // Increase to 1 day for native prompt dismiss
-
-      if (!dismissedAt || (now - parseInt(dismissedAt)) > oneDay) {
+      if (shouldShow) {
         setShowPrompt(true);
       }
     };
 
     window.addEventListener('beforeinstallprompt', handler);
 
+    const forceShowHandler = () => {
+      localStorage.removeItem('pwa-prompt-dismissed-at');
+      setShowPrompt(true);
+    };
+
+    window.addEventListener('show-pwa-prompt', forceShowHandler);
+
+    // If it's not iOS and after 30s we still haven't seen beforeinstallprompt
+    // We might want to show manual instructions anyway if it's not standalone
+    const fallbackTimer = setTimeout(() => {
+      if (!isStandaloneMode && !deferredPrompt && shouldShow) {
+         console.log('PWA prompt fallback: Showing manual instructions');
+         setShowPrompt(true);
+      }
+    }, 30000);
+
     return () => {
       window.removeEventListener('beforeinstallprompt', handler);
+      window.removeEventListener('show-pwa-prompt', forceShowHandler);
+      clearTimeout(fallbackTimer);
     };
-  }, []);
+  }, [deferredPrompt]);
 
   const handleInstall = async () => {
     if (!deferredPrompt) {
