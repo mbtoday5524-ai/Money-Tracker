@@ -7,7 +7,7 @@ import autoTable from 'jspdf-autotable';
 
 interface TransactionListProps {
   transactions: Transaction[];
-  onDelete: (id: string) => void;
+  onBulkDelete: (ids: string[]) => void;
   language: 'MM' | 'EN';
   kbzLogoUrl?: string;
   waveLogoUrl?: string;
@@ -19,7 +19,7 @@ interface TransactionListProps {
 
 export default function TransactionList({ 
   transactions, 
-  onDelete, 
+  onBulkDelete, 
   language,
   kbzLogoUrl,
   waveLogoUrl,
@@ -35,6 +35,13 @@ export default function TransactionList({
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  const handleToggleSelect = (id: string) => {
+    setSelectedIds(prev => 
+      prev.includes(id) ? prev.filter(selectedId => selectedId !== id) : [...prev, id]
+    );
+  };
 
   const f = (n: number) => n.toLocaleString();
 
@@ -82,6 +89,22 @@ export default function TransactionList({
       return matchesSearch && matchesCategory && matchesType && matchesFeeMethod && matchesDate;
     });
   }, [transactions, searchTerm, filterBankId, filterType, filterFeeMethod, startDate, endDate]);
+
+  const handleSelectAll = () => {
+    if (selectedIds.length === filteredTransactions.length && filteredTransactions.length > 0) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(filteredTransactions.map(tx => tx.id).filter((id): id is string => !!id));
+    }
+  };
+
+  const isAllSelected = filteredTransactions.length > 0 && selectedIds.length === filteredTransactions.length;
+
+  const handleBulkDelete = () => {
+    if (selectedIds.length === 0) return;
+    onBulkDelete(selectedIds);
+    setSelectedIds([]);
+  };
 
   const clearFilters = () => {
     setSearchTerm('');
@@ -214,6 +237,16 @@ export default function TransactionList({
           <p className="text-[9px] lg:text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest font-display">{language === 'MM' ? 'နောက်ဆုံးပြုလုပ်ခဲ့သောစာရင်းများ' : 'Latest wallet activity'}</p>
         </div>
         <div className="flex gap-2 items-center w-full sm:w-auto">
+
+          {selectedIds.length > 0 && (
+            <button 
+              onClick={handleBulkDelete}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 bg-rose-500 hover:bg-rose-600 text-white border border-rose-600 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all active:scale-95 shadow-lg shadow-rose-200 dark:shadow-none"
+            >
+              <Trash2 size={14} />
+              <span>{language === 'MM' ? 'ရွေးချယ်ပြီးကိုဖျက်ရန်' : 'Delete Selected'}</span>
+            </button>
+          )}
 
           <button 
             onClick={() => setShowFilters(!showFilters)}
@@ -354,7 +387,15 @@ export default function TransactionList({
         <table className="w-full text-left hidden lg:table">
           <thead className="bg-[#4f46e5] text-white text-[10px] lg:text-[11px] uppercase font-black sticky top-0 z-10 transition-colors font-display tracking-[0.1em]">
             <tr>
-              <th className="px-8 py-4 tracking-wider text-center">{language === 'MM' ? 'အမှတ်' : 'ID'}</th>
+              <th className="px-4 py-4 w-12 text-center">
+                <input 
+                  type="checkbox" 
+                  checked={isAllSelected}
+                  onChange={handleSelectAll}
+                  className="rounded border-indigo-400 bg-white/10 w-4 h-4 text-indigo-600 focus:ring-0 cursor-pointer"
+                />
+              </th>
+              <th className="px-4 py-4 tracking-wider text-center">{language === 'MM' ? 'အမှတ်' : 'ID'}</th>
               <th className="px-8 py-4 tracking-wider text-center">{language === 'MM' ? 'ရက်စွဲ' : 'Date'}</th>
               <th className="px-8 py-4 tracking-wider text-center">{language === 'MM' ? 'အကောင့်' : 'Account'}</th>
               <th className="px-8 py-4 tracking-wider text-center">{language === 'MM' ? 'အမျိုးအစား' : 'Type'}</th>
@@ -369,7 +410,7 @@ export default function TransactionList({
           <tbody className="text-sm divide-y divide-slate-50 dark:divide-slate-800/50">
             {filteredTransactions.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-8 py-20 text-center">
+                <td colSpan={9} className="px-8 py-20 text-center">
                   <div className="flex flex-col items-center gap-3">
                     <div className="w-12 h-12 bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-200 dark:text-slate-700 rounded-full">
                       <History size={24} />
@@ -385,8 +426,16 @@ export default function TransactionList({
               </tr>
             ) : (
               filteredTransactions.map((tx) => (
-                <tr key={tx.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/40 transition-colors group">
-                  <td className="px-8 py-4 text-center">
+                <tr key={tx.id} className={`transition-colors group ${tx.id && selectedIds.includes(tx.id) ? 'bg-indigo-50/50 dark:bg-indigo-900/20' : 'hover:bg-slate-50/50 dark:hover:bg-slate-900/40'}`}>
+                  <td className="px-4 py-4 text-center">
+                    <input 
+                      type="checkbox" 
+                      checked={tx.id ? selectedIds.includes(tx.id) : false}
+                      onChange={() => tx.id && handleToggleSelect(tx.id)}
+                      className="rounded border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 w-4 h-4 text-indigo-600 focus:ring-0 cursor-pointer"
+                    />
+                  </td>
+                  <td className="px-4 py-4 text-center">
                     <span className="font-mono text-[10px] font-bold text-slate-400 dark:text-slate-600 tracking-tighter">
                       TX-{tx.id?.slice(0, 6).toUpperCase()}
                     </span>
@@ -437,7 +486,12 @@ export default function TransactionList({
                   </td>
                   <td className="px-4 py-4 text-center">
                     <button
-                      onClick={() => tx.id && onDelete(tx.id)}
+                      onClick={() => {
+                        if (tx.id) {
+                          onBulkDelete([tx.id]);
+                          setSelectedIds(prev => prev.filter(id => id !== tx.id));
+                        }
+                      }}
                       className="p-2 text-slate-300 dark:text-slate-700 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-all opacity-0 group-hover:opacity-100"
                     >
                       <Trash2 size={16} />
@@ -467,8 +521,16 @@ export default function TransactionList({
             </div>
           ) : (
             filteredTransactions.map((tx) => (
-              <div key={tx.id} className="p-2.5 sm:p-3 grid grid-cols-12 items-center gap-1.5 sm:gap-3 hover:bg-slate-50 dark:hover:bg-slate-900/40 transition-all">
+              <div key={tx.id} className={`p-2.5 sm:p-3 grid grid-cols-12 items-center gap-1.5 sm:gap-3 transition-all ${tx.id && selectedIds.includes(tx.id) ? 'bg-indigo-50/50 dark:bg-indigo-900/20' : 'hover:bg-slate-50 dark:hover:bg-slate-900/40'}`}>
                 <div className="col-span-5 sm:col-span-5 flex items-center gap-1.5 sm:gap-3 min-w-0">
+                  <div className="shrink-0 flex items-center justify-center">
+                    <input 
+                      type="checkbox" 
+                      checked={tx.id ? selectedIds.includes(tx.id) : false}
+                      onChange={() => tx.id && handleToggleSelect(tx.id)}
+                      className="rounded border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 w-4 h-4 text-indigo-600 focus:ring-0 cursor-pointer"
+                    />
+                  </div>
                   <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center p-1 overflow-hidden bg-slate-50 dark:bg-slate-800 transition-colors shrink-0">
                     {getLogo(tx.category) ? (
                       <img src={getLogo(tx.category)} alt={tx.category} className="w-full h-full object-contain" />
@@ -514,7 +576,12 @@ export default function TransactionList({
                     <p className="text-[11px] sm:text-sm font-extrabold text-emerald-600 dark:text-emerald-400 font-sans tracking-tight leading-none">{f(tx.fee)}</p>
                   </div>
                   <button
-                    onClick={() => tx.id && onDelete(tx.id)}
+                    onClick={() => {
+                        if (tx.id) {
+                          onBulkDelete([tx.id]);
+                          setSelectedIds(prev => prev.filter(id => id !== tx.id));
+                        }
+                    }}
                     className="p-1 sm:p-1.5 text-slate-300 dark:text-slate-700 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-lg transition-all shrink-0"
                   >
                     <Trash2 size={15} />

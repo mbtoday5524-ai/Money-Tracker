@@ -18,12 +18,14 @@ export default function InstallPrompt({ language }: { language: 'MM' | 'EN' }) {
     const ios = /iphone|ipad|ipod/.test(userAgent);
     setIsIOS(ios);
 
-    const alreadyDismissed = localStorage.getItem('app-install-dismissed');
+    const alreadyDismissed = localStorage.getItem('app-install-dismissed-v4');
     
-    if (ios && !alreadyDismissed) {
-      // For iOS, there is no beforeinstallprompt, so we just show the instructions directly
-      setShowPrompt(true);
-    }
+    // Show prompt after a short delay if it hasn't been dismissed
+    const timer = setTimeout(() => {
+      if (!alreadyDismissed) {
+        setShowPrompt(true);
+      }
+    }, 2000);
 
     const handler = (e: Event) => {
       e.preventDefault();
@@ -35,17 +37,9 @@ export default function InstallPrompt({ language }: { language: 'MM' | 'EN' }) {
 
     window.addEventListener('beforeinstallprompt', handler);
 
-    // Some browsers like older Chrome might need a manual trigger for debugging
-    const manualTrigger = () => {
-       if (deferredPrompt && !alreadyDismissed) {
-         setShowPrompt(true);
-       }
-    };
-    window.addEventListener('click', manualTrigger, { once: true });
-
     return () => {
+      clearTimeout(timer);
       window.removeEventListener('beforeinstallprompt', handler);
-      window.removeEventListener('click', manualTrigger);
     };
   }, []);
 
@@ -66,7 +60,7 @@ export default function InstallPrompt({ language }: { language: 'MM' | 'EN' }) {
 
   const handleDismiss = () => {
     setShowPrompt(false);
-    localStorage.setItem('app-install-dismissed', 'true');
+    localStorage.setItem('app-install-dismissed-v4', 'true');
   };
 
   return (
@@ -75,7 +69,7 @@ export default function InstallPrompt({ language }: { language: 'MM' | 'EN' }) {
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.9, opacity: 0 }}
+          exit={{ opacity: 0, scale: 0.9 }}
           className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-80 bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-2xl z-50 flex flex-col gap-3"
         >
           <button 
@@ -97,15 +91,15 @@ export default function InstallPrompt({ language }: { language: 'MM' | 'EN' }) {
                 {language === 'MM' 
                   ? (isIOS 
                       ? 'Share (မျှဝေရန်) ခလုတ်ကိုနှိပ်ပြီး "Add to Home Screen" ကိုရွေးချယ်ပါ။' 
-                      : 'အမြဲတမ်းအသုံးပြုရလွယ်ကူစေရန် သင့်ဖုန်းတွင် App ပုံစံဖြင့် ထည့်သွင်းပါ။') 
+                      : (deferredPrompt ? 'အမြဲတမ်းအသုံးပြုရလွယ်ကူစေရန် သင့်ဖုန်းတွင် App ပုံစံဖြင့် ထည့်သွင်းပါ။' : 'Browser ၏ Menu (အစက်သုံးစက်) မှ "Add to Home Screen" ကိုရွေးချယ်ပါ။')) 
                   : (isIOS 
                       ? 'Tap the share button and select "Add to Home Screen".' 
-                      : 'Install this application on your device for quick access.')}
+                      : (deferredPrompt ? 'Install this application on your device for quick access.' : 'Tap the browser menu and select "Add to Home screen".'))}
               </p>
             </div>
           </div>
           
-          {!isIOS && (
+          {!isIOS && deferredPrompt && (
             <button
               onClick={handleInstallClick}
               className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-sm transition-all shadow-md shadow-indigo-600/20 active:scale-95"

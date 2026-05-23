@@ -374,20 +374,20 @@ export default function App() {
     }
   };
 
-  const handleDeleteTransaction = async (id: string) => {
+  const handleBulkDeleteTransactions = async (ids: string[]) => {
     if (!user) return;
     
-    // Optimistic delete
     const previousTransactions = [...transactions];
-    setTransactions(prev => prev.filter(tx => tx.id !== id));
+    setTransactions(prev => prev.filter(tx => !tx.id || !ids.includes(tx.id)));
 
     try {
-      await apiDeleteTx(user.uid, id);
+      // Execute all deletions in parallel
+      await Promise.all(ids.map(id => apiDeleteTx(user.uid, id)));
     } catch (err) {
-      console.error('Delete failed:', err);
+      console.error('Bulk delete failed:', err);
       // Rollback
       setTransactions(previousTransactions);
-      alert('Failed to delete transaction.');
+      alert('Failed to delete some transactions.');
     }
   };
 
@@ -998,7 +998,7 @@ export default function App() {
                           <div className="min-h-[400px]">
                             <TransactionList 
                                transactions={transactions.slice(0, 10)} 
-                               onDelete={handleDeleteTransaction}
+                               onBulkDelete={handleBulkDeleteTransactions}
                                language={language}
                                kbzLogoUrl={globalSettings?.kbzLogoUrl}
                                waveLogoUrl={globalSettings?.waveLogoUrl}
@@ -1101,7 +1101,7 @@ export default function App() {
                     <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
                       <TransactionList 
                         transactions={transactions}
-                        onDelete={handleDeleteTransaction}
+                        onBulkDelete={handleBulkDeleteTransactions}
                         language={language}
                         kbzLogoUrl={globalSettings?.kbzLogoUrl}
                         waveLogoUrl={globalSettings?.waveLogoUrl}
