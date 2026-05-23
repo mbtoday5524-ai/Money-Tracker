@@ -48,26 +48,8 @@ export default function InstallPrompt({ language }: { language: 'MM' | 'EN' }) {
 
     window.addEventListener('beforeinstallprompt', handler);
 
-    const forceShowHandler = () => {
-      localStorage.removeItem('pwa-prompt-dismissed-at');
-      setShowPrompt(true);
-    };
-
-    window.addEventListener('show-pwa-prompt', forceShowHandler);
-
-    // If it's not iOS and after 30s we still haven't seen beforeinstallprompt
-    // We might want to show manual instructions anyway if it's not standalone
-    const fallbackTimer = setTimeout(() => {
-      if (!isStandaloneMode && !deferredPrompt && shouldShow) {
-         console.log('PWA prompt fallback: Showing manual instructions');
-         setShowPrompt(true);
-      }
-    }, 30000);
-
     return () => {
       window.removeEventListener('beforeinstallprompt', handler);
-      window.removeEventListener('show-pwa-prompt', forceShowHandler);
-      clearTimeout(fallbackTimer);
     };
   }, [deferredPrompt]);
 

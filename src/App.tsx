@@ -48,8 +48,7 @@ import {
   Sun,
   Globe,
   ShieldCheck,
-  FileText,
-  Download
+  FileText
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -1131,24 +1130,6 @@ export default function App() {
                             className="w-full h-12 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 dark:shadow-none"
                           >
                             {language === 'MM' ? 'ဖောင်ဖွင့်ရန်' : 'Open Setup Form'}
-                          </button>
-                       </div>
-
-                       <div className="bg-white dark:bg-[#0f172a] p-10 rounded-2xl border border-slate-200 dark:border-slate-800 sleek-shadow space-y-6 transition-colors">
-                          <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-3">
-                             <div className="w-8 h-8 bg-indigo-50 dark:bg-indigo-900/40 rounded-lg flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-                                <Download size={18} />
-                             </div>
-                             {language === 'MM' ? 'App ကို ဖုန်းထဲထည့်သွင်းရန်' : 'Install Tracker App'}
-                          </h3>
-                          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                            {language === 'MM' ? 'အမြဲတမ်း အသုံးပြုရလွယ်ကူစေရန် သင့်ဖုန်းတွင် App ပုံစံဖြင့် ထည့်သွင်းအသုံးပြုနိုင်ပါသည်။' : 'Install this application on your device for quick access and a better experience.'}
-                          </p>
-                          <button 
-                            onClick={() => window.dispatchEvent(new CustomEvent('show-pwa-prompt'))}
-                            className="w-full h-12 border-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-500/50 rounded-xl font-bold hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-all"
-                          >
-                            {language === 'MM' ? 'App ကို ထည့်သွင်းမည်' : 'Install Now'}
                           </button>
                        </div>
                        
