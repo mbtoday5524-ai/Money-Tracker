@@ -27,7 +27,6 @@ import AdminPanel from './components/AdminPanel';
 import FinancialReports from './components/FinancialReports';
 import LoginPage from './components/LoginPage';
 import AccountActivation from './components/AccountActivation';
-import InstallPrompt from './components/InstallPrompt';
 import Documentation from './components/Documentation';
 import { 
   Wallet, 
@@ -1220,8 +1219,6 @@ export default function App() {
         />
       )}
       
-
-      <InstallPrompt language={language} />
     </div>
   );
 }
