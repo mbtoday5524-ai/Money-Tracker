@@ -143,7 +143,6 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
                     type="text"
                     value={kbzPhone}
                     onChange={(e) => setKbzPhone(e.target.value)}
-                    placeholder="09422***789"
                     className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:border-indigo-500 outline-none font-semibold"
                   />
                 </div>
@@ -182,7 +181,6 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
                     type="text"
                     value={wavePhone}
                     onChange={(e) => setWavePhone(e.target.value)}
-                    placeholder="09422***789"
                     className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:border-amber-500 outline-none font-semibold"
                   />
                 </div>
@@ -221,7 +219,6 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
                     type="text"
                     value={ayaPhone}
                     onChange={(e) => setAyaPhone(e.target.value)}
-                    placeholder="09422***789"
                     className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:border-red-500 outline-none font-semibold"
                   />
                 </div>
@@ -260,7 +257,6 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
                     type="text"
                     value={uabPhone}
                     onChange={(e) => setUabPhone(e.target.value)}
-                    placeholder="09422***789"
                     className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:border-blue-500 outline-none font-semibold"
                   />
                 </div>
@@ -299,7 +295,6 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
                     type="text"
                     value={truePhone}
                     onChange={(e) => setTruePhone(e.target.value)}
-                    placeholder="09422***789"
                     className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:border-orange-500 outline-none font-semibold"
                   />
                 </div>
@@ -357,51 +352,6 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
                 />
               </div>
             </div>
-          </div>
-
-          {/* Notifications Section */}
-          <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-            <div className="flex items-center justify-between px-1">
-              <h3 className="text-[10px] font-black text-rose-500 uppercase tracking-[0.3em]">Email Notifications</h3>
-              <button 
-                type="button"
-                onClick={() => setNotificationsEnabled(!notificationsEnabled)}
-                className={`w-12 h-6 rounded-full transition-all relative ${notificationsEnabled ? 'bg-rose-500' : 'bg-slate-300 dark:bg-slate-700'}`}
-              >
-                <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${notificationsEnabled ? 'right-1' : 'left-1'}`}></div>
-              </button>
-            </div>
-
-            {notificationsEnabled && (
-              <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                className="space-y-4 overflow-hidden"
-              >
-                <div className="space-y-2">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Email for Notifications</label>
-                  <input
-                    type="email"
-                    value={notificationEmail}
-                    onChange={(e) => setNotificationEmail(e.target.value)}
-                    placeholder="your@email.com"
-                    className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:border-rose-500 outline-none font-bold"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Low Balance Threshold</label>
-                  <input
-                    type="text"
-                    inputMode="decimal"
-                    value={lowBalanceThreshold}
-                    onChange={(e) => setLowBalanceThreshold(e.target.value)}
-                    placeholder="100000"
-                    className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:border-rose-500 outline-none font-semibold"
-                  />
-                  <p className="text-[8px] text-slate-500 font-bold uppercase tracking-tight px-1">Alert when a wallet balance drops below this amount.</p>
-                </div>
-              </motion.div>
-            )}
           </div>
 
           {/* Daily Goals Section */}

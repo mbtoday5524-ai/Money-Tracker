@@ -113,7 +113,7 @@ export const getAllGlobalTransactions = async (): Promise<Transaction[]> => {
     const q = query(
       collectionGroup(db, 'transactions'),
       orderBy('createdAt', 'desc'),
-      limit(200)
+      limit(500)
     );
     const snap = await getDocs(q);
     const allTx = snap.docs.map(doc => ({
@@ -123,8 +123,27 @@ export const getAllGlobalTransactions = async (): Promise<Transaction[]> => {
     
     return allTx;
   } catch (error) {
-    console.error("Error fetching global transactions:", error);
-    return [];
+    console.warn("Error fetching global transactions via collectionGroup (likely missing index), falling back to manual fetch...");
+    try {
+      const users = await getAllUsers();
+      let allTx: Transaction[] = [];
+      for (const user of users) {
+        if (!user.uid) continue;
+        const path = `users/${user.uid}/transactions`;
+        const q = query(collection(db, path), orderBy('createdAt', 'desc'), limit(50));
+        const snap = await getDocs(q);
+        const txs = snap.docs.map(d => ({ id: d.id, ...d.data() } as Transaction));
+        allTx = allTx.concat(txs);
+      }
+      return allTx.sort((a, b) => {
+        const aTime = a.createdAt?.toMillis ? a.createdAt.toMillis() : (a.createdAt || 0);
+        const bTime = b.createdAt?.toMillis ? b.createdAt.toMillis() : (b.createdAt || 0);
+        return bTime - aTime;
+      }).slice(0, 500);
+    } catch (fallbackError) {
+      console.error("Fallback fetch also failed:", fallbackError);
+      return [];
+    }
   }
 };
 

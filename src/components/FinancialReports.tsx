@@ -97,15 +97,29 @@ export default function FinancialReports({ transactions, language }: FinancialRe
 
   const filteredData = useMemo(() => {
     return transactions.filter(tx => {
-      const d = new Date(tx.date);
+      if (!tx.date) return false;
+      
+      let ty, tm, td;
+      if (tx.date.includes('-')) {
+        const [y, m, d] = tx.date.split('-');
+        ty = parseInt(y, 10);
+        tm = parseInt(m, 10) - 1;
+        td = parseInt(d, 10);
+      } else {
+        const dObj = new Date(tx.date);
+        ty = dObj.getFullYear();
+        tm = dObj.getMonth();
+        td = dObj.getDate();
+      }
+
       if (timeframe === 'DAY') {
-        const txDate = new Date(tx.date).toISOString().split('T')[0];
+        const txDate = tx.date.includes('T') ? tx.date.split('T')[0] : tx.date;
         return txDate === selectedDay;
       }
       if (timeframe === 'MONTH') {
-        return d.getMonth() === selectedMonth && d.getFullYear() === selectedYear;
+        return tm === selectedMonth && ty === selectedYear;
       }
-      return d.getFullYear() === selectedYear;
+      return ty === selectedYear;
     });
   }, [transactions, timeframe, selectedDay, selectedMonth, selectedYear]);
 
@@ -150,6 +164,7 @@ export default function FinancialReports({ transactions, language }: FinancialRe
     'ဇန်နဝါရီ', 'ဖေဖော်ဝါရီ', 'မတ်', 'ဧပြီ', 'မေ', 'ဇွန်',
     'ဇူလိုင်', 'ဩဂုတ်', 'စက်တင်ဘာ', 'အောက်တိုဘာ', 'နိုဝင်ဘာ', 'ဒီဇင်ဘာ'
   ] : [
+    'January', 'February', 'March', 'April', 'May', 'June',
     'July', 'August', 'September', 'October', 'November', 'December'
   ];
 
@@ -190,7 +205,9 @@ export default function FinancialReports({ transactions, language }: FinancialRe
       });
 
       filteredData.forEach(tx => {
-        const dateObj = new Date(tx.date);
+        // use createdAt to get the actual hour, if unavailable default to mid-day
+        const ts = tx.createdAt?.toMillis ? tx.createdAt.toMillis() : (tx.createdAt ? new Date(tx.createdAt).getTime() : Date.now());
+        const dateObj = new Date(ts);
         const hour = dateObj.getHours();
         const binIdx = Math.min(Math.floor(hour / 3), 7);
         bins[binIdx].fees += tx.fee || 0;
@@ -216,8 +233,13 @@ export default function FinancialReports({ transactions, language }: FinancialRe
       });
 
       filteredData.forEach(tx => {
-        const dateObj = new Date(tx.date);
-        const day = dateObj.getDate();
+        let day = 1;
+        if (tx.date && tx.date.includes('-')) {
+          day = parseInt(tx.date.split('-')[2], 10);
+        } else {
+          day = new Date(tx.date).getDate();
+        }
+        
         if (day >= 1 && day <= totalDays) {
           bins[day - 1].fees += tx.fee || 0;
           bins[day - 1].count += 1;
@@ -240,8 +262,13 @@ export default function FinancialReports({ transactions, language }: FinancialRe
     });
 
     filteredData.forEach(tx => {
-      const dateObj = new Date(tx.date);
-      const month = dateObj.getMonth();
+      let month = 0;
+      if (tx.date && tx.date.includes('-')) {
+        month = parseInt(tx.date.split('-')[1], 10) - 1;
+      } else {
+        month = new Date(tx.date).getMonth();
+      }
+
       if (month >= 0 && month < 12) {
         bins[month].fees += tx.fee || 0;
         bins[month].count += 1;
