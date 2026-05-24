@@ -72,6 +72,26 @@ export default function App() {
       return null;
     }
   });
+
+  // Dynamically update favicon based on globalSettings
+  useEffect(() => {
+    const iconUrl = globalSettings?.appLogoUrl || "/logo-round.png";
+    const linkIcon = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
+    if (linkIcon) {
+      linkIcon.href = iconUrl;
+    } else {
+      const newLink = document.createElement('link');
+      newLink.rel = 'icon';
+      newLink.type = 'image/png';
+      newLink.href = iconUrl;
+      document.head.appendChild(newLink);
+    }
+
+    const linkApple = document.querySelector('link[rel="apple-touch-icon"]') as HTMLLinkElement;
+    if (linkApple) {
+      linkApple.href = iconUrl;
+    }
+  }, [globalSettings?.appLogoUrl]);
   const [settings, setSettings] = useState<UserSettings | null>(null);
   const [isActivated, setIsActivated] = useState<boolean | null>(null);
   const [showActivation, setShowActivation] = useState(false);
@@ -714,10 +734,10 @@ export default function App() {
             {/* App Logo */}
             <div className="flex items-center justify-between mb-10 px-2 lg:block">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 flex items-center justify-center overflow-hidden shrink-0 shadow-lg shadow-black/30 border border-slate-700/50 rounded-full bg-white">
+                <div className="w-12 h-12 flex items-center justify-center overflow-hidden shrink-0 shadow-[0_0_15px_rgba(0,176,255,0.2)] border border-cyan-400/30 rounded-full bg-slate-900">
                   <img src={globalSettings?.appLogoUrl || "/logo-round.png"} alt="Logo" className="w-full h-full object-cover rounded-full" />
                 </div>
-                <h1 className="text-sm font-black text-white tracking-tight uppercase">{globalSettings?.appName || "Z MONEY TRACKER"}</h1>
+                <h1 className="text-[15px] font-black text-white tracking-widest uppercase bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">{globalSettings?.appName || "Z MONEY TRACKER"}</h1>
               </div>
               <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-slate-500 p-2 mt-2">
                 <X size={20} />
