@@ -37,6 +37,7 @@ interface TransactionListProps {
   cashLogoUrl?: string;
   uabLogoUrl?: string;
   trueLogoUrl?: string;
+  onExport?: () => void;
 }
 
 export default function TransactionList({ 
@@ -48,7 +49,8 @@ export default function TransactionList({
   ayaLogoUrl,
   cashLogoUrl,
   uabLogoUrl,
-  trueLogoUrl
+  trueLogoUrl,
+  onExport
 }: TransactionListProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterBankId, setFilterBankId] = useState<string | 'ALL'>('ALL');
@@ -175,6 +177,7 @@ export default function TransactionList({
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    onExport?.();
   };
 
   const handleExportPDF = () => {
@@ -238,6 +241,7 @@ export default function TransactionList({
     });
 
     doc.save(`money_tracker_ledger_${new Date().toISOString().split('T')[0]}.pdf`);
+    onExport?.();
   };
 
   return (

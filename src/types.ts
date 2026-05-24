@@ -70,6 +70,7 @@ export interface UserSettings {
   notificationEmail?: string;
   lowBalanceThreshold: number;
   updatedAt: any;
+  lastBackupDate?: string;
 }
 
 export enum OperationType {

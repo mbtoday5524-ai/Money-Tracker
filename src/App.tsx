@@ -101,6 +101,36 @@ export default function App() {
   const [initialFetchDone, setInitialFetchDone] = useState(false);
   const [quotaExceeded, setQuotaExceeded] = useState(false);
   const [syncState, setSyncState] = useState<'synced' | 'syncing'>('synced');
+  const [showBackupReminder, setShowBackupReminder] = useState(false);
+  const [backupDismissed, setBackupDismissed] = useState(false);
+
+  useEffect(() => {
+    if (!settings || transactions.length === 0 || backupDismissed) return;
+
+    let shouldRemind = false;
+    const now = Date.now();
+    const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
+    if (settings.lastBackupDate) {
+      if (now - new Date(settings.lastBackupDate).getTime() > THIRTY_DAYS_MS) {
+        shouldRemind = true;
+      }
+    } else {
+      const oldestTime = Math.min(...transactions.map((t: any) => new Date(t.date || t.createdAt).getTime()));
+      if (now - oldestTime > THIRTY_DAYS_MS) {
+        shouldRemind = true;
+      }
+    }
+    
+    setShowBackupReminder(shouldRemind);
+  }, [settings?.lastBackupDate, transactions, backupDismissed]);
+
+  const handleExportData = async () => {
+    if (!user || !settings) return;
+    const newSettings = { ...settings, lastBackupDate: new Date().toISOString() };
+    setSettings(newSettings);
+    await saveUserSettings(user.uid, newSettings);
+  };
 
   // Handle connection state and syncing state in real-time
   useEffect(() => {
@@ -986,6 +1016,44 @@ export default function App() {
               </div>
             </header>
 
+            {/* Backup Reminder Banner */}
+            <AnimatePresence>
+              {showBackupReminder && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="bg-amber-50 dark:bg-amber-900/30 border-b border-amber-200 dark:border-amber-800"
+                >
+                  <div className="px-4 py-3 flex items-center justify-between gap-4 max-w-7xl mx-auto">
+                    <div className="flex items-center gap-3 text-amber-800 dark:text-amber-200">
+                      <FileText className="h-5 w-5 shrink-0" />
+                      <p className="text-xs sm:text-sm font-semibold">
+                        {language === 'MM' ? 'သင့်မိတ္တူကူးထားသည့်မှတ်တမ်းများမှာ ၃၀ ရက်ကျော်ကြာခဲ့ပါပြီ။ အချက်အလက်များ မဆုံးရှုံးစေရန် CSV/PDF မိတ္တူကူးထားပါ။' : 'It has been over 30 days since your last backup. Please export your transactions to CSV/PDF to prevent data loss.'}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <button
+                        onClick={() => {
+                          setCurrentView(View.HISTORY);
+                          setBackupDismissed(true);
+                        }}
+                        className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg shadow-sm transition-colors"
+                      >
+                        {language === 'MM' ? 'မိတ္တူကူးရန်' : 'Export Now'}
+                      </button>
+                      <button
+                        onClick={() => setBackupDismissed(true)}
+                        className="p-1.5 text-amber-600 dark:text-amber-400 hover:bg-amber-200 dark:hover:bg-amber-800/50 rounded-lg transition-colors"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Viewport content */}
             <div className={`flex-1 p-2 sm:p-4 lg:p-5 lg:pt-2 scroll-smooth ${currentView === View.HISTORY ? 'overflow-hidden flex flex-col' : 'overflow-y-auto'}`}>
               <AnimatePresence mode="wait">
@@ -1041,6 +1109,7 @@ export default function App() {
                                transactions={transactions.slice(0, 10)} 
                                onBulkDelete={handleBulkDeleteTransactions}
                                language={language}
+                               onExport={handleExportData}
                                kbzLogoUrl={globalSettings?.kbzLogoUrl}
                                waveLogoUrl={globalSettings?.waveLogoUrl}
                                ayaLogoUrl={globalSettings?.ayaLogoUrl}
@@ -1127,6 +1196,7 @@ export default function App() {
                         transactions={transactions}
                         onBulkDelete={handleBulkDeleteTransactions}
                         language={language}
+                        onExport={handleExportData}
                         kbzLogoUrl={globalSettings?.kbzLogoUrl}
                         waveLogoUrl={globalSettings?.waveLogoUrl}
                         ayaLogoUrl={globalSettings?.ayaLogoUrl}
