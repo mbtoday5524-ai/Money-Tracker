@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Wallet, Settings2, ArrowRight, CreditCard, X, Loader2, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { UserSettings } from '../types';
+import LogoUploadField from './LogoUploadField';
 
 interface SetupModalProps {
   onStart: (settings: Omit<UserSettings, 'updatedAt'>) => void | Promise<void>;
@@ -34,7 +35,7 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
   const [ayaPhone, setAyaPhone] = useState(currentSettings?.ayaPhone || '');
   const [uabPhone, setUabPhone] = useState(currentSettings?.uabPhone || '');
   const [truePhone, setTruePhone] = useState(currentSettings?.truePhone || '');
-  
+
   const [notificationsEnabled, setNotificationsEnabled] = useState(currentSettings?.notificationsEnabled || false);
   const [notificationEmail, setNotificationEmail] = useState(currentSettings?.notificationEmail || '');
   const [lowBalanceThreshold, setLowBalanceThreshold] = useState(currentSettings?.lowBalanceThreshold?.toString() || '100000');

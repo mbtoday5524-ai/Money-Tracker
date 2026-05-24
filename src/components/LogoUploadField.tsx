@@ -3,12 +3,13 @@ import { Image as ImageIcon, Loader2 } from 'lucide-react';
 import { compressImage } from '../utils/imageCompressor';
 
 interface LogoUploadFieldProps {
-  provider: 'kbz' | 'wave' | 'aya' | 'cash' | 'uab' | 'true';
+  provider: string; // Changed to general string for reuse
   currentUrl: string;
   setUrl: (url: string) => void;
+  label?: string;
 }
 
-export default function LogoUploadField({ provider, currentUrl, setUrl }: LogoUploadFieldProps) {
+export default function LogoUploadField({ provider, currentUrl, setUrl, label }: LogoUploadFieldProps) {
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -52,7 +53,7 @@ export default function LogoUploadField({ provider, currentUrl, setUrl }: LogoUp
       </div>
       <div className="flex-1 flex items-center gap-2">
         <label className="flex-1 h-11 px-4 rounded-xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 text-indigo-600 dark:text-indigo-400 hover:border-indigo-500 transition-all flex items-center justify-center gap-2 cursor-pointer group disabled:opacity-50 text-[10px] uppercase font-black tracking-widest relative overflow-hidden">
-          {provider.toUpperCase()} Logo (Optional)
+          {label || `${provider.toUpperCase()} Logo (Optional)`}
           <input
             type="file"
             ref={fileInputRef}
