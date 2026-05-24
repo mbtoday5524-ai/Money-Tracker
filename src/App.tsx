@@ -1001,9 +1001,9 @@ export default function App() {
                         />
                       </div>
 
-                      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 items-start">
+                      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 items-start">
                         {/* Recent Transactions Table */}
-                        <div className="xl:col-span-2 space-y-4 lg:space-y-6">
+                        <div className="xl:col-span-2 space-y-3 lg:space-y-4">
                           <div className="flex items-center justify-between px-1">
                             <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">
                               {language === 'MM' ? 'နောက်ဆုံးမှတ်တမ်းများ' : 'Recent Transactions'}
@@ -1032,7 +1032,7 @@ export default function App() {
                         </div>
 
                         {/* Summary / Stats Card */}
-                        <div className="space-y-4 lg:space-y-6 lg:sticky lg:top-0">
+                        <div className="space-y-3 lg:space-y-4 lg:sticky lg:top-0">
                           <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest px-1">
                             {language === 'MM' ? 'စာရင်းချုပ်' : 'Current Ledger'}
                           </h3>
