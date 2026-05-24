@@ -22,7 +22,7 @@ export default function AdBanner({ customImages }: AdBannerProps) {
     if (images.length <= 1) return;
     const timer = setInterval(() => {
       setIndex((prev) => (prev + 1) % images.length);
-    }, 5000);
+    }, 3000);
     return () => clearInterval(timer);
   }, [images]);
 
@@ -44,7 +44,7 @@ export default function AdBanner({ customImages }: AdBannerProps) {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.6, ease: "easeInOut" }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
           className="absolute inset-0 w-full h-full object-cover"
         />
       </AnimatePresence>
