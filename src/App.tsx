@@ -21,7 +21,6 @@ import BalanceCards from './components/BalanceCards';
 import TransactionForm from './components/TransactionForm';
 import TransactionList from './components/TransactionList';
 import Summary from './components/Summary';
-import DailyGoalTracker from './components/DailyGoalTracker';
 import AccessDenied from './components/AccessDenied';
 import AdminPanel from './components/AdminPanel';
 import FinancialReports from './components/FinancialReports';
@@ -544,21 +543,6 @@ export default function App() {
 
   const totalFee = useMemo(() => transactions.reduce((sum, tx) => sum + tx.fee, 0), [transactions]);
 
-  const todayStats = useMemo(() => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    const todayTxs = transactions.filter(tx => {
-      const txDate = new Date(tx.date || tx.createdAt?.toDate?.() || tx.createdAt);
-      return txDate >= today;
-    });
-
-    return {
-      revenue: todayTxs.reduce((sum, tx) => sum + (tx.fee || 0), 0),
-      count: todayTxs.length
-    };
-  }, [transactions]);
-
   if (authLoading || (user && isActivated === null)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black overflow-hidden relative">
@@ -1049,23 +1033,6 @@ export default function App() {
 
                         {/* Summary / Stats Card */}
                         <div className="space-y-4 lg:space-y-6 lg:sticky lg:top-0">
-                          <DailyGoalTracker 
-                            language={language}
-                            currentRevenue={todayStats.revenue}
-                            currentCount={todayStats.count}
-                            revenueGoal={settings?.dailyRevenueGoal || 5000}
-                            transactionGoal={settings?.dailyTransactionGoal || 10}
-                            onUpdateGoals={async (rev, txs) => {
-                              if (!user || !settings) return;
-                              await saveUserSettings(user.uid, {
-                                ...settings,
-                                dailyRevenueGoal: rev,
-                                dailyTransactionGoal: txs
-                              });
-                              const s = await getUserSettings(user.uid);
-                              setSettings(s);
-                            }}
-                          />
                           <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest px-1">
                             {language === 'MM' ? 'စာရင်းချုပ်' : 'Current Ledger'}
                           </h3>

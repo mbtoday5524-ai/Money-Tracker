@@ -5,6 +5,28 @@ import { KBZLogo, WaveLogo, AYALogo, CashLogo, UABLogo, TrueLogo } from './Logos
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
+const Highlight = ({ text, highlight }: { text: string | number; highlight: string }) => {
+  if (!highlight || !highlight.trim()) {
+    return <>{text}</>;
+  }
+
+  const str = text.toString();
+  const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const parts = str.split(new RegExp(`(${escapeRegExp(highlight)})`, 'gi'));
+
+  return (
+    <>
+      {parts.map((part, i) => 
+        part.toLowerCase() === highlight.toLowerCase() ? (
+          <mark key={i} className="bg-cyan-200/40 dark:bg-cyan-500/30 text-cyan-900 dark:text-cyan-100 px-0.5 rounded-sm font-black mx-[0.5px] border-b-2 border-cyan-400 dark:border-cyan-500">{part}</mark>
+        ) : (
+          <span key={i}>{part}</span>
+        )
+      )}
+    </>
+  );
+};
+
 interface TransactionListProps {
   transactions: Transaction[];
   onBulkDelete: (ids: string[]) => void;
@@ -65,10 +87,16 @@ export default function TransactionList({
 
   const filteredTransactions = useMemo(() => {
     return transactions.filter(tx => {
+      const searchStr = searchTerm.toLowerCase();
       const matchesSearch = searchTerm === '' || 
-        tx.amount.toString().includes(searchTerm) || 
-        tx.fee.toString().includes(searchTerm) ||
-        (getBankName(tx.category).toLowerCase()).includes(searchTerm.toLowerCase());
+        tx.amount.toString().includes(searchStr) || 
+        f(tx.amount).includes(searchStr) ||
+        tx.fee.toString().includes(searchStr) ||
+        f(tx.fee).includes(searchStr) ||
+        (tx.id && tx.id.toLowerCase().includes(searchStr)) ||
+        (tx.id && `tx-${tx.id.slice(0, 6).toLowerCase()}`.includes(searchStr)) ||
+        (tx.phoneNumber && tx.phoneNumber.toLowerCase().includes(searchStr)) ||
+        (getBankName(tx.category).toLowerCase()).includes(searchStr);
       
       const matchesCategory = filterBankId === 'ALL' || tx.category === filterBankId;
       const matchesType = filterType === 'ALL' || tx.type === filterType;
@@ -437,7 +465,7 @@ export default function TransactionList({
                   </td>
                   <td className="px-4 py-4 text-center">
                     <span className="font-mono text-[10px] font-bold text-slate-400 dark:text-slate-600 tracking-tighter">
-                      TX-{tx.id?.slice(0, 6).toUpperCase()}
+                      <Highlight text={`TX-${tx.id?.slice(0, 6).toUpperCase()}`} highlight={searchTerm} />
                     </span>
                   </td>
                   <td className="px-8 py-4 font-bold text-slate-600 dark:text-slate-400 text-xs text-center">{tx.date}</td>
@@ -450,7 +478,9 @@ export default function TransactionList({
                            getDefaultLogo(tx.category)({ className: "w-full h-full" })
                          )}
                        </div>
-                       <span className="font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-tight leading-none">{tx.category}</span>
+                       <span className="font-bold text-slate-700 dark:text-slate-300 text-xs uppercase tracking-tight leading-none">
+                         <Highlight text={tx.category} highlight={searchTerm} />
+                       </span>
                     </div>
                   </td>
                   <td className="px-8 py-4 text-center">
@@ -464,13 +494,13 @@ export default function TransactionList({
                   </td>
                   <td className="px-8 py-4 text-center">
                     <span className="font-black font-display text-slate-900 dark:text-white">
-                      {f(tx.amount)}
+                      <Highlight text={f(tx.amount)} highlight={searchTerm} />
                     </span>
                   </td>
                   <td className="px-8 py-4 text-center">
                     <div className="flex flex-col items-center justify-center gap-1">
                       <span className="font-bold font-sans text-emerald-600 dark:text-emerald-400 text-sm">
-                        {f(tx.fee)}
+                        <Highlight text={f(tx.fee)} highlight={searchTerm} />
                       </span>
                       {tx.feePaymentMethod === 'Wallet' && (
                         <span className="text-[9px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-normal bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 rounded border border-amber-100 dark:border-amber-900/30">
@@ -481,7 +511,7 @@ export default function TransactionList({
                   </td>
                   <td className="px-8 py-4 text-center">
                     <span className="font-extrabold font-display text-black dark:text-white text-[15px]">
-                      {tx.phoneNumber || '-'}
+                      {tx.phoneNumber ? <Highlight text={tx.phoneNumber} highlight={searchTerm} /> : '-'}
                     </span>
                   </td>
                   <td className="px-4 py-4 text-center">
@@ -540,7 +570,7 @@ export default function TransactionList({
                   </div>
                   <div className="space-y-0.5 min-w-0 flex-1">
                     <div className="flex items-center gap-1 min-w-0">
-                       <span className="font-black text-slate-900 dark:text-white text-[13px] sm:text-base font-display whitespace-nowrap leading-none">{f(tx.amount)}</span>
+                       <span className="font-black text-slate-900 dark:text-white text-[13px] sm:text-base font-display whitespace-nowrap leading-none"><Highlight text={f(tx.amount)} highlight={searchTerm} /></span>
                        <span className={`text-[8px] sm:text-[9px] font-black uppercase tracking-wider font-display shrink-0 ${
                          tx.type === TransactionType.IN ? 'text-emerald-700 dark:text-emerald-500' : 'text-rose-700 dark:text-rose-500'
                        }`}>
@@ -550,7 +580,11 @@ export default function TransactionList({
                     <div className="flex items-center gap-1 text-[10px] sm:text-[10px] text-slate-400 dark:text-slate-500 font-bold font-display truncate">
                       <span className="shrink-0">{tx.date}</span>
                       <span className="opacity-45 shrink-0">•</span>
-                      <span className="uppercase truncate">{tx.category}</span>
+                      <span className="uppercase truncate"><Highlight text={tx.category} highlight={searchTerm} /></span>
+                      <span className="opacity-45 shrink-0">•</span>
+                      <span className="shrink-0 uppercase font-mono tracking-tighter">
+                        <Highlight text={`TX-${tx.id?.slice(0, 6).toUpperCase()}`} highlight={searchTerm} />
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -558,7 +592,7 @@ export default function TransactionList({
                 <div className="col-span-3 sm:col-span-3 flex items-center justify-center min-w-0">
                   {tx.phoneNumber ? (
                     <span className="text-[13px] sm:text-[15px] text-black dark:text-white font-extrabold font-mono tracking-tight whitespace-nowrap">
-                      {tx.phoneNumber}
+                      <Highlight text={tx.phoneNumber} highlight={searchTerm} />
                     </span>
                   ) : null}
                 </div>
@@ -573,7 +607,7 @@ export default function TransactionList({
                         </span>
                       )}
                     </div>
-                    <p className="text-[11px] sm:text-sm font-extrabold text-emerald-600 dark:text-emerald-400 font-sans tracking-tight leading-none">{f(tx.fee)}</p>
+                    <p className="text-[11px] sm:text-sm font-extrabold text-emerald-600 dark:text-emerald-400 font-sans tracking-tight leading-none"><Highlight text={f(tx.fee)} highlight={searchTerm} /></p>
                   </div>
                   <button
                     onClick={() => {

@@ -40,7 +40,7 @@ service cloud.firestore {
 
     function isValidUserSettings(data) {
       let requiredFields = ['kbzInitial', 'waveInitial', 'ayaInitial', 'cashInitial', 'percentIn', 'percentOut', 'updatedAt'];
-      let optionalFields = ['kbzPhone', 'wavePhone', 'ayaPhone', 'kbzLogoUrl', 'waveLogoUrl', 'ayaLogoUrl', 'cashLogoUrl', 'notificationsEnabled', 'notificationEmail', 'lowBalanceThreshold', 'kbzEnabled', 'waveEnabled', 'ayaEnabled', 'cashEnabled', 'uabInitial', 'trueInitial', 'uabEnabled', 'trueEnabled', 'uabPhone', 'truePhone', 'uabLogoUrl', 'trueLogoUrl', 'dailyRevenueGoal', 'dailyTransactionGoal'];
+      let optionalFields = ['kbzPhone', 'wavePhone', 'ayaPhone', 'kbzLogoUrl', 'waveLogoUrl', 'ayaLogoUrl', 'cashLogoUrl', 'notificationsEnabled', 'notificationEmail', 'lowBalanceThreshold', 'kbzEnabled', 'waveEnabled', 'ayaEnabled', 'cashEnabled', 'uabInitial', 'trueInitial', 'uabEnabled', 'trueEnabled', 'uabPhone', 'truePhone', 'uabLogoUrl', 'trueLogoUrl'];
       let allAllowedFields = requiredFields.concat(optionalFields);
       
       return data.keys().hasAll(requiredFields)

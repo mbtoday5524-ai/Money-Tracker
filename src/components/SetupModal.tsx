@@ -39,8 +39,6 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
   const [notificationsEnabled, setNotificationsEnabled] = useState(currentSettings?.notificationsEnabled || false);
   const [notificationEmail, setNotificationEmail] = useState(currentSettings?.notificationEmail || '');
   const [lowBalanceThreshold, setLowBalanceThreshold] = useState(currentSettings?.lowBalanceThreshold?.toString() || '100000');
-  const [dailyRevenueGoal, setDailyRevenueGoal] = useState(currentSettings?.dailyRevenueGoal?.toString() || '50000');
-  const [dailyTransactionGoal, setDailyTransactionGoal] = useState(currentSettings?.dailyTransactionGoal?.toString() || '10');
 
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
@@ -71,9 +69,7 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
         truePhone,
         notificationsEnabled,
         notificationEmail,
-        lowBalanceThreshold: Number(lowBalanceThreshold) || 100000,
-        dailyRevenueGoal: Number(dailyRevenueGoal) || 50000,
-        dailyTransactionGoal: Number(dailyTransactionGoal) || 10
+        lowBalanceThreshold: Number(lowBalanceThreshold) || 100000
       });
       setSaveStatus('saved');
     } catch (err) {
@@ -350,39 +346,6 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
                   value={percentOut}
                   onChange={(e) => setPercentOut(e.target.value)}
                   className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:border-indigo-500 outline-none font-semibold text-center"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Daily Goals Section */}
-          <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-            <h3 className="text-[10px] font-black text-indigo-500 uppercase tracking-[0.3em] px-1">Daily Targets</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">
-                  {language === 'MM' ? 'နေ့စဉ်ဝင်ငွေ ပန်းတိုင် (ကျပ်)' : 'Daily Revenue Goal (MMK)'}
-                </label>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  value={dailyRevenueGoal}
-                  onChange={(e) => setDailyRevenueGoal(e.target.value)}
-                  placeholder="50000"
-                  className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:border-indigo-500 outline-none font-bold"
-                />
-              </div>
-              <div className="space-y-2">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">
-                  {language === 'MM' ? 'နေ့စဉ်အကြိမ်ရေ ပန်းတိုင်' : 'Daily Transaction Goal'}
-                </label>
-                <input
-                  type="text"
-                  inputMode="decimal"
-                  value={dailyTransactionGoal}
-                  onChange={(e) => setDailyTransactionGoal(e.target.value)}
-                  placeholder="10"
-                  className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white focus:border-indigo-500 outline-none font-bold"
                 />
               </div>
             </div>

@@ -170,6 +170,19 @@ export default function Summary({
         </div>
         
         <div className="space-y-2 lg:space-y-4">
+          <div className="bg-indigo-600 rounded-xl lg:rounded-2xl p-3 lg:p-5 relative overflow-hidden group">
+            <div className="absolute right-0 top-0 w-16 lg:w-24 h-16 lg:h-24 bg-white/10 rounded-full -mr-6 lg:-mr-8 -mt-6 lg:-mt-8 blur-2xl group-hover:scale-125 transition-transform duration-700"></div>
+            <div className="relative z-10 flex items-center gap-3 lg:gap-4">
+              <div className="w-8 h-8 lg:w-12 lg:h-12 bg-white/20 text-white rounded-lg lg:rounded-xl flex items-center justify-center backdrop-blur-md shrink-0">
+                <DollarSign size={16} className="lg:w-6 lg:h-6" />
+              </div>
+              <div>
+                <p className="text-[8px] lg:text-[10px] font-bold text-white/60 uppercase tracking-widest mb-1">{language === 'MM' ? 'ရရှိသော ကော်မရှင်စုစုပေါင်း' : 'Total Revenue (Fee)'}</p>
+                <p className={`font-black text-white tracking-tighter ${language === 'MM' ? 'text-sm lg:text-lg' : 'text-base lg:text-xl'}`}>{f(totalFee)}</p>
+              </div>
+            </div>
+          </div>
+
           <div className="bg-emerald-50/50 dark:bg-emerald-900/10 border border-emerald-100/50 dark:border-emerald-800/50 rounded-xl lg:rounded-2xl p-2.5 lg:p-4 flex items-center justify-between">
             <div className="flex items-center gap-2 lg:gap-3">
               <div className="w-7 h-7 lg:w-10 lg:h-10 bg-emerald-500 text-white rounded-lg lg:rounded-xl flex items-center justify-center shrink-0">
@@ -190,19 +203,6 @@ export default function Summary({
               <div>
                 <p className="text-[8px] lg:text-[10px] font-bold text-rose-600/60 dark:text-rose-400/60 uppercase tracking-widest mb-1">{language === 'MM' ? 'စုစုပေါင်း အထွက်' : 'Total Outflow'}</p>
                 <p className={`font-black text-rose-700 dark:text-rose-400 tracking-tighter ${language === 'MM' ? 'text-xs lg:text-base' : 'text-sm lg:text-lg'}`}>{f(totalOut)}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-indigo-600 rounded-xl lg:rounded-2xl p-3 lg:p-5 relative overflow-hidden group">
-            <div className="absolute right-0 top-0 w-16 lg:w-24 h-16 lg:h-24 bg-white/10 rounded-full -mr-6 lg:-mr-8 -mt-6 lg:-mt-8 blur-2xl group-hover:scale-125 transition-transform duration-700"></div>
-            <div className="relative z-10 flex items-center gap-3 lg:gap-4">
-              <div className="w-8 h-8 lg:w-12 lg:h-12 bg-white/20 text-white rounded-lg lg:rounded-xl flex items-center justify-center backdrop-blur-md shrink-0">
-                <DollarSign size={16} className="lg:w-6 lg:h-6" />
-              </div>
-              <div>
-                <p className="text-[8px] lg:text-[10px] font-bold text-white/60 uppercase tracking-widest mb-1">{language === 'MM' ? 'ရရှိသော ကော်မရှင်စုစုပေါင်း' : 'Total Revenue (Fee)'}</p>
-                <p className={`font-black text-white tracking-tighter ${language === 'MM' ? 'text-sm lg:text-lg' : 'text-base lg:text-xl'}`}>{f(totalFee)}</p>
               </div>
             </div>
           </div>

@@ -283,10 +283,10 @@ export default function FinancialReports({ transactions, language }: FinancialRe
   }, [chartData]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3 lg:space-y-4">
       {/* Controls */}
-      <div className="flex flex-wrap items-center gap-2 sm:gap-4 bg-slate-50 dark:bg-slate-900/50 p-3 sm:p-4 rounded-2xl border border-slate-200 dark:border-slate-800">
-        <div className="flex bg-white dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700 w-full sm:w-auto">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 bg-slate-50 dark:bg-slate-900/50 p-2 sm:p-3 rounded-xl border border-slate-200 dark:border-slate-800">
+        <div className="flex bg-white dark:bg-slate-800 p-1 rounded-lg border border-slate-200 dark:border-slate-700 w-full sm:w-auto">
           <button 
             onClick={() => setTimeframe('DAY')}
             className={`flex-1 sm:flex-none px-3 sm:px-4 py-1.5 rounded-lg text-[9px] sm:text-[10px] font-black uppercase tracking-widest transition-all ${
@@ -346,21 +346,21 @@ export default function FinancialReports({ transactions, language }: FinancialRe
       </div>
 
       {/* Primary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
-        <div className="bg-indigo-600 p-4 lg:p-6 rounded-2xl md:rounded-3xl text-white shadow-lg shadow-indigo-200 dark:shadow-none relative overflow-hidden group">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div className="bg-indigo-600 p-4 lg:p-5 rounded-2xl md:rounded-3xl text-white shadow-lg shadow-indigo-200 dark:shadow-none relative overflow-hidden group">
           <div className="relative z-10">
             <p className="text-[8px] sm:text-[9px] font-black opacity-70 uppercase tracking-[0.2em] mb-0.5 md:mb-1">
               {language === 'MM' ? 'စုစုပေါင်း ဝန်ဆောင်ခ (ကော်မရှင်)' : 'Total Fees Collected'}
             </p>
-            <h3 className="text-xl sm:text-2xl lg:text-4xl font-black">{f(stats.totalFees)}</h3>
+            <h3 className="text-xl sm:text-2xl lg:text-3xl font-black">{f(stats.totalFees)}</h3>
           </div>
-          <DollarSign className="absolute -right-4 -bottom-4 text-white/10 w-20 sm:w-24 lg:w-32 h-20 sm:h-24 lg:h-32 group-hover:scale-110 transition-transform" />
+          <DollarSign className="absolute -right-4 -bottom-4 text-white/10 w-20 sm:w-24 lg:w-28 h-20 sm:h-24 lg:h-28 group-hover:scale-110 transition-transform" />
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-4 lg:p-6 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-slate-800 flex flex-col justify-center">
+        <div className="bg-white dark:bg-slate-900 p-4 lg:p-5 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-slate-800 flex flex-col justify-center">
           <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-            <div className="w-6 h-6 lg:w-8 lg:h-8 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 rounded-lg flex items-center justify-center">
-              <Percent size={12} className="lg:w-4 lg:h-4" />
+            <div className="w-6 h-6 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 rounded-lg flex items-center justify-center">
+              <Percent size={12} />
             </div>
             <p className="text-[8px] lg:text-[10px] font-black text-slate-400 uppercase tracking-widest">
               {language === 'MM' ? 'ပျမ်းမျှ ဝန်ဆောင်ခနှုန်း' : 'Avg Fee %'}
@@ -369,10 +369,10 @@ export default function FinancialReports({ transactions, language }: FinancialRe
           <h4 className="text-lg sm:text-xl lg:text-2xl font-black text-slate-900 dark:text-white">{stats.avgFeePercent.toFixed(2)}%</h4>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-4 lg:p-6 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-slate-800 flex flex-col justify-center">
+        <div className="bg-white dark:bg-slate-900 p-4 lg:p-5 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-slate-800 flex flex-col justify-center">
           <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-            <div className="w-6 h-6 lg:w-8 lg:h-8 bg-blue-50 dark:bg-blue-950/20 text-blue-600 rounded-lg flex items-center justify-center">
-              <TrendingUp size={12} className="lg:w-4 lg:h-4" />
+            <div className="w-6 h-6 bg-blue-50 dark:bg-blue-950/20 text-blue-600 rounded-lg flex items-center justify-center">
+              <TrendingUp size={12} />
             </div>
             <p className="text-[8px] lg:text-[10px] font-black text-slate-400 uppercase tracking-widest">
               {language === 'MM' ? 'စာရင်းသွင်းမှု စုစုပေါင်း' : 'Transactions'}
@@ -382,9 +382,11 @@ export default function FinancialReports({ transactions, language }: FinancialRe
         </div>
       </div>
 
-      {/* Fees Collected Over Time (Bar Chart) */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl md:rounded-3xl overflow-hidden shadow-sm">
-        <div className="p-4 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 lg:gap-4">
+        {/* Fees Collected Over Time (Bar Chart) */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl md:rounded-3xl overflow-hidden shadow-sm flex flex-col">
+          <div className="p-3 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-white dark:bg-slate-900">
+
           <div>
             <h3 className="text-[10px] sm:text-xs font-black uppercase tracking-widest flex items-center gap-2 text-slate-900 dark:text-white">
               <BarChart3 size={14} className="text-indigo-600 sm:w-4 sm:h-4 animate-pulse" />
@@ -425,18 +427,18 @@ export default function FinancialReports({ transactions, language }: FinancialRe
           </div>
         </div>
 
-        <div className="p-4 sm:p-6">
+        <div className="p-3 sm:p-4 flex-1 flex flex-col justify-end">
           {filteredData.length === 0 ? (
-            <div className="py-12 text-center">
-              <CalendarDays className="mx-auto text-slate-200 mb-2" size={40} />
+            <div className="py-8 text-center">
+              <CalendarDays className="mx-auto text-slate-200 mb-2" size={32} />
               <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">
                 {language === 'MM' ? 'ရွေးချယ်ထားသောကာလအတွင်း အချက်အလက် မရှိပါ' : 'No data available for this period'}
               </p>
             </div>
           ) : (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* Chart Stage */}
-              <div className="relative h-64 w-full flex flex-col justify-end pt-4 select-none">
+              <div className="relative h-44 sm:h-52 w-full flex flex-col justify-end pt-4 select-none">
                 {/* Y-Axis Value Guides and horizontal dashed grid lines */}
                 <div className="absolute inset-x-0 top-4 bottom-8 flex flex-col justify-between pointer-events-none">
                   {[1, 0.75, 0.5, 0.25, 0].map((percent, idx) => (
@@ -559,26 +561,26 @@ export default function FinancialReports({ transactions, language }: FinancialRe
       </div>
 
       {/* Breakdown Table */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl md:rounded-3xl overflow-hidden shadow-sm">
-        <div className="p-4 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl md:rounded-3xl overflow-hidden shadow-sm flex flex-col">
+        <div className="p-3 sm:p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
           <h3 className="text-[10px] sm:text-xs font-black uppercase tracking-widest flex items-center gap-2">
             <PieChart size={14} className="text-indigo-600 sm:w-4 sm:h-4" />
             {language === 'MM' ? 'ငွေပေးချေမှုစနစ်အလိုက် ခွဲခြမ်းစိတ်ဖြာချက်' : 'Breakdown by Payment Method'}
           </h3>
         </div>
-        <div className="p-4 sm:p-6">
+        <div className="p-3 sm:p-4 flex-1 flex flex-col justify-start">
           {Object.entries(stats.byCategory).length === 0 ? (
-            <div className="py-12 text-center">
-              <CalendarDays className="mx-auto text-slate-200 mb-2" size={40} />
+            <div className="py-8 text-center">
+              <CalendarDays className="mx-auto text-slate-200 mb-2" size={32} />
               <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">
                 {language === 'MM' ? 'ရွေးချယ်ထားသောကာလအတွင်း အချက်အလက် မရှိပါ' : 'No data available for this period'}
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
+            <div className="flex flex-col gap-4 lg:gap-6 items-center">
               {/* Interactive Donut / Pie Chart Visualizer */}
-              <div className="lg:col-span-5 flex flex-col items-center justify-center p-6 sm:p-8 bg-slate-50/60 dark:bg-slate-950/20 rounded-2xl border border-slate-100 dark:border-slate-800/40 min-h-[260px]">
-                <div className="relative w-44 h-44 sm:w-52 sm:h-52 flex items-center justify-center">
+              <div className="w-full flex flex-col items-center justify-center p-4 sm:p-6 bg-slate-50/60 dark:bg-slate-950/20 rounded-2xl border border-slate-100 dark:border-slate-800/40 min-h-[160px]">
+                <div className="relative w-36 h-36 sm:w-44 sm:h-44 flex items-center justify-center">
                   <svg 
                     width="100%" 
                     height="100%" 
@@ -676,7 +678,7 @@ export default function FinancialReports({ transactions, language }: FinancialRe
               </div>
 
               {/* Detailed Breakdown Ledger Cards (Legend with synchronized hover binding) */}
-              <div className="lg:col-span-7 space-y-2.5 sm:space-y-3">
+              <div className="w-full space-y-1 sm:space-y-2">
                 {Object.entries(stats.byCategory).sort((a: any, b: any) => b[1].fees - a[1].fees).map(([cat, data]: [string, any], i) => (
                   <motion.div 
                     initial={{ opacity: 0, y: 8 }}
@@ -685,7 +687,7 @@ export default function FinancialReports({ transactions, language }: FinancialRe
                     key={cat} 
                     onMouseEnter={() => setHoveredIdx(i)}
                     onMouseLeave={() => setHoveredIdx(null)}
-                    className={`group p-3 sm:p-4 rounded-xl sm:rounded-2xl border transition-all duration-200 cursor-pointer ${
+                    className={`group p-2.5 sm:p-3 rounded-xl border transition-all duration-200 cursor-pointer ${
                       hoveredIdx === i 
                         ? 'bg-slate-100/80 dark:bg-slate-800/60 border-indigo-200 dark:border-indigo-900/40 shadow-sm' 
                         : 'bg-slate-50/50 dark:bg-slate-950/40 border-slate-100 dark:border-slate-800/40'
@@ -718,6 +720,7 @@ export default function FinancialReports({ transactions, language }: FinancialRe
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   );
