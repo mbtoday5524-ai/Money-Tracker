@@ -210,8 +210,8 @@ export default function AccessDenied({
             
             <div className="mt-8 pt-4 border-t border-white/5">
               <div className="flex justify-between items-center px-2">
-                <button onClick={onSignOut} className="text-[10px] md:text-xs font-bold text-rose-500 hover:text-rose-400 uppercase tracking-widest leading-none transition-colors">{language === 'MM' ? 'အကောင့်ထွက်ရန်' : 'Sign Out'}</button>
-                <button onClick={onRefresh} className="text-[10px] md:text-xs font-bold text-indigo-400 hover:text-indigo-300 uppercase tracking-widest flex items-center gap-1.5 peer-hover:rotate-180 transition-colors leading-none">
+                <button onClick={onSignOut} className={`text-[10px] md:text-xs font-bold text-rose-500 hover:text-rose-400 uppercase leading-none transition-colors ${language === 'MM' ? 'tracking-normal font-black text-[12.5px]' : 'tracking-widest'}`}>{language === 'MM' ? 'အကောင့်ထွက်ရန်' : 'Sign Out'}</button>
+                <button onClick={onRefresh} className={`text-[10px] md:text-xs font-bold text-indigo-400 hover:text-indigo-300 uppercase flex items-center gap-1.5 peer-hover:rotate-180 transition-colors leading-none ${language === 'MM' ? 'tracking-normal font-black text-[12.5px]' : 'tracking-widest'}`}>
                   <motion.span animate={{ rotate: refreshing ? 360 : 0 }} transition={{ repeat: refreshing ? Infinity : 0, duration: 1 }}>↻</motion.span>
                   <span>{language === 'MM' ? 'စစ်ဆေးရန်' : 'Refresh'}</span>
                 </button>

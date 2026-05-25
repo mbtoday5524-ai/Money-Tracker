@@ -97,6 +97,7 @@ export default function TransactionList({
         f(tx.fee).includes(searchStr) ||
         tx._seqId.includes(searchStr) ||
         (tx.phoneNumber && tx.phoneNumber.toLowerCase().includes(searchStr)) ||
+        (tx.accountName && tx.accountName.toLowerCase().includes(searchStr)) ||
         (getBankName(tx.category).toLowerCase()).includes(searchStr);
       
       const matchesCategory = filterBankId === 'ALL' || tx.category === filterBankId;
@@ -152,12 +153,13 @@ export default function TransactionList({
   const handleExportCSV = () => {
     if (filteredTransactions.length === 0) return;
 
-    const headers = ['Date', 'Account', 'Type', 'Phone', 'Amount', 'Fee', 'Timestamp'];
+    const headers = ['Date', 'Account', 'Type', 'Phone', 'Account Name', 'Amount', 'Fee', 'Timestamp'];
     const rows = filteredTransactions.map(tx => [
       tx.date,
       tx.category,
       tx.type === TransactionType.IN ? 'Deposit' : 'Withdraw',
       tx.phoneNumber || '',
+      tx.accountName || '',
       tx.amount,
       tx.fee,
       tx.createdAt
@@ -199,13 +201,14 @@ export default function TransactionList({
     doc.setDrawColor(226, 232, 240);
     doc.line(14, 38, 196, 38);
 
-    const tableColumn = ["ID", "Date", "Account", "Type", "Phone", "Amount", "Fee"];
+    const tableColumn = ["ID", "Date", "Account", "Type", "Phone", "Account Name", "Amount", "Fee"];
     const tableRows = filteredTransactions.map(tx => [
       tx._seqId,
       tx.date,
       tx.category,
       tx.type === TransactionType.IN ? 'Deposit' : 'Withdraw',
       tx.phoneNumber || '-',
+      tx.accountName || '-',
       f(tx.amount),
       f(tx.fee)
     ]);
@@ -223,8 +226,9 @@ export default function TransactionList({
         halign: 'center'
       },
       columnStyles: {
-        4: { halign: 'right' },
-        5: { halign: 'right' }
+        5: { halign: 'center' },
+        6: { halign: 'right' },
+        7: { halign: 'right' }
       },
       styles: { 
         fontSize: 9, 
@@ -249,13 +253,13 @@ export default function TransactionList({
       <div className="px-4 lg:px-6 py-2.5 lg:py-4 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center bg-white dark:bg-[#0f172a] transition-colors">
         <div className="space-y-0.5">
           <h3 className="font-black text-slate-900 dark:text-white tracking-tight text-sm lg:text-base font-display">{language === 'MM' ? 'နောက်ဆုံးမှတ်တမ်းများ' : 'Recent Transactions'}</h3>
-          <p className="text-[9px] lg:text-[10px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-widest font-display">{language === 'MM' ? 'နောက်ဆုံးပြုလုပ်ခဲ့သောစာရင်းများ' : 'Latest wallet activity'}</p>
+          <p className={`text-[9px] lg:text-[10px] uppercase font-display ${language === 'MM' ? 'tracking-normal text-slate-500 dark:text-slate-400 font-extrabold text-[11.5px]' : 'tracking-widest text-slate-400 dark:text-slate-500 font-bold'}`}>{language === 'MM' ? 'နောက်ဆုံးပြုလုပ်ခဲ့သောစာရင်းများ' : 'Latest wallet activity'}</p>
         </div>
         <div className="flex gap-2 items-center w-full sm:w-auto">
 
           <button 
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all active:scale-95 border ${
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-[10px] font-black uppercase transition-all active:scale-95 border ${language === 'MM' ? 'tracking-normal text-[11.5px] font-extrabold' : 'tracking-wider'} ${
               showFilters 
                 ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-200 dark:shadow-none' 
                 : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
@@ -270,7 +274,7 @@ export default function TransactionList({
 
           <button 
             onClick={handleExportPDF}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/30 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-all active:scale-95"
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/30 rounded-xl text-[10px] font-black uppercase hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-all active:scale-95 ${language === 'MM' ? 'tracking-normal text-[11.5px] font-extrabold' : 'tracking-wider'}`}
             disabled={filteredTransactions.length === 0}
           >
             <FileText size={14} />
@@ -279,7 +283,7 @@ export default function TransactionList({
           
           <button 
             onClick={handleExportCSV}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl text-[10px] font-black uppercase tracking-wider hover:bg-slate-100 dark:hover:bg-slate-700 transition-all active:scale-95"
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl text-[10px] font-black uppercase hover:bg-slate-100 dark:hover:bg-slate-700 transition-all active:scale-95 ${language === 'MM' ? 'tracking-normal text-[11.5px] font-extrabold' : 'tracking-wider'}`}
             disabled={filteredTransactions.length === 0}
           >
             <Download size={14} />
@@ -287,7 +291,7 @@ export default function TransactionList({
           </button>
           
           <div className="hidden sm:block h-6 w-px bg-slate-200 dark:bg-slate-800 ml-1"></div>
-          <span className="text-[10px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-widest hidden sm:inline ml-1">
+          <span className={`text-[10px] font-black uppercase hidden sm:inline ml-1 ${language === 'MM' ? 'tracking-normal text-slate-505 dark:text-slate-350 font-extrabold text-[11.5px]' : 'tracking-widest text-slate-400 dark:text-slate-500'}`}>
             {language === 'MM' ? `စုစုပေါင်း ${filteredTransactions.length} ခု` : `${filteredTransactions.length} Entries`}
           </span>
         </div>
@@ -390,15 +394,16 @@ export default function TransactionList({
       <div className="overflow-auto scrollbar-hide flex-1">
         {/* Desktop Table */}
         <table className="w-full text-left hidden lg:table">
-          <thead className="bg-[#4f46e5] text-white text-[10px] lg:text-[11px] uppercase font-black sticky top-0 z-10 transition-colors font-display tracking-[0.1em]">
+          <thead className={`bg-[#4f46e5] text-white text-[10px] lg:text-[11.5px] uppercase font-black sticky top-0 z-10 transition-colors font-display ${language === 'MM' ? 'tracking-normal' : 'tracking-[0.1em]'}`}>
             <tr>
-              <th className="px-4 py-2 tracking-wider text-center">{language === 'MM' ? 'အမှတ်' : 'ID'}</th>
-              <th className="px-4 py-2 tracking-wider text-center">{language === 'MM' ? 'ရက်စွဲ' : 'Date'}</th>
-              <th className="px-4 py-2 tracking-wider text-center">{language === 'MM' ? 'အကောင့်' : 'Account'}</th>
-              <th className="px-4 py-2 tracking-wider text-center">{language === 'MM' ? 'အမျိုးအစား' : 'Type'}</th>
-              <th className="px-4 py-2 tracking-wider text-center">{language === 'MM' ? 'ဖုန်းနံပါတ်' : 'Phone'}</th>
-              <th className="px-4 py-2 tracking-wider text-center">{language === 'MM' ? 'ပမာဏ' : 'Amount'}</th>
-              <th className="px-4 py-2 tracking-wider text-center">{language === 'MM' ? 'ဝန်ဆောင်ခ' : 'Fee'}</th>
+              <th className={`px-4 py-2.5 text-center ${language === 'MM' ? 'tracking-normal font-black text-[13px] py-3' : 'tracking-wider py-2'}`}>{language === 'MM' ? 'အမှတ်' : 'ID'}</th>
+              <th className={`px-4 py-2.5 text-center ${language === 'MM' ? 'tracking-normal font-black text-[13px] py-3' : 'tracking-wider py-2'}`}>{language === 'MM' ? 'ရက်စွဲ' : 'Date'}</th>
+              <th className={`px-4 py-2.5 text-center ${language === 'MM' ? 'tracking-normal font-black text-[13px] py-3' : 'tracking-wider py-2'}`}>{language === 'MM' ? 'အကောင့်' : 'Account'}</th>
+              <th className={`px-4 py-2.5 text-center ${language === 'MM' ? 'tracking-normal font-black text-[13px] py-3' : 'tracking-wider py-2'}`}>{language === 'MM' ? 'အမျိုးအစား' : 'Type'}</th>
+              <th className={`px-4 py-2.5 text-center ${language === 'MM' ? 'tracking-normal font-black text-[13px] py-3' : 'tracking-wider py-2'}`}>{language === 'MM' ? 'ဖုန်းနံပါတ်' : 'Phone'}</th>
+              <th className={`px-4 py-2.5 text-center ${language === 'MM' ? 'tracking-normal font-black text-[13px] py-3' : 'tracking-wider py-2'}`}>{language === 'MM' ? 'အကောင့်အမည်' : 'Owner Name'}</th>
+              <th className={`px-4 py-2.5 text-center ${language === 'MM' ? 'tracking-normal font-black text-[13px] py-3' : 'tracking-wider py-2'}`}>{language === 'MM' ? 'ပမာဏ' : 'Amount'}</th>
+              <th className={`px-4 py-2.5 text-center ${language === 'MM' ? 'tracking-normal font-black text-[13px] py-3' : 'tracking-wider py-2'}`}>{language === 'MM' ? 'ဝန်ဆောင်ခ' : 'Fee'}</th>
               <th className="px-4 py-2 w-12 text-center text-indigo-200">
                 <Trash2 size={14} className="mx-auto opacity-50" />
               </th>
@@ -407,7 +412,7 @@ export default function TransactionList({
           <tbody className="text-sm divide-y divide-slate-50 dark:divide-slate-800/50">
             {filteredTransactions.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-8 py-20 text-center">
+                <td colSpan={9} className="px-8 py-20 text-center">
                   <div className="flex flex-col items-center gap-3">
                     <div className="w-12 h-12 bg-slate-50 dark:bg-slate-900 flex items-center justify-center text-slate-200 dark:text-slate-700 rounded-full">
                       <History size={24} />
@@ -456,6 +461,11 @@ export default function TransactionList({
                   <td className="px-4 py-2 text-center">
                     <span className="font-extrabold font-display text-indigo-600 dark:text-sky-400 text-[13px] tracking-tight">
                       {tx.phoneNumber ? <Highlight text={tx.phoneNumber} highlight={searchTerm} /> : '-'}
+                    </span>
+                  </td>
+                  <td className="px-4 py-2 text-center">
+                    <span className="font-bold font-display text-slate-500 dark:text-slate-400 text-xs tracking-tight">
+                      {tx.accountName ? <Highlight text={tx.accountName} highlight={searchTerm} /> : '-'}
                     </span>
                   </td>
                   <td className="px-4 py-2 text-center">
@@ -541,10 +551,15 @@ export default function TransactionList({
                   </div>
                 </div>
 
-                <div className="col-span-3 sm:col-span-3 flex items-center justify-center min-w-0">
+                <div className="col-span-3 sm:col-span-3 flex flex-col items-center justify-center min-w-0 leading-tight">
                   {tx.phoneNumber ? (
-                    <span className="text-[13px] sm:text-[15px] text-indigo-600 dark:text-sky-400 font-extrabold font-mono tracking-tight whitespace-nowrap">
+                    <span className="text-[12px] sm:text-[14px] text-indigo-600 dark:text-sky-400 font-extrabold font-mono tracking-tight whitespace-nowrap">
                       <Highlight text={tx.phoneNumber} highlight={searchTerm} />
+                    </span>
+                  ) : null}
+                  {tx.accountName ? (
+                    <span className="text-[9px] sm:text-[10px] text-slate-550 dark:text-slate-450 font-bold tracking-tight whitespace-nowrap truncate max-w-full italic">
+                      <Highlight text={tx.accountName} highlight={searchTerm} />
                     </span>
                   ) : null}
                 </div>

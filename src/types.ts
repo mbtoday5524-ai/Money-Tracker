@@ -11,6 +11,7 @@ export interface Transaction {
   amount: number;
   fee: number;
   phoneNumber?: string;
+  accountName?: string;
   feePaymentMethod?: 'Cash' | 'Wallet';
   createdAt: any;
   userId: string;

@@ -124,7 +124,7 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
             <div className={`transition-all duration-300 space-y-4 ${!kbzEnabled ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">{language === 'MM' ? 'လက်ကျန်' : 'Balance'}</label>
+                  <label className={`text-[9px] font-black text-slate-400 uppercase px-1 ${language === 'MM' ? 'tracking-normal text-[11px] font-extrabold text-slate-500' : 'tracking-widest'}`}>{language === 'MM' ? 'လက်ကျန်' : 'Balance'}</label>
                   <input
                     type="text"
                     inputMode="decimal"
@@ -135,7 +135,7 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">{language === 'MM' ? 'ဖုန်းနံပါတ်' : 'Phone Number'}</label>
+                  <label className={`text-[9px] font-black text-slate-400 uppercase px-1 ${language === 'MM' ? 'tracking-normal text-[11px] font-extrabold text-slate-500' : 'tracking-widest'}`}>{language === 'MM' ? 'ဖုန်းနံပါတ်' : 'Phone Number'}</label>
                   <input
                     type="text"
                     value={kbzPhone}
@@ -162,7 +162,7 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
             <div className={`transition-all duration-300 space-y-4 ${!waveEnabled ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">{language === 'MM' ? 'လက်ကျန်' : 'Balance'}</label>
+                  <label className={`text-[9px] font-black text-slate-400 uppercase px-1 ${language === 'MM' ? 'tracking-normal text-[11px] font-extrabold text-slate-500' : 'tracking-widest'}`}>{language === 'MM' ? 'လက်ကျန်' : 'Balance'}</label>
                   <input
                     type="text"
                     inputMode="decimal"
@@ -173,7 +173,7 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">{language === 'MM' ? 'ဖုန်းနံပါတ်' : 'Phone Number'}</label>
+                  <label className={`text-[9px] font-black text-slate-400 uppercase px-1 ${language === 'MM' ? 'tracking-normal text-[11px] font-extrabold text-slate-500' : 'tracking-widest'}`}>{language === 'MM' ? 'ဖုန်းနံပါတ်' : 'Phone Number'}</label>
                   <input
                     type="text"
                     value={wavePhone}
@@ -200,7 +200,7 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
             <div className={`transition-all duration-300 space-y-4 ${!ayaEnabled ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">{language === 'MM' ? 'လက်ကျန်' : 'Balance'}</label>
+                  <label className={`text-[9px] font-black text-slate-400 uppercase px-1 ${language === 'MM' ? 'tracking-normal text-[11px] font-extrabold text-slate-500' : 'tracking-widest'}`}>{language === 'MM' ? 'လက်ကျန်' : 'Balance'}</label>
                   <input
                     type="text"
                     inputMode="decimal"
@@ -211,7 +211,7 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">{language === 'MM' ? 'ဖုန်းနံပါတ်' : 'Phone Number'}</label>
+                  <label className={`text-[9px] font-black text-slate-400 uppercase px-1 ${language === 'MM' ? 'tracking-normal text-[11px] font-extrabold text-slate-500' : 'tracking-widest'}`}>{language === 'MM' ? 'ဖုန်းနံပါတ်' : 'Phone Number'}</label>
                   <input
                     type="text"
                     value={ayaPhone}
@@ -238,7 +238,7 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
             <div className={`transition-all duration-300 space-y-4 ${!uabEnabled ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">{language === 'MM' ? 'လက်ကျန်' : 'Balance'}</label>
+                  <label className={`text-[9px] font-black text-slate-400 uppercase px-1 ${language === 'MM' ? 'tracking-normal text-[11px] font-extrabold text-slate-500' : 'tracking-widest'}`}>{language === 'MM' ? 'လက်ကျန်' : 'Balance'}</label>
                   <input
                     type="text"
                     inputMode="decimal"
@@ -249,7 +249,7 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">{language === 'MM' ? 'ဖုန်းနံပါတ်' : 'Phone Number'}</label>
+                  <label className={`text-[9px] font-black text-slate-400 uppercase px-1 ${language === 'MM' ? 'tracking-normal text-[11px] font-extrabold text-slate-500' : 'tracking-widest'}`}>{language === 'MM' ? 'ဖုန်းနံပါတ်' : 'Phone Number'}</label>
                   <input
                     type="text"
                     value={uabPhone}
@@ -276,7 +276,7 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
             <div className={`transition-all duration-300 space-y-4 ${!trueEnabled ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">{language === 'MM' ? 'လက်ကျန်' : 'Balance'}</label>
+                  <label className={`text-[9px] font-black text-slate-400 uppercase px-1 ${language === 'MM' ? 'tracking-normal text-[11px] font-extrabold text-slate-500' : 'tracking-widest'}`}>{language === 'MM' ? 'လက်ကျန်' : 'Balance'}</label>
                   <input
                     type="text"
                     inputMode="decimal"
@@ -287,7 +287,7 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">{language === 'MM' ? 'ဖုန်းနံပါတ်' : 'Phone Number'}</label>
+                  <label className={`text-[9px] font-black text-slate-400 uppercase px-1 ${language === 'MM' ? 'tracking-normal text-[11px] font-extrabold text-slate-500' : 'tracking-widest'}`}>{language === 'MM' ? 'ဖုန်းနံပါတ်' : 'Phone Number'}</label>
                   <input
                     type="text"
                     value={truePhone}
@@ -314,7 +314,7 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
             <div className={`transition-all duration-300 ${!cashEnabled ? 'opacity-40 grayscale pointer-events-none' : ''}`}>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                  <div className="space-y-2">
-                  <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">{language === 'MM' ? 'လက်ဝယ်ရှိငွေ' : 'Cash Initial'}</label>
+                  <label className={`text-[9px] font-black text-slate-400 uppercase px-1 ${language === 'MM' ? 'tracking-normal text-[11px] font-extrabold text-slate-500' : 'tracking-widest'}`}>{language === 'MM' ? 'လက်ဝယ်ရှိငွေ' : 'Cash Initial'}</label>
                   <input
                     type="text"
                     inputMode="decimal"
@@ -329,7 +329,7 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                <div className="space-y-2">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">{language === 'MM' ? 'သွင်း %' : 'In %'}</label>
+                <label className={`text-[9px] font-black text-slate-400 uppercase px-1 ${language === 'MM' ? 'tracking-normal text-[11px] font-extrabold text-slate-500' : 'tracking-widest'}`}>{language === 'MM' ? 'သွင်း %' : 'In %'}</label>
                 <input
                   type="text"
                   inputMode="decimal"
@@ -339,7 +339,7 @@ export default function SetupModal({ onStart, onClose, language, currentSettings
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">{language === 'MM' ? 'ထုတ် %' : 'Out %'}</label>
+                <label className={`text-[9px] font-black text-slate-400 uppercase px-1 ${language === 'MM' ? 'tracking-normal text-[11px] font-extrabold text-slate-500' : 'tracking-widest'}`}>{language === 'MM' ? 'ထုတ် %' : 'Out %'}</label>
                 <input
                   type="text"
                   inputMode="decimal"

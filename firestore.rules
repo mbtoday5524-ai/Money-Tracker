@@ -60,7 +60,7 @@ service cloud.firestore {
 
     function isValidTransaction(data, userId) {
       let requiredFields = ['date', 'category', 'type', 'amount', 'fee', 'createdAt', 'userId'];
-      let optionalFields = ['phoneNumber', 'feePaymentMethod'];
+      let optionalFields = ['phoneNumber', 'accountName', 'feePaymentMethod'];
       let allAllowedFields = requiredFields.concat(optionalFields);
       
       return data.keys().hasAll(requiredFields)
@@ -72,7 +72,8 @@ service cloud.firestore {
         && data.fee is number && data.fee >= 0
         && data.userId == userId
         && data.createdAt == request.time
-        && (data.phoneNumber is string || !('phoneNumber' in data))
+        && (data.phoneNumber is string && data.phoneNumber.size() <= 50 || !('phoneNumber' in data))
+        && (data.accountName is string && data.accountName.size() <= 200 || !('accountName' in data))
         && (data.feePaymentMethod in ['Cash', 'Wallet'] || !('feePaymentMethod' in data));
     }
 

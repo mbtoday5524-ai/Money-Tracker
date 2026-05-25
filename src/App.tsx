@@ -1222,6 +1222,15 @@ export default function App() {
                              cashLogoUrl={globalSettings?.cashLogoUrl}
                              uabLogoUrl={globalSettings?.uabLogoUrl}
                              trueLogoUrl={globalSettings?.trueLogoUrl}
+                             initialBalances={settings ? {
+                               kbz: settings.kbzInitial || 0,
+                               wave: settings.waveInitial || 0,
+                               aya: settings.ayaInitial || 0,
+                               uab: settings.uabInitial || 0,
+                               trueMoney: settings.trueInitial || 0,
+                               cash: settings.cashInitial || 0
+                             } : undefined}
+                             currentBalances={calculatedBalances}
                           />
                         </div>
                       </div>

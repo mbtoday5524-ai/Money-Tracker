@@ -11,6 +11,7 @@ interface TransactionFormProps {
     amount: number;
     fee: number;
     phoneNumber?: string;
+    accountName?: string;
     feePaymentMethod?: 'Cash' | 'Wallet';
   }) => void;
   transactions?: Transaction[];
@@ -71,11 +72,24 @@ export default function TransactionForm({
   const [type, setType] = useState<TransactionType>(TransactionType.IN);
   const [amount, setAmount] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [accountName, setAccountName] = useState('');
+  const [fee, setFee] = useState('');
+  const [isManualFee, setIsManualFee] = useState(false);
   const [feePaymentMethod, setFeePaymentMethod] = useState<'Cash' | 'Wallet'>('Cash');
 
   const getCleanAmount = (val: string) => {
     return Number(val.replace(/,/g, '')) || 0;
   };
+
+  // Keep fee aligned with amount/rate if not manually overridden
+  useEffect(() => {
+    if (!isManualFee) {
+      const parsedAmount = getCleanAmount(amount);
+      const rate = type === TransactionType.IN ? percentIn : percentOut;
+      const calculated = parsedAmount * rate / 100;
+      setFee(calculated > 0 ? calculated.toFixed(0) : '');
+    }
+  }, [amount, type, percentIn, percentOut, isManualFee]);
 
   const handleAutoFill = () => {
     // Find the most recent transaction matching the currently selected category (wallet)
@@ -83,19 +97,22 @@ export default function TransactionForm({
     if (lastMatchingTx) {
       setAmount(lastMatchingTx.amount.toString());
       setPhoneNumber(lastMatchingTx.phoneNumber || '');
+      setAccountName(lastMatchingTx.accountName || '');
       if (lastMatchingTx.feePaymentMethod && categoryId !== 'Cash') {
         setFeePaymentMethod(lastMatchingTx.feePaymentMethod);
       }
+      // Re-trigger auto-calc on autofill
+      setIsManualFee(false);
     }
   };
 
   const handleSubmit = (e: React.FormEvent, selectedType?: TransactionType) => {
     e.preventDefault();
+    const finalType = selectedType || type;
     const parsedAmount = getCleanAmount(amount);
     if (!amount || parsedAmount <= 0 || !categoryId) return;
     
-    const finalType = selectedType || type;
-    const finalFee = parsedAmount * (finalType === TransactionType.IN ? percentIn : percentOut) / 100;
+    const finalFee = isManualFee ? getCleanAmount(fee) : (parsedAmount * (finalType === TransactionType.IN ? percentIn : percentOut) / 100);
 
     // Automatically compute correct local date (YYYY-MM-DD)
     const today = new Date();
@@ -110,10 +127,14 @@ export default function TransactionForm({
       amount: parsedAmount,
       fee: finalFee,
       phoneNumber: phoneNumber || undefined,
+      accountName: accountName || undefined,
       feePaymentMethod: categoryId === 'Cash' ? 'Cash' : feePaymentMethod
     });
     setAmount('');
     setPhoneNumber('');
+    setAccountName('');
+    setFee('');
+    setIsManualFee(false);
     // Keep or reset fee payment mode
   };
 
@@ -128,7 +149,7 @@ export default function TransactionForm({
       <div className="space-y-4">
         {/* Wallet Selection at Full Width */}
         <div className="space-y-2">
-          <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.25em] px-1 flex items-center gap-2 transition-colors font-display">
+          <label className={`text-[10.5px] font-black uppercase px-1 flex items-center gap-2 transition-colors font-display ${language === 'MM' ? 'tracking-normal text-slate-600 dark:text-slate-300 font-extrabold text-[12px]' : 'tracking-[0.20em] text-slate-450 dark:text-slate-500'}`}>
             <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
             {language === 'MM' ? 'အကောင့်အမျိုးအစား' : 'Select Wallet'}
           </label>
@@ -168,7 +189,7 @@ export default function TransactionForm({
         <div className="space-y-3 pt-2">
           {/* Action Row */}
           <div className="flex justify-between items-center px-1">
-            <span className="text-[10px] sm:text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest font-display">
+            <span className={`text-[10.5px] sm:text-xs font-black uppercase font-display ${language === 'MM' ? 'tracking-normal text-slate-600 dark:text-slate-300 font-extrabold text-[12px]' : 'tracking-widest text-slate-450 dark:text-slate-500'}`}>
                {language === 'MM' ? 'အသေးစိတ်အချက်အလက်' : 'Details'}
             </span>
             <button
@@ -184,50 +205,111 @@ export default function TransactionForm({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Amount Input */}
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.25em] px-1 flex items-center gap-2 font-display">
-              <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-              {language === 'MM' ? 'ငွေပမာဏ (ကျပ်)' : 'Transfer Amount'}
-            </label>
-            <div className="relative group h-12">
-              <input
-                type="text"
-                inputMode="decimal"
-                value={amount}
-                onChange={e => setAmount(e.target.value)}
-                placeholder="0.00"
-                className="w-full h-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 pr-16 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-800/85 transition-all group-hover:border-slate-300 dark:group-hover:border-slate-700 placeholder:text-slate-300 dark:placeholder:text-slate-650"
-              />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-indigo-50/80 dark:bg-indigo-900/30 px-2 py-0.5 rounded-lg border border-indigo-100/60 dark:border-indigo-800/50 pointer-events-none">
-                <Sparkles size={10} className="text-indigo-500" />
-                <span className="text-[8px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-tight">Net</span>
+            <div className="space-y-1.5">
+              <label className={`text-[10.5px] font-black uppercase px-1 flex items-center gap-2 font-display ${language === 'MM' ? 'tracking-normal text-slate-600 dark:text-slate-300 font-extrabold text-[12px]' : 'tracking-[0.20em] text-slate-450 dark:text-slate-500'}`}>
+                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                {language === 'MM' ? 'ငွေပမာဏ (ကျပ်)' : 'Transfer Amount'}
+              </label>
+              <div className="relative group h-12">
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={amount}
+                  onChange={e => setAmount(e.target.value)}
+                  placeholder="0.00"
+                  className="w-full h-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 pr-16 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-800/85 transition-all group-hover:border-slate-300 dark:group-hover:border-slate-700 placeholder:text-slate-300 dark:placeholder:text-slate-650"
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-indigo-50/80 dark:bg-indigo-900/30 px-2 py-0.5 rounded-lg border border-indigo-100/60 dark:border-indigo-800/50 pointer-events-none">
+                  <Sparkles size={10} className="text-indigo-500" />
+                  <span className="text-[8px] font-black text-indigo-600 dark:text-indigo-400 uppercase tracking-tight">Net</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Custom Profit/Fee Input */}
+            <div className="space-y-1.5">
+              <label className={`text-[10.5px] font-black uppercase px-1 flex items-center justify-between font-display ${language === 'MM' ? 'tracking-normal text-slate-600 dark:text-slate-300 font-extrabold text-[12px]' : 'tracking-[0.20em] text-slate-450 dark:text-slate-500'}`}>
+                <span className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  {language === 'MM' ? 'ကော်မရှင် / ဝန်ဆောင်ခ (ကျပ်)' : 'Service Fee (MMK)'}
+                </span>
+                {isManualFee && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsManualFee(false);
+                      const parsedAmount = getCleanAmount(amount);
+                      const rate = type === TransactionType.IN ? percentIn : percentOut;
+                      const calculated = parsedAmount * rate / 100;
+                      setFee(calculated > 0 ? calculated.toFixed(0) : '');
+                    }}
+                    className="text-[9px] font-bold text-indigo-500 hover:underline hover:text-indigo-600 dark:text-indigo-400"
+                  >
+                    {language === 'MM' ? 'အော်တိုပြန်တွက်ရန်' : 'Reset to auto-calc'}
+                  </button>
+                )}
+              </label>
+              <div className="relative group h-12">
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={fee}
+                  onChange={e => {
+                    setFee(e.target.value);
+                    setIsManualFee(true);
+                  }}
+                  placeholder="0"
+                  className="w-full h-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 pr-16 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-800/85 transition-all group-hover:border-slate-300 dark:group-hover:border-slate-700 placeholder:text-slate-300 dark:placeholder:text-slate-650"
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 bg-emerald-50/80 dark:bg-emerald-900/30 px-2 py-0.5 rounded-lg border border-emerald-100/60 dark:border-emerald-800/50 pointer-events-none">
+                  <Coins size={10} className="text-emerald-500" />
+                  <span className={`text-[8px] font-black text-emerald-650 dark:text-emerald-400 uppercase ${language === 'MM' ? 'tracking-normal text-[9.5px] font-extrabold pr-0.5' : 'tracking-tight'}`}>
+                    {isManualFee ? (language === 'MM' ? 'ကိုယ်တိုင်' : 'Manual') : (language === 'MM' ? 'အလိုအလျောက်' : 'Auto')}
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Phone Number Input */}
+            <div className="space-y-1.5">
+              <label className={`text-[10.5px] font-black uppercase px-1 flex items-center gap-2 font-display ${language === 'MM' ? 'tracking-normal text-slate-600 dark:text-slate-300 font-extrabold text-[12px]' : 'tracking-[0.20em] text-slate-450 dark:text-slate-500'}`}>
+                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                {language === 'MM' ? 'ဖုန်းနံပါတ်' : 'Phone Number'}
+              </label>
+              <div className="relative group h-12">
+                <input
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={e => setPhoneNumber(e.target.value)}
+                  placeholder="09..."
+                  className="w-full h-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-800/85 transition-all group-hover:border-slate-300 dark:group-hover:border-slate-700 placeholder:text-slate-300 dark:placeholder:text-slate-650"
+                />
+              </div>
+            </div>
+
+            {/* Account Name Input */}
+            <div className="space-y-1.5">
+              <label className={`text-[10.5px] font-black uppercase px-1 flex items-center gap-2 font-display ${language === 'MM' ? 'tracking-normal text-slate-600 dark:text-slate-300 font-extrabold text-[12px]' : 'tracking-[0.20em] text-slate-450 dark:text-slate-500'}`}>
+                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                {language === 'MM' ? 'အကောင့်အမည်' : 'Account Name'}
+              </label>
+              <div className="relative group h-12">
+                <input
+                  type="text"
+                  value={accountName}
+                  onChange={e => setAccountName(e.target.value)}
+                  placeholder={language === 'MM' ? 'အကောင့်ပိုင်ရှင်အမည်...' : 'Account holder name...'}
+                  className="w-full h-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-800/85 transition-all group-hover:border-slate-300 dark:group-hover:border-slate-700 placeholder:text-slate-300 dark:placeholder:text-slate-650"
+                />
               </div>
             </div>
           </div>
-          
-          {/* Phone Number Input */}
-          <div className="space-y-1.5">
-            <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.25em] px-1 flex items-center gap-2 font-display">
-              <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-              {language === 'MM' ? 'ဖုန်းနံပါတ်' : 'Phone Number'}
-            </label>
-            <div className="relative group h-12">
-              <input
-                type="tel"
-                value={phoneNumber}
-                onChange={e => setPhoneNumber(e.target.value)}
-                placeholder="09..."
-                className="w-full h-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-800/85 transition-all group-hover:border-slate-300 dark:group-hover:border-slate-700 placeholder:text-slate-300 dark:placeholder:text-slate-650"
-              />
-            </div>
-          </div>
-        </div>
         </div>
 
         {/* Fee Payment Method Selection */}
         {categoryId !== 'Cash' && (
           <div className="space-y-2 pt-3 border-t border-slate-100 dark:border-slate-800/60">
-            <label className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.25em] px-1 flex items-center gap-2 transition-colors font-display">
+            <label className={`text-[10.5px] font-black uppercase px-1 flex items-center gap-2 transition-colors font-display ${language === 'MM' ? 'tracking-normal text-slate-600 dark:text-slate-300 font-extrabold text-[12px]' : 'tracking-[0.20em] text-slate-450 dark:text-slate-500'}`}>
               <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
               {language === 'MM' ? 'ကော်မရှင် / ဝန်ဆောင်ခ ရရှိပုံ' : 'Fee Payment Method'}
             </label>
@@ -243,7 +325,7 @@ export default function TransactionForm({
               >
                 <Coins size={15} className={feePaymentMethod === 'Cash' ? 'text-emerald-500' : 'text-slate-400'} />
                 <div className="text-left leading-none">
-                  <span className="text-[11px] font-black uppercase tracking-wider block">
+                  <span className={`text-[11.5px] font-black uppercase block ${language === 'MM' ? 'tracking-normal font-extrabold text-[12.5px]' : 'tracking-wider'}`}>
                     {language === 'MM' ? 'Cash နဲ့ပေးချေ' : 'Cash Payment'}
                   </span>
                 </div>
@@ -260,7 +342,7 @@ export default function TransactionForm({
               >
                 <Wallet size={15} className={feePaymentMethod === 'Wallet' ? 'text-amber-500' : 'text-slate-400'} />
                 <div className="text-left leading-none">
-                  <span className="text-[11px] font-black uppercase tracking-wider block">
+                  <span className={`text-[11.5px] font-black uppercase block ${language === 'MM' ? 'tracking-normal font-extrabold text-[12.5px]' : 'tracking-wider'}`}>
                     {language === 'MM' ? 'Transfer ထဲပေါင်းလွှဲ' : 'Include in Transfer'}
                   </span>
                 </div>
@@ -293,7 +375,7 @@ export default function TransactionForm({
           </div>
 
           <div className="text-right relative z-10">
-            <p className="text-[8px] font-black text-white/60 uppercase tracking-widest leading-none mb-1">{language === 'MM' ? 'ကော်မရှင်' : 'Fee'} ({percentIn}%)</p>
+            <p className={`text-[8px] font-black text-white/90 uppercase leading-none mb-1 ${language === 'MM' ? 'tracking-normal text-[10px]' : 'tracking-widest'}`}>{language === 'MM' ? 'ကော်မရှင်' : 'Fee'} ({percentIn}%)</p>
             <p className="font-black text-xs sm:text-sm tracking-tighter leading-none">+{f(calculatedFeeIn)}</p>
           </div>
         </button>
@@ -314,7 +396,7 @@ export default function TransactionForm({
           </div>
 
           <div className="text-right relative z-10">
-            <p className="text-[8px] font-black text-white/60 uppercase tracking-widest leading-none mb-1">{language === 'MM' ? 'ကော်မရှင်' : 'Fee'} ({percentOut}%)</p>
+            <p className={`text-[8px] font-black text-white/90 uppercase leading-none mb-1 ${language === 'MM' ? 'tracking-normal text-[10px]' : 'tracking-widest'}`}>{language === 'MM' ? 'ကော်မရှင်' : 'Fee'} ({percentOut}%)</p>
             <p className="font-black text-xs sm:text-sm tracking-tighter leading-none">+{f(calculatedFeeOut)}</p>
           </div>
         </button>

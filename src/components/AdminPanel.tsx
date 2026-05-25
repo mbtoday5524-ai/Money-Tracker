@@ -118,7 +118,7 @@ export default function AdminPanel({ language, globalSettings: initialGlobalSett
             <Users size={24} />
           </div>
           <div>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">စုစုပေါင်း User</p>
+            <p className="text-[11px] font-extrabold text-slate-500 uppercase tracking-normal">စုစုပေါင်း User</p>
             <h4 className="text-2xl font-black text-slate-900 dark:text-white">{users.length}</h4>
           </div>
         </div>
@@ -128,7 +128,7 @@ export default function AdminPanel({ language, globalSettings: initialGlobalSett
             <ShieldCheck size={24} />
           </div>
           <div>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">ခွင့်ပြုပြီး User</p>
+            <p className="text-[11px] font-extrabold text-slate-500 uppercase tracking-normal">ခွင့်ပြုပြီး User</p>
             <h4 className="text-2xl font-black text-slate-900 dark:text-white">
               {users.filter(u => u.active).length}
             </h4>
@@ -140,7 +140,7 @@ export default function AdminPanel({ language, globalSettings: initialGlobalSett
             <ShieldAlert size={24} />
           </div>
           <div>
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">မခွင့်ပြုရသေးသူ</p>
+            <p className="text-[11px] font-extrabold text-slate-500 uppercase tracking-normal">မခွင့်ပြုရသေးသူ</p>
             <h4 className="text-2xl font-black text-slate-900 dark:text-white">
               {users.filter(u => !u.active).length}
             </h4>
