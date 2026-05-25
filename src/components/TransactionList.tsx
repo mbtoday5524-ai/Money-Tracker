@@ -250,12 +250,34 @@ export default function TransactionList({
 
   return (
     <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 sleek-shadow flex flex-col overflow-hidden h-full transition-colors">
-      <div className="px-4 lg:px-6 py-2.5 lg:py-4 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row gap-3 justify-between items-start sm:items-center bg-white dark:bg-[#0f172a] transition-colors">
-        <div className="space-y-0.5">
+      <div className="px-4 lg:px-6 py-3 lg:py-4 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center bg-white dark:bg-[#0f172a] transition-colors">
+        <div className="space-y-0.5 shrink-0">
           <h3 className="font-black text-slate-900 dark:text-white tracking-tight text-sm lg:text-base font-display">{language === 'MM' ? 'နောက်ဆုံးမှတ်တမ်းများ' : 'Recent Transactions'}</h3>
           <p className={`text-[9px] lg:text-[10px] uppercase font-display ${language === 'MM' ? 'tracking-normal text-slate-500 dark:text-slate-400 font-extrabold text-[11.5px]' : 'tracking-widest text-slate-400 dark:text-slate-500 font-bold'}`}>{language === 'MM' ? 'နောက်ဆုံးပြုလုပ်ခဲ့သောစာရင်းများ' : 'Latest wallet activity'}</p>
         </div>
-        <div className="flex gap-2 items-center w-full sm:w-auto">
+
+        {/* Prominent Search Bar Component */}
+        <div className="relative flex-1 max-w-full md:max-w-xs xl:max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500 transition-colors" size={14} />
+          <input 
+            type="text" 
+            placeholder={language === 'MM' ? 'ဖုန်းနံပါတ်၊ အကောင့်အမည် သို့မဟုတ် ပမာဏဖြင့် ရှာရန်...' : 'Search by phone, name, or amount...'}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-9 pr-8 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white dark:focus:bg-slate-950 font-medium transition-all shadow-sm"
+          />
+          {searchTerm && (
+            <button 
+              onClick={() => setSearchTerm('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-rose-500 dark:hover:text-rose-400 rounded-lg transition-colors"
+              title="Clear Search"
+            >
+              <X size={14} />
+            </button>
+          )}
+        </div>
+
+        <div className="flex gap-2 items-center w-full md:w-auto shrink-0">
 
           <button 
             onClick={() => setShowFilters(!showFilters)}
@@ -300,19 +322,7 @@ export default function TransactionList({
       {/* Filter Toolbar */}
       {showFilters && (
         <div className="px-4 lg:px-8 py-4 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800 transition-all animate-in slide-in-from-top duration-300">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
-              <input 
-                type="text" 
-                placeholder={language === 'MM' ? 'ပမာဏဖြင့် ရှာရန်...' : 'Search amount or fee...'}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-              />
-            </div>
-
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Category Filter */}
             <div className="relative">
               <Wallet className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />

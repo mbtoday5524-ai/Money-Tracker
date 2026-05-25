@@ -158,31 +158,31 @@ export default function Summary({
     logoUrl?: string, 
     DefaultLogo: ComponentType<{ className?: string }> 
   }) => (
-    <div className="space-y-1">
-      <div className="flex items-center gap-1.5 sm:gap-2">
-        <div className="w-4 h-4 sm:w-5 h-5 flex items-center justify-center overflow-hidden rounded-sm bg-slate-50 dark:bg-slate-800">
+    <div className="space-y-1.5 py-1">
+      <div className="flex items-center gap-2">
+        <div className="w-5 h-5 flex items-center justify-center overflow-hidden rounded-md bg-slate-50 dark:bg-slate-800">
            {logoUrl ? (
              <img src={logoUrl} alt={label} className="w-full h-full object-contain" />
            ) : (
-             <DefaultLogo className="w-3 h-3 sm:w-4 h-4 opacity-70" />
+             <DefaultLogo className="w-4 h-4 opacity-75" />
            )}
         </div>
-        <p className="text-[7.5px] sm:text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest">{label}</p>
+        <p className={`font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider ${language === 'MM' ? 'text-[10.5px] font-extrabold' : 'text-[9.5px]'}`}>{label}</p>
       </div>
-      <div className="flex flex-col gap-0.5 sm:gap-1.5 pt-0.5 pl-5.5 sm:pl-7">
+      <div className="flex flex-col gap-1 pt-0.5 pl-7">
                     <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-1.5 opacity-60">
-                        <TrendingUp size={7} className="text-emerald-500 sm:w-2.5 sm:h-2.5" />
-                        <span className="text-[7.2px] sm:text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase">{language === 'MM' ? 'အဝင်' : 'In'}</span>
+                      <div className="flex items-center gap-1.5 opacity-75">
+                        <TrendingUp size={9} className="text-emerald-500 sm:w-2.5 sm:h-2.5" />
+                        <span className={`font-bold text-slate-500 dark:text-slate-400 uppercase ${language === 'MM' ? 'text-[10px]' : 'text-[8.5px]'}`}>{language === 'MM' ? 'အဝင်' : 'In'}</span>
                       </div>
-                      <span className="text-[9px] sm:text-xs font-black text-slate-700 dark:text-slate-300 font-mono">{f(inc)}</span>
+                      <span className="text-xs sm:text-sm font-black text-slate-800 dark:text-slate-200 font-mono tracking-wide">{f(inc)}</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-1.5 opacity-60">
-                        <TrendingDown size={7} className="text-rose-500 sm:w-2.5 sm:h-2.5" />
-                        <span className="text-[7.2px] sm:text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase">{language === 'MM' ? 'အထွက်' : 'Out'}</span>
+                      <div className="flex items-center gap-1.5 opacity-75">
+                        <TrendingDown size={9} className="text-rose-500 sm:w-2.5 sm:h-2.5" />
+                        <span className={`font-bold text-slate-500 dark:text-slate-400 uppercase ${language === 'MM' ? 'text-[10px]' : 'text-[8.5px]'}`}>{language === 'MM' ? 'အထွက်' : 'Out'}</span>
                       </div>
-                      <span className="text-[9px] sm:text-xs font-black text-slate-700 dark:text-slate-300 font-mono">{f(dec)}</span>
+                      <span className="text-xs sm:text-sm font-black text-slate-800 dark:text-slate-200 font-mono tracking-wide">{f(dec)}</span>
                     </div>
       </div>
     </div>
@@ -190,8 +190,8 @@ export default function Summary({
 
   return (
     <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 sleek-shadow overflow-hidden flex flex-col h-full transition-colors">
-      <div className="p-3 sm:p-4 lg:p-8 border-b border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/30 transition-colors">
-        <div className="flex justify-between items-center mb-3 lg:mb-6">
+      <div className="p-3.5 sm:p-5 lg:p-8 border-b border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/30 transition-colors">
+        <div className="flex justify-between items-center mb-3.5 lg:mb-6">
           <h3 className={`text-[10px] sm:text-xs lg:text-sm font-black text-slate-900 dark:text-white uppercase ${language === 'MM' ? 'tracking-normal text-[12.5px] font-extrabold' : 'tracking-widest'}`}>{language === 'MM' ? 'စာရင်းချုပ်' : 'Current Ledger'}</h3>
           <button
             onClick={handleExportPDF}
@@ -202,58 +202,58 @@ export default function Summary({
           </button>
         </div>
         
-        <div className="space-y-2 lg:space-y-4">
+        <div className="space-y-3 lg:space-y-4">
           {/* Main Profit Card */}
-          <div className="bg-indigo-600 rounded-xl lg:rounded-2xl p-3 lg:p-5 relative overflow-hidden group">
+          <div className="bg-indigo-600 rounded-xl lg:rounded-2xl p-4 lg:p-6 relative overflow-hidden group">
             <div className="absolute right-0 top-0 w-16 lg:w-24 h-16 lg:h-24 bg-white/10 rounded-full -mr-6 lg:-mr-8 -mt-6 lg:-mt-8 blur-2xl group-hover:scale-125 transition-transform duration-700"></div>
-            <div className="relative z-10 flex items-center gap-3 lg:gap-4">
-              <div className="w-8 h-8 lg:w-12 lg:h-12 bg-white/20 text-white rounded-lg lg:rounded-xl flex items-center justify-center backdrop-blur-md shrink-0">
-                <DollarSign size={16} className="lg:w-6 lg:h-6" />
+            <div className="relative z-10 flex items-center gap-3.5 lg:gap-4">
+              <div className="w-10 h-10 lg:w-12 lg:h-12 bg-white/20 text-white rounded-xl flex items-center justify-center backdrop-blur-md shrink-0">
+                <DollarSign size={20} className="lg:w-6 lg:h-6" />
               </div>
               <div>
-                <p className={`text-[8.5px] lg:text-[10.5px] uppercase mb-1 ${language === 'MM' ? 'tracking-normal text-white/95 font-extrabold text-[11.5px]' : 'tracking-widest font-bold text-white/60'}`}>{language === 'MM' ? 'ရရှိသော ကော်မရှင်စုစုပေါင်း' : 'Total Revenue (Fee)'}</p>
-                <p className={`font-black text-white tracking-tighter ${language === 'MM' ? 'text-sm lg:text-lg' : 'text-base lg:text-xl'}`}>{f(totalFee)}</p>
+                <p className={`text-[8.5px] lg:text-[10.5px] uppercase mb-1 leading-none ${language === 'MM' ? 'tracking-normal text-white/95 font-extrabold text-[11px]' : 'tracking-widest font-bold text-white/60'}`}>{language === 'MM' ? 'ရရှိသော ကော်မရှင်စုစုပေါင်း' : 'Total Revenue (Fee)'}</p>
+                <p className="font-black text-white tracking-tight text-xl sm:text-2xl lg:text-3xl font-display">{f(totalFee)}</p>
               </div>
             </div>
           </div>
-
+ 
           {/* Capital & Current Net Balance Cards */}
-          <div className="grid grid-cols-2 gap-2 lg:gap-3">
-            <div className="bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-xl p-2.5 lg:p-3.5 flex flex-col justify-between">
+          <div className="grid grid-cols-2 gap-2.5 lg:gap-3">
+            <div className="bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-xl p-3 lg:p-4.5 flex flex-col justify-between">
               <div>
-                <p className={`text-[8px] lg:text-[10px] font-black uppercase mb-1 leading-none ${language === 'MM' ? 'tracking-normal text-blue-750 dark:text-blue-350 text-[11px] font-extrabold' : 'tracking-wider text-blue-600/70 dark:text-blue-450/70'}`}>{language === 'MM' ? 'မူလအရင်းအနှီး' : 'Initial Investment'}</p>
-                <p className="font-extrabold text-blue-800 dark:text-blue-300 text-xs lg:text-base tracking-tight font-display">{f(initialCapital)}</p>
+                <p className={`text-[8px] lg:text-[10px] font-black uppercase mb-1.5 leading-none ${language === 'MM' ? 'tracking-normal text-blue-750 dark:text-blue-350 text-[11px] font-extrabold' : 'tracking-wider text-blue-600/70 dark:text-blue-450/70'}`}>{language === 'MM' ? 'မူလအရင်းအနှီး' : 'Initial Investment'}</p>
+                <p className="font-black text-blue-800 dark:text-blue-300 text-base sm:text-lg lg:text-2xl tracking-tight font-display">{f(initialCapital)}</p>
               </div>
             </div>
-            <div className="bg-purple-50/50 dark:bg-purple-900/10 border border-purple-100 dark:border-purple-900/30 rounded-xl p-2.5 lg:p-3.5 flex flex-col justify-between">
+            <div className="bg-purple-50/50 dark:bg-purple-900/10 border border-purple-100 dark:border-purple-900/30 rounded-xl p-3 lg:p-4.5 flex flex-col justify-between">
               <div>
-                <p className={`text-[8px] lg:text-[10px] font-black uppercase mb-1 leading-none ${language === 'MM' ? 'tracking-normal text-purple-750 dark:text-purple-350 text-[11px] font-extrabold' : 'tracking-wider text-purple-600/70 dark:text-purple-400/70'}`}>{language === 'MM' ? 'လက်ရှိစုစုပေါင်းငွေ' : 'Current Net Money'}</p>
-                <p className="font-extrabold text-purple-700 dark:text-purple-300 text-xs lg:text-base tracking-tight font-display">{f(currentTotal)}</p>
+                <p className={`text-[8px] lg:text-[10px] font-black uppercase mb-1.5 leading-none ${language === 'MM' ? 'tracking-normal text-purple-750 dark:text-purple-350 text-[11px] font-extrabold' : 'tracking-wider text-purple-600/70 dark:text-purple-400/70'}`}>{language === 'MM' ? 'လက်ရှိစုစုပေါင်းငွေ' : 'Current Net Money'}</p>
+                <p className="font-black text-purple-700 dark:text-purple-300 text-base sm:text-lg lg:text-2xl tracking-tight font-display">{f(currentTotal)}</p>
               </div>
             </div>
           </div>
-
+ 
           {/* Inflow & Outflow visualizers */}
-          <div className="bg-emerald-50/50 dark:bg-emerald-900/10 border border-emerald-100/50 dark:border-emerald-800/50 rounded-xl lg:rounded-2xl p-2.5 lg:p-4 flex items-center justify-between">
-            <div className="flex items-center gap-2 lg:gap-3">
-              <div className="w-7 h-7 lg:w-10 lg:h-10 bg-emerald-500 text-white rounded-lg lg:rounded-xl flex items-center justify-center shrink-0">
-                <TrendingUp size={14} className="lg:w-5 lg:h-5" />
+          <div className="bg-emerald-50/50 dark:bg-emerald-900/10 border border-emerald-100/50 dark:border-emerald-800/50 rounded-xl lg:rounded-2xl p-3 lg:p-4.5 flex items-center justify-between">
+            <div className="flex items-center gap-3 lg:gap-3.5">
+              <div className="w-9 h-9 lg:w-10 lg:h-10 bg-emerald-500 text-white rounded-xl flex items-center justify-center shrink-0">
+                <TrendingUp size={16} className="lg:w-5 lg:h-5" />
               </div>
               <div>
-                <p className={`text-[8px] lg:text-[10px] uppercase mb-1 ${language === 'MM' ? 'tracking-normal text-emerald-700 dark:text-emerald-300 font-extrabold text-[11.5px]' : 'tracking-widest font-bold text-emerald-600/60 dark:text-emerald-400/60'}`}>{language === 'MM' ? 'စုစုပေါင်း အဝင်' : 'Total Inflow'}</p>
-                <p className={`font-black text-emerald-700 dark:text-emerald-400 tracking-tighter ${language === 'MM' ? 'text-xs lg:text-base' : 'text-sm lg:text-lg'}`}>{f(totalIn)}</p>
+                <p className={`text-[8px] lg:text-[10px] uppercase mb-1 leading-none ${language === 'MM' ? 'tracking-normal text-emerald-700 dark:text-emerald-300 font-extrabold text-[11px]' : 'tracking-widest font-bold text-emerald-600/60 dark:text-emerald-400/60'}`}>{language === 'MM' ? 'စုစုပေါင်း အဝင်' : 'Total Inflow'}</p>
+                <p className="font-black text-emerald-700 dark:text-emerald-400 tracking-tight text-base sm:text-lg lg:text-2xl font-display">{f(totalIn)}</p>
               </div>
             </div>
           </div>
-
-          <div className="bg-rose-50/50 dark:bg-rose-900/10 border border-rose-100/50 dark:border-rose-800/50 rounded-xl lg:rounded-2xl p-2.5 lg:p-4 flex items-center justify-between">
-            <div className="flex items-center gap-2 lg:gap-3">
-              <div className="w-7 h-7 lg:w-10 lg:h-10 bg-rose-500 text-white rounded-lg lg:rounded-xl flex items-center justify-center shrink-0">
-                <TrendingDown size={14} className="lg:w-5 lg:h-5" />
+ 
+          <div className="bg-rose-50/50 dark:bg-rose-900/10 border border-rose-100/50 dark:border-rose-800/50 rounded-xl lg:rounded-2xl p-3 lg:p-4.5 flex items-center justify-between">
+            <div className="flex items-center gap-3 lg:gap-3.5">
+              <div className="w-9 h-9 lg:w-10 lg:h-10 bg-rose-500 text-white rounded-xl flex items-center justify-center shrink-0">
+                <TrendingDown size={16} className="lg:w-5 lg:h-5" />
               </div>
               <div>
-                <p className={`text-[8px] lg:text-[10px] uppercase mb-1 ${language === 'MM' ? 'tracking-normal text-rose-700 dark:text-rose-300 font-extrabold text-[11.5px]' : 'tracking-widest font-semibold text-rose-600/60 dark:text-rose-400/60'}`}>{language === 'MM' ? 'စုစုပေါင်း အထွက်' : 'Total Outflow'}</p>
-                <p className={`font-black text-rose-700 dark:text-rose-400 tracking-tighter ${language === 'MM' ? 'text-xs lg:text-base' : 'text-sm lg:text-lg'}`}>{f(totalOut)}</p>
+                <p className={`text-[8px] lg:text-[10px] uppercase mb-1 leading-none ${language === 'MM' ? 'tracking-normal text-rose-700 dark:text-rose-300 font-extrabold text-[11px]' : 'tracking-widest font-semibold text-rose-600/60 dark:text-rose-400/60'}`}>{language === 'MM' ? 'စုစုပေါင်း အထွက်' : 'Total Outflow'}</p>
+                <p className="font-black text-rose-700 dark:text-rose-400 tracking-tight text-base sm:text-lg lg:text-2xl font-display">{f(totalOut)}</p>
               </div>
             </div>
           </div>
