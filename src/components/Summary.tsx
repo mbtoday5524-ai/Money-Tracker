@@ -151,139 +151,218 @@ export default function Summary({
     doc.save(`zmt-ledger-summary-${new Date().getTime()}.pdf`);
   };
 
-  const AccountStat = ({ label, inc, dec, logoUrl, DefaultLogo }: { 
+  const AccountStat = ({ label, inc, dec, current, logoUrl, DefaultLogo }: { 
     label: string, 
     inc: number, 
     dec: number, 
+    current?: number,
     logoUrl?: string, 
     DefaultLogo: ComponentType<{ className?: string }> 
   }) => (
-    <div className="space-y-1.5 py-1">
-      <div className="flex items-center gap-2">
-        <div className="w-5 h-5 flex items-center justify-center overflow-hidden rounded-md bg-slate-50 dark:bg-slate-800">
-           {logoUrl ? (
-             <img src={logoUrl} alt={label} className="w-full h-full object-contain" />
-           ) : (
-             <DefaultLogo className="w-4 h-4 opacity-75" />
-           )}
+    <div className="bg-slate-50/50 dark:bg-slate-900/30 border border-slate-100/70 dark:border-slate-800/70 rounded-2xl p-4 hover:border-indigo-100 dark:hover:border-indigo-900/30 hover:bg-indigo-50/10 dark:hover:bg-indigo-900/5 hover:-translate-y-0.5 transition-all duration-300">
+      <div className="flex items-center justify-between gap-2">
+        {/* Brand Details */}
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 flex items-center justify-center overflow-hidden rounded-xl bg-white dark:bg-slate-850 shadow-sm border border-slate-100 dark:border-slate-800 shrink-0">
+             {logoUrl ? (
+               <img src={logoUrl} alt={label} className="w-full h-full object-contain" />
+             ) : (
+               <DefaultLogo className="w-4 h-4 opacity-80" />
+             )}
+          </div>
+          <div>
+            <span className={`font-black text-slate-800 dark:text-slate-200 tracking-wide block ${language === 'MM' ? 'text-xs font-extrabold' : 'text-[13px]'}`}>{label}</span>
+            <span className="text-[9.5px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mt-0.5">
+              {language === 'MM' ? 'အကောင့်လက်ကျန်' : 'Account Balance'}
+            </span>
+          </div>
         </div>
-        <p className={`font-black text-slate-500 dark:text-slate-400 uppercase tracking-wider ${language === 'MM' ? 'text-[10.5px] font-extrabold' : 'text-[9.5px]'}`}>{label}</p>
+        
+        {/* Live Remaining Balance */}
+        {current !== undefined && (
+          <div className="text-right">
+            <span className="font-extrabold text-slate-900 dark:text-white text-base font-display">
+              {f(current)}
+            </span>
+            <span className="text-[10px] text-slate-400 dark:text-slate-500 ml-0.5 uppercase">MMK</span>
+          </div>
+        )}
       </div>
-      <div className="flex flex-col gap-1 pt-0.5 pl-7">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-1.5 opacity-75">
-                        <TrendingUp size={9} className="text-emerald-500 sm:w-2.5 sm:h-2.5" />
-                        <span className={`font-bold text-slate-500 dark:text-slate-400 uppercase ${language === 'MM' ? 'text-[10px]' : 'text-[8.5px]'}`}>{language === 'MM' ? 'အဝင်' : 'In'}</span>
-                      </div>
-                      <span className="text-xs sm:text-sm font-black text-slate-800 dark:text-slate-200 font-mono tracking-wide">{f(inc)}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center gap-1.5 opacity-75">
-                        <TrendingDown size={9} className="text-rose-500 sm:w-2.5 sm:h-2.5" />
-                        <span className={`font-bold text-slate-500 dark:text-slate-400 uppercase ${language === 'MM' ? 'text-[10px]' : 'text-[8.5px]'}`}>{language === 'MM' ? 'အထွက်' : 'Out'}</span>
-                      </div>
-                      <span className="text-xs sm:text-sm font-black text-slate-800 dark:text-slate-200 font-mono tracking-wide">{f(dec)}</span>
-                    </div>
+
+      {/* Transaction flow indicator */}
+      <div className="grid grid-cols-2 gap-3 mt-3.5 pt-3 border-t border-slate-150/50 dark:border-slate-150/60 dark:border-slate-800/60">
+        <div className="flex items-center justify-between text-xs px-1">
+          <span className="text-slate-400 dark:text-slate-500 font-bold flex items-center gap-1.5">
+            <TrendingUp size={12} className="text-emerald-500" />
+            {language === 'MM' ? 'အဝင်' : 'In'}
+          </span>
+          <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">{f(inc)}</span>
+        </div>
+        <div className="flex items-center justify-between text-xs px-1">
+          <span className="text-slate-400 dark:text-slate-500 font-bold flex items-center gap-1.5">
+            <TrendingDown size={12} className="text-rose-500" />
+            {language === 'MM' ? 'အထွက်' : 'Out'}
+          </span>
+          <span className="font-mono font-bold text-rose-600 dark:text-rose-400">{f(dec)}</span>
+        </div>
       </div>
     </div>
   );
 
   return (
-    <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 sleek-shadow overflow-hidden flex flex-col h-full transition-colors">
-      <div className="p-3.5 sm:p-5 lg:p-8 border-b border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/30 transition-colors">
-        <div className="flex justify-between items-center mb-3.5 lg:mb-6">
-          <h3 className={`text-[10px] sm:text-xs lg:text-sm font-black text-slate-900 dark:text-white uppercase ${language === 'MM' ? 'tracking-normal text-[12.5px] font-extrabold' : 'tracking-widest'}`}>{language === 'MM' ? 'စာရင်းချုပ်' : 'Current Ledger'}</h3>
-          <button
-            onClick={handleExportPDF}
-            className="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 hover:text-indigo-700 dark:hover:text-indigo-300 rounded-xl text-[10px] sm:text-xs font-bold uppercase transition-all duration-300 active:scale-95"
-          >
-            <Download size={14} className="sm:w-4 sm:h-4" />
-            <span>{language === 'MM' ? 'ထုတ်ယူရန် (PDF)' : 'Export PDF'}</span>
-          </button>
+    <div className="space-y-6">
+      {/* Top Header Card */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-[#0f172a] p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-slate-800 sleek-shadow transition-colors">
+        <div>
+          <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white uppercase tracking-wider">
+            {language === 'MM' ? 'စာရင်းချုပ် ဘဏ္ဍာရေးအခြေအနေ' : 'Ledger & Accounts Overview'}
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">
+            {language === 'MM' ? 'အကောင့်များအားလုံး၏ စုစုပေါင်းလက်ကျန်ငွေ၊ အဝင်/အထွက်နှင့် ကော်မရှင် အစီရင်ခံစာ' : 'Summary of system-wide wallets, financial flows, and commissions'}
+          </p>
         </div>
         
-        <div className="space-y-3 lg:space-y-4">
+        <button
+          onClick={handleExportPDF}
+          className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-indigo-900/40 dark:text-indigo-350 dark:hover:bg-indigo-900/60 rounded-xl text-xs font-bold uppercase transition-all duration-300 active:scale-95 shadow-md shadow-indigo-600/15 dark:shadow-none shrink-0"
+        >
+          <Download size={14} className="w-4 h-4" />
+          <span>{language === 'MM' ? 'ထုတ်ယူရန် (PDF)' : 'Export PDF'}</span>
+        </button>
+      </div>
+
+      {/* Grid Dashboard */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Side (Total indicators) - Col Span 7 on large screen */}
+        <div className="lg:col-span-7 space-y-4">
           {/* Main Profit Card */}
-          <div className="bg-indigo-600 rounded-xl lg:rounded-2xl p-4 lg:p-6 relative overflow-hidden group">
-            <div className="absolute right-0 top-0 w-16 lg:w-24 h-16 lg:h-24 bg-white/10 rounded-full -mr-6 lg:-mr-8 -mt-6 lg:-mt-8 blur-2xl group-hover:scale-125 transition-transform duration-700"></div>
-            <div className="relative z-10 flex items-center gap-3.5 lg:gap-4">
-              <div className="w-10 h-10 lg:w-12 lg:h-12 bg-white/20 text-white rounded-xl flex items-center justify-center backdrop-blur-md shrink-0">
-                <DollarSign size={20} className="lg:w-6 lg:h-6" />
+          <div className="bg-indigo-600 rounded-2xl p-5 lg:p-7 relative overflow-hidden group shadow-lg shadow-indigo-500/10 dark:shadow-none">
+            <div className="absolute right-0 top-0 w-24 lg:w-36 h-24 lg:h-36 bg-white/10 rounded-full -mr-8 lg:-mr-12 -mt-8 lg:-mt-12 blur-2xl group-hover:scale-125 transition-transform duration-700"></div>
+            <div className="relative z-10 flex items-center gap-4 lg:gap-5">
+              <div className="w-12 h-12 lg:w-16 lg:h-16 bg-white/20 text-white rounded-2xl flex items-center justify-center backdrop-blur-md shrink-0">
+                <DollarSign size={24} className="lg:w-8 lg:h-8" />
               </div>
               <div>
-                <p className={`text-[8.5px] lg:text-[10.5px] uppercase mb-1 leading-none ${language === 'MM' ? 'tracking-normal text-white/95 font-extrabold text-[11px]' : 'tracking-widest font-bold text-white/60'}`}>{language === 'MM' ? 'ရရှိသော ကော်မရှင်စုစုပေါင်း' : 'Total Revenue (Fee)'}</p>
-                <p className="font-black text-white tracking-tight text-xl sm:text-2xl lg:text-3xl font-display">{f(totalFee)}</p>
+                <p className={`text-[9px] lg:text-[11px] uppercase mb-1 leading-none font-bold ${language === 'MM' ? 'tracking-normal text-white/95 font-extrabold text-[12.5px]' : 'tracking-widest text-white/70'}`}>{language === 'MM' ? 'ရရှိသော ကော်မရှင်စုစုပေါင်း' : 'Total Revenue (Fee)'}</p>
+                <p className="font-black text-white tracking-tight text-2xl sm:text-3xl lg:text-4xl font-display">{f(totalFee)} <span className="text-xs sm:text-sm font-normal text-indigo-200">MMK</span></p>
               </div>
             </div>
           </div>
- 
+
           {/* Capital & Current Net Balance Cards */}
-          <div className="grid grid-cols-2 gap-2.5 lg:gap-3">
-            <div className="bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-xl p-3 lg:p-4.5 flex flex-col justify-between">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-4.5 lg:p-6 flex flex-col justify-between hover:border-blue-400 dark:hover:border-blue-900/40 transition-colors">
               <div>
-                <p className={`text-[8px] lg:text-[10px] font-black uppercase mb-1.5 leading-none ${language === 'MM' ? 'tracking-normal text-blue-750 dark:text-blue-350 text-[11px] font-extrabold' : 'tracking-wider text-blue-600/70 dark:text-blue-450/70'}`}>{language === 'MM' ? 'မူလအရင်းအနှီး' : 'Initial Investment'}</p>
-                <p className="font-black text-blue-800 dark:text-blue-300 text-base sm:text-lg lg:text-2xl tracking-tight font-display">{f(initialCapital)}</p>
+                <p className={`text-[9.5px] lg:text-[11px] font-black uppercase mb-1.5 leading-none tracking-wider text-slate-400 dark:text-slate-500`}>{language === 'MM' ? 'မူလအရင်းအနှီး' : 'Initial Investment'}</p>
+                <p className="font-black text-blue-800 dark:text-blue-400 text-base sm:text-xl lg:text-2xl tracking-tight font-display">{f(initialCapital)} <span className="text-[10px] sm:text-xs font-normal text-slate-400 dark:text-slate-500">MMK</span></p>
               </div>
             </div>
-            <div className="bg-purple-50/50 dark:bg-purple-900/10 border border-purple-100 dark:border-purple-900/30 rounded-xl p-3 lg:p-4.5 flex flex-col justify-between">
+            <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-4.5 lg:p-6 flex flex-col justify-between hover:border-purple-400 dark:hover:border-purple-900/40 transition-colors">
               <div>
-                <p className={`text-[8px] lg:text-[10px] font-black uppercase mb-1.5 leading-none ${language === 'MM' ? 'tracking-normal text-purple-750 dark:text-purple-350 text-[11px] font-extrabold' : 'tracking-wider text-purple-600/70 dark:text-purple-400/70'}`}>{language === 'MM' ? 'လက်ရှိစုစုပေါင်းငွေ' : 'Current Net Money'}</p>
-                <p className="font-black text-purple-700 dark:text-purple-300 text-base sm:text-lg lg:text-2xl tracking-tight font-display">{f(currentTotal)}</p>
+                <p className={`text-[9.5px] lg:text-[11px] font-black uppercase mb-1.5 leading-none tracking-wider text-slate-400 dark:text-slate-500`}>{language === 'MM' ? 'လက်ရှိစုစုပေါင်းငွေ' : 'Current Net Money'}</p>
+                <p className="font-black text-purple-700 dark:text-purple-400 text-base sm:text-xl lg:text-2xl tracking-tight font-display">{f(currentTotal)} <span className="text-[10px] sm:text-xs font-normal text-slate-400 dark:text-slate-500">MMK</span></p>
               </div>
             </div>
           </div>
- 
+
           {/* Inflow & Outflow visualizers */}
-          <div className="bg-emerald-50/50 dark:bg-emerald-900/10 border border-emerald-100/50 dark:border-emerald-800/50 rounded-xl lg:rounded-2xl p-3 lg:p-4.5 flex items-center justify-between">
-            <div className="flex items-center gap-3 lg:gap-3.5">
-              <div className="w-9 h-9 lg:w-10 lg:h-10 bg-emerald-500 text-white rounded-xl flex items-center justify-center shrink-0">
-                <TrendingUp size={16} className="lg:w-5 lg:h-5" />
+          <div className="grid grid-cols-2 gap-4">
+            <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-4.5 flex items-center gap-3 hover:border-emerald-400 dark:hover:border-emerald-900/40 transition-colors">
+              <div className="w-11 h-11 bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-450 rounded-xl flex items-center justify-center shrink-0">
+                <TrendingUp size={20} />
               </div>
               <div>
-                <p className={`text-[8px] lg:text-[10px] uppercase mb-1 leading-none ${language === 'MM' ? 'tracking-normal text-emerald-700 dark:text-emerald-300 font-extrabold text-[11px]' : 'tracking-widest font-bold text-emerald-600/60 dark:text-emerald-400/60'}`}>{language === 'MM' ? 'စုစုပေါင်း အဝင်' : 'Total Inflow'}</p>
-                <p className="font-black text-emerald-700 dark:text-emerald-400 tracking-tight text-base sm:text-lg lg:text-2xl font-display">{f(totalIn)}</p>
+                <p className={`text-[9px] lg:text-[10.5px] uppercase mb-1 leading-none font-bold text-slate-400 dark:text-slate-500 tracking-wider`}>{language === 'MM' ? 'စုစုပေါင်း အဝင်' : 'Total Inflow'}</p>
+                <p className="font-black text-emerald-600 dark:text-emerald-400 text-base sm:text-lg lg:text-xl font-display">{f(totalIn)} <span className="text-[9px] font-normal text-slate-400">MMK</span></p>
               </div>
             </div>
-          </div>
- 
-          <div className="bg-rose-50/50 dark:bg-rose-900/10 border border-rose-100/50 dark:border-rose-800/50 rounded-xl lg:rounded-2xl p-3 lg:p-4.5 flex items-center justify-between">
-            <div className="flex items-center gap-3 lg:gap-3.5">
-              <div className="w-9 h-9 lg:w-10 lg:h-10 bg-rose-500 text-white rounded-xl flex items-center justify-center shrink-0">
-                <TrendingDown size={16} className="lg:w-5 lg:h-5" />
+
+            <div className="bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 rounded-2xl p-4.5 flex items-center gap-3 hover:border-rose-400 dark:hover:border-rose-900/40 transition-colors">
+              <div className="w-11 h-11 bg-rose-500/10 dark:bg-rose-500/20 text-rose-600 dark:text-rose-450 rounded-xl flex items-center justify-center shrink-0">
+                <TrendingDown size={20} />
               </div>
               <div>
-                <p className={`text-[8px] lg:text-[10px] uppercase mb-1 leading-none ${language === 'MM' ? 'tracking-normal text-rose-700 dark:text-rose-300 font-extrabold text-[11px]' : 'tracking-widest font-semibold text-rose-600/60 dark:text-rose-400/60'}`}>{language === 'MM' ? 'စုစုပေါင်း အထွက်' : 'Total Outflow'}</p>
-                <p className="font-black text-rose-700 dark:text-rose-400 tracking-tight text-base sm:text-lg lg:text-2xl font-display">{f(totalOut)}</p>
+                <p className={`text-[9px] lg:text-[10.5px] uppercase mb-1 leading-none font-bold text-slate-400 dark:text-slate-500 tracking-wider`}>{language === 'MM' ? 'စုစုပေါင်း အထွက်' : 'Total Outflow'}</p>
+                <p className="font-black text-rose-600 dark:text-rose-400 text-base sm:text-lg lg:text-xl font-display">{f(totalOut)} <span className="text-[9px] font-normal text-slate-400">MMK</span></p>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      
-      <div className="p-3 sm:p-4 lg:p-8 space-y-3 lg:space-y-8 flex-1 bg-white dark:bg-[#0f172a] transition-colors">
-        {kbzEnabled && <>
-            <AccountStat label="KPay Wallet" inc={kbzIn} dec={kbzOut} logoUrl={kbzLogoUrl} DefaultLogo={KBZLogo} />
-            <div className="h-px bg-slate-50 dark:bg-slate-800"></div>
-        </>}
-        {waveEnabled && <>
-            <AccountStat label="Wave Wallet" inc={waveIn} dec={waveOut} logoUrl={waveLogoUrl} DefaultLogo={WaveLogo} />
-            <div className="h-px bg-slate-50 dark:bg-slate-800"></div>
-        </>}
-        {ayaEnabled && <>
-            <AccountStat label="AYAPay Wallet" inc={ayaIn} dec={ayaOut} logoUrl={ayaLogoUrl} DefaultLogo={AYALogo} />
-            <div className="h-px bg-slate-50 dark:bg-slate-800"></div>
-        </>}
-        {uabEnabled && <>
-            <AccountStat label="UAB Wallet" inc={uabIn} dec={uabOut} logoUrl={uabLogoUrl} DefaultLogo={UABLogo} />
-            <div className="h-px bg-slate-50 dark:bg-slate-800"></div>
-        </>}
-        {trueEnabled && <>
-            <AccountStat label="True Money Wallet" inc={trueIn} dec={trueOut} logoUrl={trueLogoUrl} DefaultLogo={TrueLogo} />
-            <div className="h-px bg-slate-50 dark:bg-slate-800"></div>
-        </>}
-        {cashEnabled && <>
-            <AccountStat label={language === 'MM' ? 'လက်ဝယ်ရှိငွေ' : 'Cash on Hand'} inc={cashIn} dec={cashOut} logoUrl={cashLogoUrl} DefaultLogo={CashLogo} />
-        </>}
+
+        {/* Right Side (Wallet list breakdowns) - Col Span 5 on large screen */}
+        <div className="lg:col-span-5 bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 sleek-shadow p-5 flex flex-col transition-colors">
+          <div className="mb-4">
+            <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider mb-0.5">
+              {language === 'MM' ? 'အကောင့်တစ်ခုချင်းစီ အသေးစိတ်' : 'Accounts Balance & Flow'}
+            </h3>
+            <p className="text-xs text-slate-400 dark:text-slate-500">
+              {language === 'MM' ? 'လက်ကျန်အခြေအနေနှင့် ငွေကြေးစီးဆင်းမှု ပြကွက်' : 'Live balance breakdown and transaction activity for each vendor'}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3.5">
+            {kbzEnabled && (
+              <AccountStat 
+                label="KPay Wallet" 
+                inc={kbzIn} 
+                dec={kbzOut} 
+                current={currentBalances?.kbz} 
+                logoUrl={kbzLogoUrl} 
+                DefaultLogo={KBZLogo} 
+              />
+            )}
+            {waveEnabled && (
+              <AccountStat 
+                label="Wave Wallet" 
+                inc={waveIn} 
+                dec={waveOut} 
+                current={currentBalances?.wave} 
+                logoUrl={waveLogoUrl} 
+                DefaultLogo={WaveLogo} 
+              />
+            )}
+            {ayaEnabled && (
+              <AccountStat 
+                label="AYAPay Wallet" 
+                inc={ayaIn} 
+                dec={ayaOut} 
+                current={currentBalances?.aya} 
+                logoUrl={ayaLogoUrl} 
+                DefaultLogo={AYALogo} 
+              />
+            )}
+            {uabEnabled && (
+              <AccountStat 
+                label="UAB Wallet" 
+                inc={uabIn} 
+                dec={uabOut} 
+                current={currentBalances?.uab} 
+                logoUrl={uabLogoUrl} 
+                DefaultLogo={UABLogo} 
+              />
+            )}
+            {trueEnabled && (
+              <AccountStat 
+                label="True Money Wallet" 
+                inc={trueIn} 
+                dec={trueOut} 
+                current={currentBalances?.trueMoney} 
+                logoUrl={trueLogoUrl} 
+                DefaultLogo={TrueLogo} 
+              />
+            )}
+            {cashEnabled && (
+              <AccountStat 
+                label={language === 'MM' ? 'လက်ဝယ်ရှိငွေ' : 'Cash on Hand'} 
+                inc={cashIn} 
+                dec={cashOut} 
+                current={currentBalances?.cash} 
+                logoUrl={cashLogoUrl} 
+                DefaultLogo={CashLogo} 
+              />
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

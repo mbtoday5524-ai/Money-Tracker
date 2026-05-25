@@ -54,6 +54,7 @@ enum View {
   DASHBOARD = 'DASHBOARD',
   NEW_TRANSACTION = 'NEW_TRANSACTION',
   HISTORY = 'HISTORY',
+  SUMMARY = 'SUMMARY',
   SETTINGS = 'SETTINGS',
   ADMIN = 'ADMIN',
   REPORTS = 'REPORTS',
@@ -851,6 +852,7 @@ export default function App() {
               <NavItem icon={LayoutDashboard} label={language === 'MM' ? 'ပင်မစာမျက်နှာ' : 'Dashboard'} view={View.DASHBOARD} />
               <NavItem icon={PlusCircle} label={language === 'MM' ? 'စာရင်းသစ်သွင်းရန်' : 'New Record'} view={View.NEW_TRANSACTION} />
               <NavItem icon={History} label={language === 'MM' ? 'လုပ်ငန်းမှတ်တမ်း' : 'Transactions'} view={View.HISTORY} />
+              <NavItem icon={Wallet} label={language === 'MM' ? 'စာရင်းချုပ်' : 'Ledger'} view={View.SUMMARY} />
               <NavItem icon={TrendingUp} label={language === 'MM' ? 'အစီရင်ခံစာ' : 'Reports'} view={View.REPORTS} />
               
               {isAdmin && (
@@ -943,6 +945,7 @@ export default function App() {
                     {currentView === View.DASHBOARD && (language === 'MM' ? 'ပင်မစာမျက်နှာ' : 'Dashboard')}
                     {currentView === View.NEW_TRANSACTION && (language === 'MM' ? 'စာရင်းသစ်သွင်းရန်' : 'New Transaction')}
                     {currentView === View.HISTORY && (language === 'MM' ? 'လုပ်ငန်းမှတ်တမ်း' : 'History')}
+                    {currentView === View.SUMMARY && (language === 'MM' ? 'စာရင်းချုပ်' : 'Ledger')}
                     {currentView === View.SETTINGS && (language === 'MM' ? 'ဆက်တင်များ' : 'Settings')}
                     {currentView === View.DOCS && (language === 'MM' ? 'လမ်းညွှန်မှတ်တမ်း' : 'System Documentation')}
                     {currentView === View.REPORTS && (language === 'MM' ? 'ဘဏ္ဍာရေး အစီရင်ခံစာ' : 'Financial Reports')}
@@ -1161,80 +1164,76 @@ export default function App() {
                         />
                       </div>
 
-                      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 items-start">
-                        {/* Recent Transactions Table */}
-                        <div className="xl:col-span-2 space-y-3 lg:space-y-4">
-                          <div className="flex items-center justify-between px-1">
-                            <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">
-                              {language === 'MM' ? 'နောက်ဆုံးမှတ်တမ်းများ' : 'Recent Transactions'}
-                            </h3>
-                            <button 
-                              onClick={() => setCurrentView(View.HISTORY)}
-                              className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 flex items-center gap-1 group"
-                            >
-                              {language === 'MM' ? 'အားလုံးကြည့်ရန်' : 'View All'}
-                              <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                            </button>
-                          </div>
-                          <div className="min-h-[400px]">
-                            <TransactionList 
-                               transactions={transactions.slice(0, 10)} 
-                               onBulkDelete={handleBulkDeleteTransactions}
-                               language={language}
-                               onExport={handleExportData}
-                               kbzLogoUrl={globalSettings?.kbzLogoUrl}
-                               waveLogoUrl={globalSettings?.waveLogoUrl}
-                               ayaLogoUrl={globalSettings?.ayaLogoUrl}
-                               uabLogoUrl={globalSettings?.uabLogoUrl}
-                               trueLogoUrl={globalSettings?.trueLogoUrl}
-                               cashLogoUrl={globalSettings?.cashLogoUrl}
-                            />
-                          </div>
-                        </div>
-
-                        {/* Summary / Stats Card */}
-                        <div className="space-y-3 lg:space-y-4 lg:sticky lg:top-0">
-                          <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest px-1">
-                            {language === 'MM' ? 'စာရင်းချုပ်' : 'Current Ledger'}
+                      {/* Recent Transactions Table */}
+                      <div className="space-y-3 lg:space-y-4">
+                        <div className="flex items-center justify-between px-1">
+                          <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">
+                            {language === 'MM' ? 'နောက်ဆုံးမှတ်တမ်းများ' : 'Recent Transactions'}
                           </h3>
-                          <Summary 
-                             kbzIn={stats.kbzIn}
-                             kbzOut={stats.kbzOut}
-                             waveIn={stats.waveIn}
-                             waveOut={stats.waveOut}
-                             ayaIn={stats.ayaIn}
-                             ayaOut={stats.ayaOut}
-                             uabIn={stats.uabIn}
-                             uabOut={stats.uabOut}
-                             trueIn={stats.trueIn}
-                             trueOut={stats.trueOut}
-                             kbzEnabled={settings?.kbzEnabled ?? true}
-                             waveEnabled={settings?.waveEnabled ?? true}
-                             ayaEnabled={settings?.ayaEnabled ?? true}
-                             uabEnabled={settings?.uabEnabled ?? true}
-                             trueEnabled={settings?.trueEnabled ?? true}
-                             cashEnabled={settings?.cashEnabled ?? true}
-                             totalFee={totalFee}
+                          <button 
+                            onClick={() => setCurrentView(View.HISTORY)}
+                            className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 flex items-center gap-1 group"
+                          >
+                            {language === 'MM' ? 'အားလုံးကြည့်ရန်' : 'View All'}
+                            <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                          </button>
+                        </div>
+                        <div className="min-h-[400px]">
+                          <TransactionList 
+                             transactions={transactions.slice(0, 10)} 
+                             onBulkDelete={handleBulkDeleteTransactions}
                              language={language}
+                             onExport={handleExportData}
                              kbzLogoUrl={globalSettings?.kbzLogoUrl}
                              waveLogoUrl={globalSettings?.waveLogoUrl}
                              ayaLogoUrl={globalSettings?.ayaLogoUrl}
-                             cashLogoUrl={globalSettings?.cashLogoUrl}
                              uabLogoUrl={globalSettings?.uabLogoUrl}
                              trueLogoUrl={globalSettings?.trueLogoUrl}
-                             initialBalances={settings ? {
-                               kbz: settings.kbzInitial || 0,
-                               wave: settings.waveInitial || 0,
-                               aya: settings.ayaInitial || 0,
-                               uab: settings.uabInitial || 0,
-                               trueMoney: settings.trueInitial || 0,
-                               cash: settings.cashInitial || 0
-                             } : undefined}
-                             currentBalances={calculatedBalances}
+                             cashLogoUrl={globalSettings?.cashLogoUrl}
                           />
                         </div>
                       </div>
                     </>
+                  )}
+
+                  {currentView === View.SUMMARY && (
+                    <div className="max-w-7xl mx-auto lg:mx-0 space-y-4">
+                      <Summary 
+                         kbzIn={stats.kbzIn}
+                         kbzOut={stats.kbzOut}
+                         waveIn={stats.waveIn}
+                         waveOut={stats.waveOut}
+                         ayaIn={stats.ayaIn}
+                         ayaOut={stats.ayaOut}
+                         uabIn={stats.uabIn}
+                         uabOut={stats.uabOut}
+                         trueIn={stats.trueIn}
+                         trueOut={stats.trueOut}
+                         kbzEnabled={settings?.kbzEnabled ?? true}
+                         waveEnabled={settings?.waveEnabled ?? true}
+                         ayaEnabled={settings?.ayaEnabled ?? true}
+                         uabEnabled={settings?.uabEnabled ?? true}
+                         trueEnabled={settings?.trueEnabled ?? true}
+                         cashEnabled={settings?.cashEnabled ?? true}
+                         totalFee={totalFee}
+                         language={language}
+                         kbzLogoUrl={globalSettings?.kbzLogoUrl}
+                         waveLogoUrl={globalSettings?.waveLogoUrl}
+                         ayaLogoUrl={globalSettings?.ayaLogoUrl}
+                         cashLogoUrl={globalSettings?.cashLogoUrl}
+                         uabLogoUrl={globalSettings?.uabLogoUrl}
+                         trueLogoUrl={globalSettings?.trueLogoUrl}
+                         initialBalances={settings ? {
+                           kbz: settings.kbzInitial || 0,
+                           wave: settings.waveInitial || 0,
+                           aya: settings.ayaInitial || 0,
+                           uab: settings.uabInitial || 0,
+                           trueMoney: settings.trueInitial || 0,
+                           cash: settings.cashInitial || 0
+                         } : undefined}
+                         currentBalances={calculatedBalances}
+                      />
+                    </div>
                   )}
 
                   {currentView === View.NEW_TRANSACTION && (
