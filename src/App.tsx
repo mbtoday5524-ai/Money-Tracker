@@ -471,6 +471,34 @@ export default function App() {
     }
   };
 
+  const handleDismissSetup = async () => {
+    const defaultSettings = {
+      kbzInitial: 0,
+      waveInitial: 0,
+      ayaInitial: 0,
+      cashInitial: 0,
+      uabInitial: 0,
+      trueInitial: 0,
+      kbzEnabled: true,
+      waveEnabled: true,
+      ayaEnabled: true,
+      cashEnabled: true,
+      uabEnabled: true,
+      trueEnabled: true,
+      percentIn: 0,
+      percentOut: 0,
+      kbzPhone: '',
+      wavePhone: '',
+      ayaPhone: '',
+      uabPhone: '',
+      truePhone: '',
+      notificationsEnabled: false,
+      notificationEmail: '',
+      lowBalanceThreshold: 100000
+    };
+    await handleStart(defaultSettings);
+  };
+
   const handleAddTransaction = async (txData: Omit<Transaction, 'createdAt' | 'userId' | 'id'>) => {
     if (!user) return;
     
@@ -1381,7 +1409,7 @@ export default function App() {
 
       {/* Modals & Loaders */}
       {user && initialFetchDone && isActivated && !settings && (
-        <SetupModal onStart={handleStart} language={language} currentSettings={settings} userId={user.uid} />
+        <SetupModal onStart={handleStart} onClose={handleDismissSetup} language={language} currentSettings={settings} userId={user.uid} />
       )}
       
       {showSetupOverlay && (

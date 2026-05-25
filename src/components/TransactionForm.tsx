@@ -127,7 +127,7 @@ export default function TransactionForm({
       amount: parsedAmount,
       fee: finalFee,
       phoneNumber: phoneNumber || undefined,
-      accountName: accountName || undefined,
+      accountName: accountName ? accountName.trim().toUpperCase() : undefined,
       feePaymentMethod: categoryId === 'Cash' ? 'Cash' : feePaymentMethod
     });
     setAmount('');
@@ -297,7 +297,7 @@ export default function TransactionForm({
                 <input
                   type="text"
                   value={accountName}
-                  onChange={e => setAccountName(e.target.value)}
+                  onChange={e => setAccountName(e.target.value.toUpperCase())}
                   placeholder={language === 'MM' ? 'အကောင့်ပိုင်ရှင်အမည်...' : 'Account holder name...'}
                   className="w-full h-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-800/85 transition-all group-hover:border-slate-300 dark:group-hover:border-slate-700 placeholder:text-slate-300 dark:placeholder:text-slate-650"
                 />
