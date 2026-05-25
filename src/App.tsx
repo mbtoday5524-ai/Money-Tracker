@@ -73,24 +73,64 @@ export default function App() {
     }
   });
 
-  // Dynamically update favicon based on globalSettings
+  // Dynamically update favicon based on globalSettings with crisp downscaling
   useEffect(() => {
     const iconUrl = globalSettings?.appLogoUrl || "/logo-round.png";
-    const linkIcon = document.querySelector('link[rel="icon"]') as HTMLLinkElement;
-    if (linkIcon) {
-      linkIcon.href = iconUrl;
-    } else {
-      const newLink = document.createElement('link');
-      newLink.rel = 'icon';
-      newLink.type = 'image/png';
-      newLink.href = iconUrl;
-      document.head.appendChild(newLink);
-    }
 
+    const defaultIcon = document.getElementById('favicon-default') as HTMLLinkElement || document.querySelector('link[rel="icon"]');
+    const icon16 = document.getElementById('favicon-16') as HTMLLinkElement;
+    const icon32 = document.getElementById('favicon-32') as HTMLLinkElement;
+    const icon48 = document.getElementById('favicon-48') as HTMLLinkElement;
+    const icon192 = document.getElementById('favicon-192') as HTMLLinkElement;
     const linkApple = document.querySelector('link[rel="apple-touch-icon"]') as HTMLLinkElement;
-    if (linkApple) {
-      linkApple.href = iconUrl;
-    }
+
+    // Direct fallback immediately
+    if (defaultIcon) defaultIcon.setAttribute('href', iconUrl);
+    if (icon16) icon16.setAttribute('href', iconUrl);
+    if (icon32) icon32.setAttribute('href', iconUrl);
+    if (icon48) icon48.setAttribute('href', iconUrl);
+    if (icon192) icon192.setAttribute('href', iconUrl);
+    if (linkApple) linkApple.setAttribute('href', iconUrl);
+
+    // Apply canvas based pixel-perfect downscaling for extremely crisp favicon in Chrome
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const sizes = [16, 32, 48, 192];
+      const targets = [icon16, icon32, icon48, icon192];
+
+      sizes.forEach((size, index) => {
+        const target = targets[index];
+        if (!target) return;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
+          ctx.clearRect(0, 0, size, size);
+          ctx.drawImage(img, 0, 0, size, size);
+
+          try {
+            const dataUrl = canvas.toDataURL('image/png');
+            target.setAttribute('href', dataUrl);
+
+            // Dynamically update default/apple fallback with crisp resolution
+            if (size === 192 && linkApple) {
+              linkApple.setAttribute('href', dataUrl);
+            }
+            if (size === 32 && defaultIcon) {
+              defaultIcon.setAttribute('href', dataUrl);
+            }
+          } catch (e) {
+            console.warn('Canvas favicon drawing error:', e);
+          }
+        }
+      });
+    };
+    img.src = iconUrl;
   }, [globalSettings?.appLogoUrl]);
   const [settings, setSettings] = useState<UserSettings | null>(null);
   const [isActivated, setIsActivated] = useState<boolean | null>(null);
