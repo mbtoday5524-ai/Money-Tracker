@@ -73,34 +73,74 @@ export default function App() {
     }
   });
 
-  // Dynamically update favicon based on globalSettings with crisp downscaling
+  // Dynamically update favicon and manifest based on globalSettings for crystal-clear icons and shortcuts
   useEffect(() => {
     const iconUrl = globalSettings?.appLogoUrl || "/logo-round.png";
+    const appName = globalSettings?.appName || "Z Money Tracker";
 
+    // Grab all standard favicon/shortcut references in document head
     const defaultIcon = document.getElementById('favicon-default') as HTMLLinkElement || document.querySelector('link[rel="icon"]');
     const icon16 = document.getElementById('favicon-16') as HTMLLinkElement;
     const icon32 = document.getElementById('favicon-32') as HTMLLinkElement;
     const icon48 = document.getElementById('favicon-48') as HTMLLinkElement;
     const icon192 = document.getElementById('favicon-192') as HTMLLinkElement;
-    const linkApple = document.querySelector('link[rel="apple-touch-icon"]') as HTMLLinkElement;
+    const icon512 = document.getElementById('favicon-512') as HTMLLinkElement;
+    const linkApple = document.getElementById('favicon-apple') as HTMLLinkElement;
+    const linkApple152 = document.getElementById('favicon-apple-152') as HTMLLinkElement;
+    const linkApple180 = document.getElementById('favicon-apple-180') as HTMLLinkElement;
 
-    // Direct fallback immediately
+    // Use pristine, unaltered original high-resolution logo for larger devices and system launchers so they are crisp
     if (defaultIcon) defaultIcon.setAttribute('href', iconUrl);
-    if (icon16) icon16.setAttribute('href', iconUrl);
-    if (icon32) icon32.setAttribute('href', iconUrl);
-    if (icon48) icon48.setAttribute('href', iconUrl);
     if (icon192) icon192.setAttribute('href', iconUrl);
+    if (icon512) icon512.setAttribute('href', iconUrl);
     if (linkApple) linkApple.setAttribute('href', iconUrl);
+    if (linkApple152) linkApple152.setAttribute('href', iconUrl);
+    if (linkApple180) linkApple180.setAttribute('href', iconUrl);
 
-    // Apply canvas based pixel-perfect downscaling for extremely crisp favicon in Chrome
+    // Dynamically update PWA manifest on the fly with the high-resolution custom logo
+    const manifestEl = document.querySelector('link[rel="manifest"]') as HTMLLinkElement;
+    if (manifestEl) {
+      const customManifest = {
+        name: appName,
+        short_name: appName.substring(0, 12),
+        description: "Z Money Tracker Ledger application",
+        start_url: "/",
+        display: "standalone",
+        background_color: "#0f172a",
+        theme_color: "#0f172a",
+        icons: [
+          {
+            src: iconUrl,
+            sizes: "192x192",
+            type: "image/png"
+          },
+          {
+            src: iconUrl,
+            sizes: "512x512",
+            type: "image/png"
+          }
+        ]
+      };
+      
+      try {
+        const stringManifest = JSON.stringify(customManifest);
+        const blob = new Blob([stringManifest], { type: 'application/json' });
+        const manifestUrl = URL.createObjectURL(blob);
+        manifestEl.setAttribute('href', manifestUrl);
+      } catch (err) {
+        console.error('Failed to update dynamic manifest:', err);
+      }
+    }
+
+    // High fidelity anti-aliased canvas downscaling only for the tiny micro-icons (16, 32, 48) to avoid blur in small tab bars
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {
-      const sizes = [16, 32, 48, 192];
-      const targets = [icon16, icon32, icon48, icon192];
+      const tinySizes = [16, 32, 48];
+      const tinyTargets = [icon16, icon32, icon48];
 
-      sizes.forEach((size, index) => {
-        const target = targets[index];
+      tinySizes.forEach((size, index) => {
+        const target = tinyTargets[index];
         if (!target) return;
 
         const canvas = document.createElement('canvas');
@@ -116,22 +156,14 @@ export default function App() {
           try {
             const dataUrl = canvas.toDataURL('image/png');
             target.setAttribute('href', dataUrl);
-
-            // Dynamically update default/apple fallback with crisp resolution
-            if (size === 192 && linkApple) {
-              linkApple.setAttribute('href', dataUrl);
-            }
-            if (size === 32 && defaultIcon) {
-              defaultIcon.setAttribute('href', dataUrl);
-            }
           } catch (e) {
-            console.warn('Canvas favicon drawing error:', e);
+            console.warn('Canvas fav drawing error:', e);
           }
         }
       });
     };
     img.src = iconUrl;
-  }, [globalSettings?.appLogoUrl]);
+  }, [globalSettings?.appLogoUrl, globalSettings?.appName]);
   const [settings, setSettings] = useState<UserSettings | null>(null);
   const [isActivated, setIsActivated] = useState<boolean | null>(null);
   const [showActivation, setShowActivation] = useState(false);
