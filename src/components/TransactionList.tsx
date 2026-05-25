@@ -437,8 +437,12 @@ export default function TransactionList({
                 </td>
               </tr>
             ) : (
-              filteredTransactions.map((tx) => (
-                <tr key={tx.id} className={`transition-colors group hover:bg-slate-50/50 dark:hover:bg-slate-900/40`}>
+              filteredTransactions.map((tx, idx) => (
+                <tr key={tx.id} className={`transition-colors group ${
+                  idx % 2 === 0 
+                    ? 'bg-white dark:bg-[#0f172a]' 
+                    : 'bg-slate-50/30 dark:bg-slate-900/15'
+                } hover:bg-slate-100/40 dark:hover:bg-slate-900/50`}>
                   <td className="px-4 py-2 text-center">
                     <span className="font-mono text-[10px] font-bold text-slate-500 dark:text-slate-400 tracking-wider">
                       #<Highlight text={tx._seqId} highlight={searchTerm} />
@@ -474,7 +478,7 @@ export default function TransactionList({
                     </span>
                   </td>
                   <td className="px-4 py-2 text-center">
-                    <span className="font-bold font-display text-slate-500 dark:text-slate-400 text-xs tracking-tight">
+                    <span className="inline-block font-extrabold text-amber-600 dark:text-amber-400 text-[11px] tracking-wider uppercase bg-amber-50/80 dark:bg-amber-950/35 border border-amber-150/40 dark:border-amber-900/20 px-2 py-0.5 rounded leading-none">
                       {tx.accountName ? <Highlight text={tx.accountName} highlight={searchTerm} /> : '-'}
                     </span>
                   </td>
@@ -514,7 +518,7 @@ export default function TransactionList({
         </table>
 
         {/* Mobile List View */}
-        <div className="lg:hidden divide-y divide-slate-50 dark:divide-slate-800/50">
+        <div className="lg:hidden divide-y divide-slate-100 dark:divide-slate-800/40">
           {filteredTransactions.length === 0 ? (
             <div className="px-8 py-20 text-center">
               <div className="flex flex-col items-center gap-3">
@@ -530,10 +534,17 @@ export default function TransactionList({
               </div>
             </div>
           ) : (
-            filteredTransactions.map((tx) => (
-              <div key={tx.id} className={`p-2.5 sm:p-3 grid grid-cols-12 items-center gap-1.5 sm:gap-3 transition-all hover:bg-slate-50 dark:hover:bg-slate-900/40`}>
+            filteredTransactions.map((tx, idx) => (
+              <div 
+                key={tx.id} 
+                className={`p-4 sm:p-5 grid grid-cols-12 items-center gap-2 sm:gap-3 transition-all ${
+                  idx % 2 === 0 
+                    ? 'bg-white dark:bg-[#0f172a]' 
+                    : 'bg-slate-50/40 dark:bg-slate-900/20'
+                } hover:bg-indigo-50/25 dark:hover:bg-indigo-950/20`}
+              >
                 <div className="col-span-5 sm:col-span-5 flex items-center gap-1.5 sm:gap-3 min-w-0">
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center p-1 overflow-hidden bg-slate-50 dark:bg-slate-800 transition-colors shrink-0">
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center p-1 overflow-hidden bg-slate-50 dark:bg-slate-850 transition-colors shrink-0 shadow-sm border border-slate-100 dark:border-slate-800">
                     {getLogo(tx.category) ? (
                       <img src={getLogo(tx.category)} alt={tx.category} className="w-full h-full object-contain" />
                     ) : (
@@ -541,10 +552,12 @@ export default function TransactionList({
                     )}
                   </div>
                   <div className="space-y-0.5 min-w-0 flex-1">
-                    <div className="flex items-center gap-1 min-w-0">
-                       <span className="font-black text-slate-900 dark:text-white text-[13px] sm:text-base font-display whitespace-nowrap leading-none"><Highlight text={f(tx.amount)} highlight={searchTerm} /></span>
-                       <span className={`text-[8px] sm:text-[9px] font-black uppercase tracking-wider font-display shrink-0 ${
-                         tx.type === TransactionType.IN ? 'text-emerald-700 dark:text-emerald-500' : 'text-rose-700 dark:text-rose-500'
+                    <div className="flex items-center gap-1.5 min-w-0">
+                       <span className="font-extrabold text-slate-900 dark:text-white text-[14px] sm:text-base font-display whitespace-nowrap leading-none"><Highlight text={f(tx.amount)} highlight={searchTerm} /></span>
+                       <span className={`text-[8px] sm:text-[9px] font-black uppercase tracking-wider font-display shrink-0 px-1 py-0.5 rounded ${
+                         tx.type === TransactionType.IN 
+                           ? 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400' 
+                           : 'bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-400'
                        }`}>
                          {tx.type === TransactionType.IN ? (language === 'MM' ? 'သွင်း' : 'In') : (language === 'MM' ? 'ထုတ်' : 'Out')}
                        </span>
@@ -561,30 +574,30 @@ export default function TransactionList({
                   </div>
                 </div>
 
-                <div className="col-span-3 sm:col-span-3 flex flex-col items-center justify-center min-w-0 leading-tight">
+                <div className="col-span-4 sm:col-span-4 flex flex-col items-center justify-center min-w-0 space-y-1 text-center">
                   {tx.phoneNumber ? (
-                    <span className="text-[12px] sm:text-[14px] text-indigo-600 dark:text-sky-400 font-extrabold font-mono tracking-tight whitespace-nowrap">
+                    <span className="text-[12.5px] sm:text-[14px] text-indigo-650 dark:text-sky-400 font-extrabold font-mono tracking-tight whitespace-nowrap leading-none block">
                       <Highlight text={tx.phoneNumber} highlight={searchTerm} />
                     </span>
                   ) : null}
                   {tx.accountName ? (
-                    <span className="text-[9px] sm:text-[10px] text-slate-550 dark:text-slate-450 font-bold tracking-tight whitespace-nowrap truncate max-w-full italic">
+                    <span className="text-[10px] sm:text-[11px] text-amber-600 dark:text-amber-400 font-black tracking-normal uppercase bg-amber-50/75 dark:bg-amber-950/30 px-2 py-0.5 rounded border border-amber-100/50 dark:border-amber-900/20 leading-tight block max-w-full truncate">
                       <Highlight text={tx.accountName} highlight={searchTerm} />
                     </span>
                   ) : null}
                 </div>
                 
-                <div className="col-span-4 sm:col-span-4 flex items-center justify-end gap-1 sm:gap-2 min-w-0">
+                <div className="col-span-3 sm:col-span-3 flex items-center justify-end gap-1 sm:gap-2 min-w-0">
                   <div className="text-right shrink-0">
                     <div className="flex items-center justify-end gap-1 mb-0.5 leading-none">
-                      <p className="text-[8px] sm:text-[9px] text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest font-sans">{language === 'MM' ? 'ဝန်ဆောင်ခ' : 'fee'}</p>
+                      <p className="text-[8px] sm:text-[9px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest font-sans">{language === 'MM' ? 'ဝန်ဆောင်ခ' : 'fee'}</p>
                       {tx.feePaymentMethod === 'Wallet' && (
                         <span className="text-[7.5px] sm:text-[8px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-normal bg-amber-50 dark:bg-amber-950/40 px-1 py-0.5 rounded border border-amber-100 dark:border-amber-900/30">
                           {language === 'MM' ? 'ပေါင်းလွှဲ' : 'Wallet'}
                         </span>
                       )}
                     </div>
-                    <p className="text-[11px] sm:text-sm font-extrabold text-emerald-600 dark:text-emerald-400 font-sans tracking-tight leading-none"><Highlight text={f(tx.fee)} highlight={searchTerm} /></p>
+                    <p className="text-[11px] sm:text-sm font-extrabold text-emerald-600 dark:text-emerald-400 font-sans tracking-tight leading-none"><Highlight text={f(tx.fee)} highlight={searchTerm}/></p>
                   </div>
                   <button
                     onClick={() => {
