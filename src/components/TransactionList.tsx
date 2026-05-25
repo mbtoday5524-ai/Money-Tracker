@@ -120,13 +120,35 @@ export default function TransactionList({
     });
   }, [transactions, searchTerm, filterBankId, filterType, filterFeeMethod, startDate, endDate]);
 
+  const filteredTotals = useMemo(() => {
+    let deposits = 0;
+    let withdrawals = 0;
+    let totalFees = 0;
+    
+    filteredTransactions.forEach(tx => {
+      if (tx.type === TransactionType.IN) {
+        deposits += tx.amount;
+      } else {
+        withdrawals += tx.amount;
+      }
+      totalFees += tx.fee;
+    });
+
+    return {
+      deposits,
+      withdrawals,
+      totalFees,
+      count: filteredTransactions.length
+    };
+  }, [filteredTransactions]);
+
   const clearFilters = () => {
-    setSearchTerm('');
     setFilterBankId('ALL');
     setFilterType('ALL');
     setFilterFeeMethod('ALL');
     setStartDate('');
     setEndDate('');
+    setShowFilters(false);
   };
 
   const getLogo = (bankId: string) => {
@@ -280,7 +302,13 @@ export default function TransactionList({
         <div className="flex gap-2 items-center w-full md:w-auto shrink-0">
 
           <button 
-            onClick={() => setShowFilters(!showFilters)}
+            onClick={() => {
+              if (showFilters) {
+                clearFilters();
+              } else {
+                setShowFilters(true);
+              }
+            }}
             className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-[10px] font-black uppercase transition-all active:scale-95 border ${language === 'MM' ? 'tracking-normal text-[11.5px] font-extrabold' : 'tracking-wider'} ${
               showFilters 
                 ? 'bg-indigo-600 text-white border-indigo-600 shadow-lg shadow-indigo-200 dark:shadow-none' 
@@ -321,81 +349,126 @@ export default function TransactionList({
 
       {/* Filter Toolbar */}
       {showFilters && (
-        <div className="px-4 lg:px-8 py-4 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800 transition-all animate-in slide-in-from-top duration-300">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="px-3.5 sm:px-6 lg:px-8 py-2.5 sm:py-4 bg-slate-50/90 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800 transition-all animate-in slide-in-from-top duration-300">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
             {/* Category Filter */}
-            <div className="relative">
-              <Wallet className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+            <div className="relative col-span-1">
+              <Wallet className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-slate-400" size={13} />
               <select 
                 value={filterBankId}
                 onChange={(e) => setFilterBankId(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                className="w-full pl-7.5 sm:pl-9 pr-3 sm:pr-4 py-1.5 sm:py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg sm:rounded-xl text-[11px] sm:text-xs appearance-none focus:outline-none focus:ring-1.5 focus:ring-indigo-500 transition-all font-semibold text-slate-700 dark:text-slate-300"
               >
                 <option value="ALL">{language === 'MM' ? 'အကောင့်အားလုံး' : 'All Accounts'}</option>
                 {banks.map(bank => (
                   <option key={bank.id} value={bank.id}>{bank.name}</option>
                 ))}
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={12} />
+              <ChevronDown className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={12} />
             </div>
 
             {/* Type Filter */}
-            <div className="relative">
-              <ArrowRightLeft className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+            <div className="relative col-span-1">
+              <ArrowRightLeft className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-slate-400" size={13} />
               <select 
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value as any)}
-                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                className="w-full pl-7.5 sm:pl-9 pr-3 sm:pr-4 py-1.5 sm:py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg sm:rounded-xl text-[11px] sm:text-xs appearance-none focus:outline-none focus:ring-1.5 focus:ring-indigo-500 transition-all font-semibold text-slate-700 dark:text-slate-300"
               >
                 <option value="ALL">{language === 'MM' ? 'အမျိုးအစားအားလုံး' : 'All Types'}</option>
                 <option value={TransactionType.IN}>{language === 'MM' ? 'ငွေသွင်း' : 'Deposit'}</option>
                 <option value={TransactionType.OUT}>{language === 'MM' ? 'ငွေထုတ်' : 'Withdraw'}</option>
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={12} />
+              <ChevronDown className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={12} />
             </div>
 
             {/* Fee Payment Method Filter */}
-            <div className="relative">
-              <Banknote className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+            <div className="relative col-span-2 sm:col-span-1">
+              <Banknote className="absolute left-2.5 sm:left-3 top-1/2 -translate-y-1/2 text-slate-400" size={13} />
               <select 
                 value={filterFeeMethod}
                 onChange={(e) => setFilterFeeMethod(e.target.value as any)}
-                className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                className="w-full pl-7.5 sm:pl-9 pr-3 sm:pr-4 py-1.5 sm:py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg sm:rounded-xl text-[11px] sm:text-xs appearance-none focus:outline-none focus:ring-1.5 focus:ring-indigo-500 transition-all font-semibold text-slate-700 dark:text-slate-300"
               >
                 <option value="ALL">{language === 'MM' ? 'ဝန်ဆောင်ခပေးစနစ်အားလုံး' : 'All Fee Methods'}</option>
                 <option value="Cash">{language === 'MM' ? 'လက်ငင်း (Cash)' : 'Cash'}</option>
                 <option value="Wallet">{language === 'MM' ? 'ဝေါလတ်ထဲမှ (Wallet)' : 'Wallet'}</option>
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={12} />
+              <ChevronDown className="absolute right-2.5 sm:right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={12} />
             </div>
 
             {/* Date Range */}
-            <div className="flex gap-2">
+            <div className="flex gap-1.5 sm:gap-2 col-span-2 sm:col-span-1">
               <div className="relative flex-1">
-                <Calendar className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400" size={12} />
+                <Calendar className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400" size={11} />
                 <input 
                   type="date" 
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full pl-7 pr-2 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-[10px] focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                  className="w-full pl-6 pr-1 py-1.5 sm:py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg sm:rounded-xl text-[10px] sm:text-xs focus:outline-none focus:ring-1.5 focus:ring-indigo-500 transition-all font-medium text-slate-600 dark:text-slate-400"
                 />
               </div>
               <div className="relative flex-1">
-                <Calendar className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400" size={12} />
+                <Calendar className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400" size={11} />
                 <input 
                   type="date" 
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full pl-7 pr-2 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-[10px] focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                  className="w-full pl-6 pr-1 py-1.5 sm:py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg sm:rounded-xl text-[10px] sm:text-xs focus:outline-none focus:ring-1.5 focus:ring-indigo-500 transition-all font-medium text-slate-600 dark:text-slate-400"
                 />
               </div>
               <button 
                 onClick={clearFilters}
-                className="p-2 bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-rose-500 rounded-xl transition-colors"
+                className="p-1.5 sm:p-2 bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-rose-500 rounded-lg sm:rounded-xl transition-colors shrink-0"
                 title="Clear Filters"
               >
-                <X size={16} />
+                <X size={14} />
               </button>
+            </div>
+          </div>
+
+          {/* Real-time Filtered Summary Counters */}
+          <div className="mt-2.5 pt-2.5 border-t border-slate-200/60 dark:border-slate-800/85">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 animate-in fade-in duration-300">
+              {/* Total Transactions Count */}
+              <div className="bg-white/85 dark:bg-slate-900/50 border border-slate-200/55 dark:border-slate-800/80 rounded-lg sm:rounded-xl p-2 sm:p-3 flex flex-col justify-between shadow-xs transition-all hover:border-slate-300 dark:hover:border-slate-705">
+                <span className="text-[8.5px] sm:text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block leading-none">
+                  {language === 'MM' ? 'ရှာဖွေတွေ့ရှိမှု' : 'Filtered Count'}
+                </span>
+                <span className="text-[11.5px] sm:text-base font-extrabold text-indigo-650 dark:text-indigo-400 mt-1 sm:mt-2 font-mono leading-none">
+                  {f(filteredTotals.count)} <span className="text-[8.5px] sm:text-xs font-sans font-bold text-slate-500 dark:text-slate-400">{language === 'MM' ? 'ခု' : 'items'}</span>
+                </span>
+              </div>
+
+              {/* Total Deposits */}
+              <div className="bg-white/85 dark:bg-slate-900/50 border border-slate-200/55 dark:border-slate-800/80 rounded-lg sm:rounded-xl p-2 sm:p-3 flex flex-col justify-between shadow-xs transition-all hover:border-slate-300 dark:hover:border-slate-705">
+                <span className="text-[8.5px] sm:text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block leading-none">
+                  {language === 'MM' ? 'သွင်းငွေစုစုပေါင်း' : 'Total Deposits'}
+                </span>
+                <span className="text-[11.5px] sm:text-base font-extrabold text-emerald-600 dark:text-emerald-400 mt-1 sm:mt-2 font-mono leading-none">
+                  {f(filteredTotals.deposits)} <span className="text-[8.5px] sm:text-xs font-sans font-bold text-slate-500 dark:text-slate-400">Ks</span>
+                </span>
+              </div>
+
+              {/* Total Withdrawals */}
+              <div className="bg-white/85 dark:bg-slate-900/50 border border-slate-200/55 dark:border-slate-800/80 rounded-lg sm:rounded-xl p-2 sm:p-3 flex flex-col justify-between shadow-xs transition-all hover:border-slate-300 dark:hover:border-slate-705">
+                <span className="text-[8.5px] sm:text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block leading-none">
+                  {language === 'MM' ? 'ထုတ်ငွေစုစုပေါင်း' : 'Total Withdrawals'}
+                </span>
+                <span className="text-[11.5px] sm:text-base font-extrabold text-rose-600 dark:text-rose-400 mt-1 sm:mt-2 font-mono leading-none">
+                  {f(filteredTotals.withdrawals)} <span className="text-[8.5px] sm:text-xs font-sans font-bold text-slate-500 dark:text-slate-400">Ks</span>
+                </span>
+              </div>
+
+              {/* Total Fees */}
+              <div className="bg-white/85 dark:bg-slate-900/50 border border-slate-200/55 dark:border-slate-800/80 rounded-lg sm:rounded-xl p-2 sm:p-3 flex flex-col justify-between shadow-xs transition-all hover:border-slate-300 dark:hover:border-slate-705">
+                <span className="text-[8.5px] sm:text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-wider block leading-none">
+                  {language === 'MM' ? 'ဝန်ဆောင်ခစုစုပေါင်း' : 'Total Fees'}
+                </span>
+                <span className="text-[11.5px] sm:text-base font-extrabold text-amber-600 dark:text-amber-400 mt-1 sm:mt-2 font-mono leading-none">
+                  {f(filteredTotals.totalFees)} <span className="text-[8.5px] sm:text-xs font-sans font-bold text-slate-500 dark:text-slate-400">Ks</span>
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -441,7 +514,7 @@ export default function TransactionList({
                 <tr key={tx.id} className={`transition-colors group ${
                   idx % 2 === 0 
                     ? 'bg-white dark:bg-[#0f172a]' 
-                    : 'bg-slate-50/30 dark:bg-slate-900/15'
+                    : 'bg-slate-100/70 dark:bg-slate-800/30'
                 } hover:bg-slate-100/40 dark:hover:bg-slate-900/50`}>
                   <td className="px-4 py-2 text-center">
                     <span className="font-mono text-[10px] font-bold text-slate-500 dark:text-slate-400 tracking-wider">
@@ -540,10 +613,10 @@ export default function TransactionList({
                 className={`p-4 sm:p-5 grid grid-cols-12 items-center gap-2 sm:gap-3 transition-all ${
                   idx % 2 === 0 
                     ? 'bg-white dark:bg-[#0f172a]' 
-                    : 'bg-slate-50/40 dark:bg-slate-900/20'
+                    : 'bg-slate-100/70 dark:bg-slate-800/30'
                 } hover:bg-indigo-50/25 dark:hover:bg-indigo-950/20`}
               >
-                <div className="col-span-5 sm:col-span-5 flex items-center gap-1.5 sm:gap-3 min-w-0">
+                <div className="col-span-4 sm:col-span-5 flex items-center gap-1.5 sm:gap-3 min-w-0">
                   <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center p-1 overflow-hidden bg-slate-50 dark:bg-slate-850 transition-colors shrink-0 shadow-sm border border-slate-100 dark:border-slate-800">
                     {getLogo(tx.category) ? (
                       <img src={getLogo(tx.category)} alt={tx.category} className="w-full h-full object-contain" />
@@ -587,17 +660,17 @@ export default function TransactionList({
                   ) : null}
                 </div>
                 
-                <div className="col-span-3 sm:col-span-3 flex items-center justify-end gap-1 sm:gap-2 min-w-0">
+                <div className="col-span-4 sm:col-span-3 flex items-center justify-end gap-1 sm:gap-2 min-w-0">
                   <div className="text-right shrink-0">
-                    <div className="flex items-center justify-end gap-1 mb-0.5 leading-none">
-                      <p className="text-[8px] sm:text-[9px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest font-sans">{language === 'MM' ? 'ဝန်ဆောင်ခ' : 'fee'}</p>
+                    <div className="flex items-center justify-end gap-1 mb-1 leading-snug">
+                      <p className="text-[9.5px] sm:text-[10px] text-slate-800 dark:text-slate-200 font-black uppercase tracking-wider font-sans">{language === 'MM' ? 'ဝန်ဆောင်ခ' : 'fee'}</p>
                       {tx.feePaymentMethod === 'Wallet' && (
                         <span className="text-[7.5px] sm:text-[8px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-normal bg-amber-50 dark:bg-amber-950/40 px-1 py-0.5 rounded border border-amber-100 dark:border-amber-900/30">
                           {language === 'MM' ? 'ပေါင်းလွှဲ' : 'Wallet'}
                         </span>
                       )}
                     </div>
-                    <p className="text-[11px] sm:text-sm font-extrabold text-emerald-600 dark:text-emerald-400 font-sans tracking-tight leading-none"><Highlight text={f(tx.fee)} highlight={searchTerm}/></p>
+                    <p className="text-[11.5px] sm:text-sm font-extrabold text-emerald-600 dark:text-emerald-400 font-sans tracking-tight leading-none mt-0.5"><Highlight text={f(tx.fee)} highlight={searchTerm}/></p>
                   </div>
                   <button
                     onClick={() => {
