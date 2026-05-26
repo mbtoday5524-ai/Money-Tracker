@@ -551,9 +551,13 @@ export default function TransactionList({
                     </span>
                   </td>
                   <td className="px-4 py-2 text-center">
-                    <span className="inline-block font-extrabold text-amber-600 dark:text-amber-400 text-[11px] tracking-wider uppercase bg-amber-50/80 dark:bg-amber-950/35 border border-amber-150/40 dark:border-amber-900/20 px-2 py-0.5 rounded leading-none">
-                      {tx.accountName ? <Highlight text={tx.accountName} highlight={searchTerm} /> : '-'}
-                    </span>
+                    {tx.accountName ? (
+                      <span className="font-bold text-amber-600 dark:text-amber-400 text-xs tracking-wider uppercase">
+                        <Highlight text={tx.accountName} highlight={searchTerm} />
+                      </span>
+                    ) : (
+                      <span className="text-slate-300 dark:text-slate-700">-</span>
+                    )}
                   </td>
                   <td className="px-4 py-2 text-center">
                     <span className="font-black font-display text-slate-900 dark:text-white text-sm">
@@ -562,7 +566,7 @@ export default function TransactionList({
                   </td>
                   <td className="px-4 py-2 text-center">
                     <div className="flex flex-col items-center justify-center gap-1">
-                      <span className="font-bold font-sans text-emerald-600 dark:text-emerald-400 text-xs shadow-sm">
+                      <span className="font-extrabold font-display text-emerald-600 dark:text-emerald-400 text-[13.5px]">
                         <Highlight text={f(tx.fee)} highlight={searchTerm} />
                       </span>
                       {tx.feePaymentMethod === 'Wallet' && (
