@@ -311,9 +311,8 @@ export default function TransactionList({
   return (
     <div className="bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 sleek-shadow flex flex-col overflow-hidden h-full transition-colors">
       <div className="px-4 lg:px-6 py-3 lg:py-4 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row gap-3 justify-between items-stretch md:items-center bg-white dark:bg-[#0f172a] transition-colors">
-        <div className="space-y-0.5 shrink-0">
+        <div className="shrink-0">
           <h3 className="font-black text-slate-900 dark:text-white tracking-tight text-sm lg:text-base font-display">{language === 'MM' ? 'နောက်ဆုံးမှတ်တမ်းများ' : 'Recent Transactions'}</h3>
-          <p className={`text-[9px] lg:text-[10px] uppercase font-display ${language === 'MM' ? 'tracking-normal text-slate-500 dark:text-slate-400 font-extrabold text-[11.5px]' : 'tracking-widest text-slate-400 dark:text-slate-500 font-bold'}`}>{language === 'MM' ? 'နောက်ဆုံးပြုလုပ်ခဲ့သောစာရင်းများ' : 'Latest wallet activity'}</p>
         </div>
 
         {/* Prominent Search Bar Component */}

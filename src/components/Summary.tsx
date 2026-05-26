@@ -217,9 +217,6 @@ export default function Summary({
           <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white uppercase tracking-wider">
             {language === 'MM' ? 'စာရင်းချုပ် ဘဏ္ဍာရေးအခြေအနေ' : 'Ledger & Accounts Overview'}
           </h2>
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 font-medium">
-            {language === 'MM' ? 'အကောင့်များအားလုံး၏ စုစုပေါင်းလက်ကျန်ငွေ၊ အဝင်/အထွက်နှင့် ကော်မရှင် အစီရင်ခံစာ' : 'Summary of system-wide wallets, financial flows, and commissions'}
-          </p>
         </div>
         
         <button
@@ -292,12 +289,9 @@ export default function Summary({
         {/* Right Side (Wallet list breakdowns) - Col Span 5 on large screen */}
         <div className="lg:col-span-5 bg-white dark:bg-[#0f172a] rounded-2xl border border-slate-200 dark:border-slate-800 sleek-shadow p-5 flex flex-col transition-colors">
           <div className="mb-4">
-            <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider mb-0.5">
+            <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
               {language === 'MM' ? 'အကောင့်တစ်ခုချင်းစီ အသေးစိတ်' : 'Accounts Balance & Flow'}
             </h3>
-            <p className="text-xs text-slate-400 dark:text-slate-500">
-              {language === 'MM' ? 'လက်ကျန်အခြေအနေနှင့် ငွေကြေးစီးဆင်းမှု ပြကွက်' : 'Live balance breakdown and transaction activity for each vendor'}
-            </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3.5">

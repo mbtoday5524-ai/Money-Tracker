@@ -548,15 +548,23 @@ export default function App() {
     if (!user) return;
     
     const previousTransactions = [...transactions];
+    const previousGlobalTransactions = [...globalTransactions];
+    
     setTransactions(prev => prev.filter(tx => !tx.id || !ids.includes(tx.id)));
+    setGlobalTransactions(prev => prev.filter(tx => !tx.id || !ids.includes(tx.id)));
 
     try {
-      // Execute all deletions in parallel
-      await Promise.all(ids.map(id => apiDeleteTx(user.uid, id)));
+      // Execute all deletions in parallel using the correct userId of each transaction
+      await Promise.all(ids.map(id => {
+        const foundTx = transactions.find(t => t.id === id) || globalTransactions.find(t => t.id === id);
+        const txUserId = foundTx?.userId || user.uid;
+        return apiDeleteTx(txUserId, id);
+      }));
     } catch (err) {
       console.error('Bulk delete failed:', err);
       // Rollback
       setTransactions(previousTransactions);
+      setGlobalTransactions(previousGlobalTransactions);
       alert('Failed to delete some transactions.');
     }
   };
@@ -572,7 +580,9 @@ export default function App() {
     let trueDelta = 0;
     let cashDelta = 0;
 
-    transactions.forEach(tx => {
+    const txsToCalculate = isAdmin ? globalTransactions : transactions;
+
+    txsToCalculate.forEach(tx => {
         const isWalletFee = tx.feePaymentMethod === 'Wallet';
         const feeAmt = tx.fee || 0;
 
@@ -659,7 +669,7 @@ export default function App() {
         trueMoney: (settings.trueInitial || 0) + trueDelta,
         cash: (settings.cashInitial || 0) + cashDelta
     };
-  }, [settings, transactions]);
+  }, [settings, transactions, globalTransactions, isAdmin]);
 
   const stats = useMemo(() => {
     const res = {
@@ -670,7 +680,9 @@ export default function App() {
       trueIn: 0, trueOut: 0,
     };
 
-    transactions.forEach(tx => {
+    const txsToCalculate = isAdmin ? globalTransactions : transactions;
+
+    txsToCalculate.forEach(tx => {
       if (tx.category === 'KBZ') {
         if (tx.type === TransactionType.IN) res.kbzIn += tx.amount;
         else res.kbzOut += tx.amount;
@@ -690,9 +702,12 @@ export default function App() {
     });
 
     return res;
-  }, [transactions]);
+  }, [transactions, globalTransactions, isAdmin]);
 
-  const totalFee = useMemo(() => transactions.reduce((sum, tx) => sum + tx.fee, 0), [transactions]);
+  const totalFee = useMemo(() => {
+    const txsToCalculate = isAdmin ? globalTransactions : transactions;
+    return txsToCalculate.reduce((sum, tx) => sum + tx.fee, 0);
+  }, [transactions, globalTransactions, isAdmin]);
 
   if (authLoading || (user && isActivated === null)) {
     return (
@@ -1217,10 +1232,7 @@ export default function App() {
 
                       {/* Recent Transactions Table */}
                       <div className="space-y-3 lg:space-y-4">
-                        <div className="flex items-center justify-between px-1">
-                          <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">
-                            {language === 'MM' ? 'နောက်ဆုံးမှတ်တမ်းများ' : 'Recent Transactions'}
-                          </h3>
+                        <div className="flex items-center justify-end px-1">
                           <button 
                             onClick={() => setCurrentView(View.HISTORY)}
                             className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 flex items-center gap-1 group"
@@ -1231,7 +1243,7 @@ export default function App() {
                         </div>
                         <div className="min-h-[400px]">
                           <TransactionList 
-                             transactions={transactions.slice(0, 10)} 
+                            transactions={(isAdmin ? globalTransactions : transactions).slice(0, 10)} 
                              onBulkDelete={handleBulkDeleteTransactions}
                              language={language}
                              onExport={handleExportData}
@@ -1294,13 +1306,10 @@ export default function App() {
                            <h3 className="text-lg lg:text-xl font-bold text-slate-900 dark:text-white">
                              {language === 'MM' ? 'ဝန်ဆောင်မှုသစ် စာရင်းသွင်းရန်' : 'Add New Service Entry'}
                            </h3>
-                           <p className="text-slate-500 dark:text-slate-400 font-medium text-xs lg:text-sm mt-1">
-                             {language === 'MM' ? 'ဝန်ဆောင်မှုအမျိုးအစားနှင့် ငွေပမာဏကို မှန်ကန်စွာ ဖြည့်သွင်းပါ။' : 'Please select the service type and enter the amount.'}
-                           </p>
                         </div>
                         <TransactionForm 
                           onAdd={handleAddTransaction}
-                          transactions={transactions}
+                          transactions={isAdmin ? globalTransactions : transactions}
                           percentIn={settings?.percentIn || 0}
                           percentOut={settings?.percentOut || 0}
                           language={language}
@@ -1324,7 +1333,7 @@ export default function App() {
                   {currentView === View.HISTORY && (
                     <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
                       <TransactionList 
-                        transactions={transactions}
+                        transactions={isAdmin ? globalTransactions : transactions}
                         onBulkDelete={handleBulkDeleteTransactions}
                         language={language}
                         onExport={handleExportData}
