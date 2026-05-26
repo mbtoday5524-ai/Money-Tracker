@@ -21,7 +21,7 @@ export default defineConfig(({mode}) => {
           maximumFileSizeToCacheInBytes: 5000000 // 5MB limit
         },
         manifest: {
-          name: 'Z Money Tracker',
+          name: 'ZMT',
           short_name: 'ZMT',
           description: 'Financial transaction tracker for MM Pay services.',
           theme_color: '#4f46e5',

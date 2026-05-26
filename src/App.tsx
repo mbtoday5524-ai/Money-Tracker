@@ -176,6 +176,29 @@ export default function App() {
   const [syncState, setSyncState] = useState<'synced' | 'syncing'>('synced');
   const [showBackupReminder, setShowBackupReminder] = useState(false);
   const [backupDismissed, setBackupDismissed] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+    }
+  };
 
   useEffect(() => {
     if (!settings || transactions.length === 0 || backupDismissed) return;
@@ -812,6 +835,43 @@ export default function App() {
 
   return (
     <div className="h-screen flex bg-slate-50 dark:bg-[#020617] overflow-hidden text-slate-800 dark:text-slate-200 transition-colors duration-300" lang={language === 'MM' ? 'my' : 'en'}>
+      <AnimatePresence>
+        {deferredPrompt && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-96 bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-2xl z-[100] border border-slate-200 dark:border-slate-700 flex flex-col gap-3 pointer-events-auto"
+          >
+            <div className="flex items-start gap-3">
+              <div className="bg-indigo-100 dark:bg-indigo-900/50 p-2 rounded-xl text-indigo-600 dark:text-indigo-400 shrink-0">
+                <PlusCircle size={24} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-bold text-sm mb-1 text-slate-900 dark:text-white">{language === 'MM' ? 'App ကို သွင်းရန်' : 'Install App'}</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                  {language === 'MM' ? 'ZMT App ကို ဖုန်း (သို့) ကွန်ပျူတာ မျက်နှာပြင်တွင် ထည့်သွင်းပြီး အလွယ်တကူ အသုံးပြုပါ။' : 'Install ZMT App to your home screen for quick and easy access.'}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 mt-1">
+              <button
+                onClick={() => setDeferredPrompt(null)}
+                className="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 rounded-xl font-bold text-xs transition-colors"
+              >
+                {language === 'MM' ? 'နောက်မှလုပ်မည်' : 'Not Now'}
+              </button>
+              <button
+                onClick={handleInstallClick}
+                className="flex-1 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-sm transition-colors"
+              >
+                {language === 'MM' ? 'Install ထည့်သွင်းမည်' : 'Install Now'}
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {quotaExceeded && (
         <div className="absolute top-0 left-0 right-0 bg-rose-500 text-white shadow-md z-[100] px-4 py-3 flex text-sm items-start sm:items-center justify-between pointer-events-auto">
           <div className="flex items-center gap-3">
@@ -998,6 +1058,18 @@ export default function App() {
               </div>
               
               <div className="flex items-center gap-2 lg:gap-4">
+                 {deferredPrompt && (
+                   <button
+                     onClick={handleInstallClick}
+                     className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-all mr-1 shadow-sm font-bold text-xs"
+                     title={language === 'MM' ? 'App ကို Install လုပ်ရန်' : 'Install App'}
+                   >
+                     <PlusCircle size={15} />
+                     <span className="hidden sm:inline-block leading-none">
+                       {language === 'MM' ? 'Install' : 'Install'}
+                     </span>
+                   </button>
+                 )}
                  {/* Language Toggle in Header */}
                  <button
                     onClick={() => setLanguage(prev => prev === 'MM' ? 'EN' : 'MM')}
