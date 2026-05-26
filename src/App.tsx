@@ -179,15 +179,19 @@ export default function App() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   useEffect(() => {
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
+    // Check if the prompt was already captured before React mounted
+    if ((window as any).deferredPrompt) {
+      setDeferredPrompt((window as any).deferredPrompt);
+    }
+
+    const handlePromptReady = () => {
+      setDeferredPrompt((window as any).deferredPrompt);
     };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('deferredPromptReady', handlePromptReady);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window.removeEventListener('deferredPromptReady', handlePromptReady);
     };
   }, []);
 
@@ -1271,12 +1275,8 @@ export default function App() {
                         const gridClass = activeCount <= 2
                           ? "grid grid-cols-1 sm:grid-cols-2 gap-2.5 lg:gap-4"
                           : activeCount === 3
-                          ? "grid grid-cols-2 sm:grid-cols-3 gap-2.5 lg:gap-4"
-                          : activeCount === 4
-                          ? "grid grid-cols-2 sm:grid-cols-4 gap-2.5 lg:gap-4"
-                          : activeCount === 5
-                          ? "grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-2.5 lg:gap-4"
-                          : "grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-2.5 lg:gap-4";
+                          ? "grid grid-cols-2 xl:grid-cols-3 gap-2.5 lg:gap-4"
+                          : "grid grid-cols-2 xl:grid-cols-4 gap-2.5 lg:gap-4";
 
                         return (
                           <div className={gridClass}>

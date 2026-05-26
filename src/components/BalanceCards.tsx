@@ -120,11 +120,11 @@ export default function BalanceCards({
           phone={kbzPhone}
           enabled={kbzEnabled}
           language={language}
-          colorClass="bg-blue-50" 
-          darkColorClass="dark:bg-blue-900/20"
+          colorClass="bg-white" 
+          darkColorClass="dark:bg-[#0f172a]"
           iconColorClass="text-blue-600 dark:text-blue-400" 
           labelColorClass="text-blue-600 dark:text-blue-400"
-          borderColorClass="border-blue-200 dark:border-blue-900/50 group-hover:border-blue-400 dark:group-hover:border-blue-700"
+          borderColorClass="border-blue-400/50 dark:border-blue-900/80 group-hover:border-blue-500 dark:group-hover:border-blue-700"
         />
       )}
       {waveEnabled && (
@@ -136,11 +136,11 @@ export default function BalanceCards({
           phone={wavePhone}
           enabled={waveEnabled}
           language={language}
-          colorClass="bg-amber-50" 
-          darkColorClass="dark:bg-amber-900/20"
+          colorClass="bg-white" 
+          darkColorClass="dark:bg-[#0f172a]"
           iconColorClass="text-amber-600 dark:text-amber-400" 
           labelColorClass="text-amber-600 dark:text-amber-400"
-          borderColorClass="border-amber-200 dark:border-amber-900/50 group-hover:border-amber-400 dark:group-hover:border-amber-700"
+          borderColorClass="border-amber-400/50 dark:border-amber-900/80 group-hover:border-amber-500 dark:group-hover:border-amber-700"
         />
       )}
       {ayaEnabled && (
@@ -152,11 +152,11 @@ export default function BalanceCards({
           phone={ayaPhone}
           enabled={ayaEnabled}
           language={language}
-          colorClass="bg-red-50" 
-          darkColorClass="dark:bg-red-900/20"
+          colorClass="bg-white" 
+          darkColorClass="dark:bg-[#0f172a]"
           iconColorClass="text-red-600 dark:text-red-400" 
           labelColorClass="text-red-600 dark:text-red-400"
-          borderColorClass="border-red-200 dark:border-red-900/50 group-hover:border-red-400 dark:group-hover:border-red-700"
+          borderColorClass="border-red-400/50 dark:border-red-900/80 group-hover:border-red-500 dark:group-hover:border-red-700"
         />
       )}
       {uabEnabled && (
@@ -168,11 +168,11 @@ export default function BalanceCards({
           phone={uabPhone}
           enabled={uabEnabled}
           language={language}
-          colorClass="bg-purple-50" 
-          darkColorClass="dark:bg-purple-900/20"
+          colorClass="bg-white" 
+          darkColorClass="dark:bg-[#0f172a]"
           iconColorClass="text-purple-600 dark:text-purple-400" 
           labelColorClass="text-purple-600 dark:text-purple-400"
-          borderColorClass="border-purple-200 dark:border-purple-900/50 group-hover:border-purple-400 dark:group-hover:border-purple-700"
+          borderColorClass="border-purple-400/50 dark:border-purple-900/80 group-hover:border-purple-500 dark:group-hover:border-purple-700"
         />
       )}
       {trueEnabled && (
@@ -184,11 +184,11 @@ export default function BalanceCards({
           phone={truePhone}
           enabled={trueEnabled}
           language={language}
-          colorClass="bg-orange-50" 
-          darkColorClass="dark:bg-orange-900/20"
+          colorClass="bg-white" 
+          darkColorClass="dark:bg-[#0f172a]"
           iconColorClass="text-orange-600 dark:text-orange-400" 
           labelColorClass="text-orange-600 dark:text-orange-400"
-          borderColorClass="border-orange-200 dark:border-orange-900/50 group-hover:border-orange-400 dark:group-hover:border-orange-700"
+          borderColorClass="border-orange-400/50 dark:border-orange-900/80 group-hover:border-orange-500 dark:group-hover:border-orange-700"
         />
       )}
       {cashEnabled && (
@@ -199,11 +199,11 @@ export default function BalanceCards({
           customLogo={CashLogo}
           enabled={cashEnabled}
           language={language}
-          colorClass="bg-emerald-50" 
-          darkColorClass="dark:bg-emerald-900/20"
+          colorClass="bg-white" 
+          darkColorClass="dark:bg-[#0f172a]"
           iconColorClass="text-emerald-600 dark:text-emerald-400" 
           labelColorClass="text-emerald-600 dark:text-emerald-400"
-          borderColorClass="border-emerald-200 dark:border-emerald-900/50 group-hover:border-emerald-400 dark:group-hover:border-emerald-700"
+          borderColorClass="border-emerald-400/50 dark:border-emerald-900/80 group-hover:border-emerald-500 dark:group-hover:border-emerald-700"
         />
       )}
     </>
