@@ -27,6 +27,28 @@ const Highlight = ({ text, highlight }: { text: string | number; highlight: stri
   );
 };
 
+const formatTime = (createdAt: any) => {
+  if (!createdAt) return '';
+  let date: Date;
+  if (typeof createdAt.toDate === 'function') {
+    date = createdAt.toDate();
+  } else if (createdAt instanceof Date) {
+    date = createdAt;
+  } else if (typeof createdAt === 'number') {
+    date = new Date(createdAt);
+  } else if (typeof createdAt === 'string') {
+    date = new Date(createdAt);
+  } else if (createdAt.seconds !== undefined) {
+    date = new Date(createdAt.seconds * 1000);
+  } else {
+    return '';
+  }
+
+  if (isNaN(date.getTime())) return '';
+
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }).toUpperCase();
+};
+
 interface TransactionListProps {
   transactions: Transaction[];
   onBulkDelete: (ids: string[]) => void;
@@ -59,6 +81,7 @@ export default function TransactionList({
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [showFilters, setShowFilters] = useState(false);
+  const [selectedTx, setSelectedTx] = useState<(Transaction & { _seqId: string }) | null>(null);
 
   const f = (n: number) => n.toLocaleString();
 
@@ -175,17 +198,32 @@ export default function TransactionList({
   const handleExportCSV = () => {
     if (filteredTransactions.length === 0) return;
 
-    const headers = ['Date', 'Account', 'Type', 'Phone', 'Account Name', 'Amount', 'Fee', 'Timestamp'];
-    const rows = filteredTransactions.map(tx => [
-      tx.date,
-      tx.category,
-      tx.type === TransactionType.IN ? 'Deposit' : 'Withdraw',
-      tx.phoneNumber || '',
-      tx.accountName || '',
-      tx.amount,
-      tx.fee,
-      tx.createdAt
-    ]);
+    const headers = ['Date', 'Time', 'Account', 'Type', 'Phone', 'Account Name', 'Amount', 'Fee', 'Raw Timestamp'];
+    const rows = filteredTransactions.map(tx => {
+      let tsStr = '';
+      if (tx.createdAt) {
+        try {
+          if (typeof tx.createdAt.toDate === 'function') {
+            tsStr = tx.createdAt.toDate().toISOString();
+          } else {
+            tsStr = new Date(tx.createdAt).toISOString();
+          }
+        } catch (e) {
+          tsStr = String(tx.createdAt);
+        }
+      }
+      return [
+        tx.date,
+        tx.createdAt ? formatTime(tx.createdAt) : '',
+        tx.category,
+        tx.type === TransactionType.IN ? 'Deposit' : 'Withdraw',
+        tx.phoneNumber || '',
+        tx.accountName || '',
+        tx.amount,
+        tx.fee,
+        tsStr
+      ];
+    });
 
     const csvContent = [
       headers.join(','),
@@ -223,10 +261,10 @@ export default function TransactionList({
     doc.setDrawColor(226, 232, 240);
     doc.line(14, 38, 196, 38);
 
-    const tableColumn = ["ID", "Date", "Account", "Type", "Phone", "Account Name", "Amount", "Fee"];
+    const tableColumn = ["ID", "Date & Time", "Account", "Type", "Phone", "Account Name", "Amount", "Fee"];
     const tableRows = filteredTransactions.map(tx => [
       tx._seqId,
-      tx.date,
+      tx.createdAt ? `${tx.date} ${formatTime(tx.createdAt)}` : tx.date,
       tx.category,
       tx.type === TransactionType.IN ? 'Deposit' : 'Withdraw',
       tx.phoneNumber || '-',
@@ -480,7 +518,7 @@ export default function TransactionList({
           <thead className={`bg-[#4f46e5] text-white text-[10px] lg:text-[11.5px] uppercase font-black sticky top-0 z-10 transition-colors font-display ${language === 'MM' ? 'tracking-normal' : 'tracking-[0.1em]'}`}>
             <tr>
               <th className={`px-4 py-2.5 text-center ${language === 'MM' ? 'tracking-normal font-black text-[13px] py-3' : 'tracking-wider py-2'}`}>{language === 'MM' ? 'အမှတ်' : 'ID'}</th>
-              <th className={`px-4 py-2.5 text-center ${language === 'MM' ? 'tracking-normal font-black text-[13px] py-3' : 'tracking-wider py-2'}`}>{language === 'MM' ? 'ရက်စွဲ' : 'Date'}</th>
+              <th className={`px-4 py-2.5 text-center ${language === 'MM' ? 'tracking-normal font-black text-[13px] py-3' : 'tracking-wider py-2'}`}>{language === 'MM' ? 'ရက်စွဲ / အချိန်' : 'Date / Time'}</th>
               <th className={`px-4 py-2.5 text-center ${language === 'MM' ? 'tracking-normal font-black text-[13px] py-3' : 'tracking-wider py-2'}`}>{language === 'MM' ? 'အကောင့်' : 'Account'}</th>
               <th className={`px-4 py-2.5 text-center ${language === 'MM' ? 'tracking-normal font-black text-[13px] py-3' : 'tracking-wider py-2'}`}>{language === 'MM' ? 'အမျိုးအစား' : 'Type'}</th>
               <th className={`px-4 py-2.5 text-center ${language === 'MM' ? 'tracking-normal font-black text-[13px] py-3' : 'tracking-wider py-2'}`}>{language === 'MM' ? 'ဖုန်းနံပါတ်' : 'Phone'}</th>
@@ -517,11 +555,20 @@ export default function TransactionList({
                     : 'bg-slate-100/70 dark:bg-slate-800/30'
                 } hover:bg-slate-100/40 dark:hover:bg-slate-900/50`}>
                   <td className="px-4 py-2 text-center">
-                    <span className="font-mono text-[10px] font-bold text-slate-500 dark:text-slate-400 tracking-wider">
+                    <span className="font-bold text-[12.5px] text-slate-600 dark:text-slate-300">
                       #<Highlight text={tx._seqId} highlight={searchTerm} />
                     </span>
                   </td>
-                  <td className="px-4 py-2 font-bold text-slate-600 dark:text-slate-400 text-[11px] text-center">{tx.date}</td>
+                  <td className="px-4 py-2 text-center">
+                    <div className="flex flex-col items-center justify-center">
+                      <span className="font-bold text-slate-700 dark:text-slate-200 text-[11.5px]">{tx.date}</span>
+                      {tx.createdAt && (
+                        <span className="font-semibold text-slate-450 dark:text-slate-400 text-[9.5px] font-mono mt-0.5">
+                          {formatTime(tx.createdAt)}
+                        </span>
+                      )}
+                    </div>
+                  </td>
                   <td className="px-4 py-2 text-center">
                     <div className="inline-flex items-center gap-2 w-20 text-left">
                        <div className="w-5 h-5 flex items-center justify-center overflow-hidden rounded-sm bg-slate-50 dark:bg-slate-800 shrink-0">
@@ -614,11 +661,12 @@ export default function TransactionList({
             filteredTransactions.map((tx, idx) => (
               <div 
                 key={tx.id} 
-                className={`p-4 sm:p-5 grid grid-cols-12 items-center gap-2 sm:gap-3 transition-all ${
+                onClick={() => setSelectedTx(tx)}
+                className={`p-4 sm:p-5 grid grid-cols-12 items-center gap-2 sm:gap-3 transition-all cursor-pointer ${
                   idx % 2 === 0 
                     ? 'bg-white dark:bg-[#0f172a]' 
                     : 'bg-slate-100/70 dark:bg-slate-800/30'
-                } hover:bg-indigo-50/25 dark:hover:bg-indigo-950/20`}
+                } hover:bg-slate-50 dark:hover:bg-slate-900/40 active:bg-indigo-50/45 dark:active:bg-indigo-950/20`}
               >
                 <div className="col-span-4 sm:col-span-5 flex items-center gap-1.5 sm:gap-3 min-w-0">
                   <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center p-1 overflow-hidden bg-slate-50 dark:bg-slate-850 transition-colors shrink-0 shadow-sm border border-slate-100 dark:border-slate-800">
@@ -639,12 +687,18 @@ export default function TransactionList({
                          {tx.type === TransactionType.IN ? (language === 'MM' ? 'သွင်း' : 'In') : (language === 'MM' ? 'ထုတ်' : 'Out')}
                        </span>
                     </div>
-                    <div className="flex items-center gap-1 text-[10px] sm:text-[10px] text-slate-400 dark:text-slate-500 font-bold font-display truncate">
-                      <span className="shrink-0">{tx.date}</span>
-                      <span className="opacity-45 shrink-0">•</span>
-                      <span className="uppercase truncate"><Highlight text={tx.category} highlight={searchTerm} /></span>
-                      <span className="opacity-45 shrink-0">•</span>
-                      <span className="shrink-0 uppercase font-mono tracking-tighter">
+                    <div className="flex items-center gap-1 text-[10px] sm:text-[10px] text-slate-500 dark:text-slate-400 font-bold font-display truncate">
+                      <span className="shrink-0 text-slate-700 dark:text-slate-200 font-extrabold">{tx.date}</span>
+                      {tx.createdAt && (
+                        <>
+                          <span className="opacity-45 shrink-0">•</span>
+                          <span className="font-semibold text-slate-600 dark:text-slate-300 text-[9.5px]/none shrink-0">{formatTime(tx.createdAt)}</span>
+                        </>
+                      )}
+                      <span className="opacity-50 shrink-0">•</span>
+                      <span className="uppercase truncate text-slate-600 dark:text-slate-400 font-black"><Highlight text={tx.category} highlight={searchTerm} /></span>
+                      <span className="opacity-50 shrink-0">•</span>
+                      <span className="shrink-0 font-extrabold text-slate-600 dark:text-slate-300 text-[10px]">
                         #<Highlight text={tx._seqId} highlight={searchTerm} />
                       </span>
                     </div>
@@ -677,7 +731,8 @@ export default function TransactionList({
                     <p className="text-[11.5px] sm:text-sm font-extrabold text-emerald-600 dark:text-emerald-400 font-sans tracking-tight leading-none mt-0.5"><Highlight text={f(tx.fee)} highlight={searchTerm}/></p>
                   </div>
                   <button
-                    onClick={() => {
+                    onClick={(e) => {
+                        e.stopPropagation();
                         if (tx.id) {
                           onBulkDelete([tx.id]);
                         }
@@ -692,6 +747,124 @@ export default function TransactionList({
           )}
         </div>
       </div>
+
+      {/* Transaction Detail Modal for Mobile */}
+      {selectedTx && (
+        <div 
+          className="fixed inset-0 bg-slate-950/65 backdrop-blur-[2px] z-50 flex items-center justify-center p-4 transition-all"
+          onClick={() => setSelectedTx(null)}
+        >
+          <div 
+            className="bg-white dark:bg-[#0f172a] w-full max-w-sm rounded-[20px] border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden transform transition-all animate-in fade-in zoom-in-95 duration-150 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="px-5 py-4 border-b border-slate-100 dark:border-slate-800/85 flex items-center justify-between">
+              <span className="font-extrabold text-slate-950 dark:text-white text-[13.5px] font-display uppercase tracking-wider flex items-center gap-1.5 leading-none">
+                <FileText size={15} className="text-indigo-500" />
+                {language === 'MM' ? 'လုပ်ငန်းအသေးစိတ်' : 'Transaction Info'}
+              </span>
+              <button 
+                onClick={() => setSelectedTx(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-rose-500 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Content Body */}
+            <div className="p-5 space-y-4">
+              {/* Giant Amount display & Type */}
+              <div className="text-center py-4 bg-slate-50/50 dark:bg-slate-900/30 rounded-2xl border border-slate-100 dark:border-slate-800 flex flex-col items-center justify-center">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden p-1.5 bg-white dark:bg-slate-800 shadow-xs mb-2 border border-slate-150 dark:border-slate-700">
+                  {getLogo(selectedTx.category) ? (
+                    <img src={getLogo(selectedTx.category)} alt={selectedTx.category} className="w-full h-full object-contain" />
+                  ) : (
+                    getDefaultLogo(selectedTx.category)({ className: "w-full h-full" })
+                  )}
+                </div>
+                
+                <span className="text-[10px] font-black uppercase text-slate-455 dark:text-slate-500 tracking-widest block font-display leading-none">
+                  {getBankName(selectedTx.category)} • {selectedTx.type === TransactionType.IN ? (language === 'MM' ? 'ငွေသွင်း' : 'Deposit') : (language === 'MM' ? 'ငွေထုတ်' : 'Withdraw')}
+                </span>
+
+                <span className="text-2xl font-black font-display text-slate-900 dark:text-white mt-2 block leading-none">
+                  {f(selectedTx.amount)} <span className="text-xs font-sans font-black text-slate-400 dark:text-slate-500">Ks</span>
+                </span>
+              </div>
+
+              {/* Grid Details */}
+              <div className="space-y-2 text-xs divide-y divide-slate-100 dark:divide-slate-800/40 text-slate-800 dark:text-slate-300">
+                {/* ID/SEQ */}
+                <div className="flex items-center justify-between py-2 first:pt-0 border-none">
+                  <span className="font-bold text-slate-500 dark:text-slate-400 uppercase text-[9.5px] tracking-wider">{language === 'MM' ? 'အမှတ်စဉ်' : 'ID Number'}</span>
+                  <span className="font-bold text-slate-800 dark:text-slate-100 text-[13px] tracking-wide">
+                    #{selectedTx._seqId}
+                  </span>
+                </div>
+
+                {/* Date / Time */}
+                <div className="flex items-center justify-between py-2">
+                  <span className="font-bold text-slate-500 dark:text-slate-400 uppercase text-[9.5px] tracking-wider">{language === 'MM' ? 'ရက်စွဲနှင့်အချိန်' : 'Date & Time'}</span>
+                  <div className="text-right">
+                    <span className="font-extrabold text-slate-900 dark:text-slate-100 block">{selectedTx.date}</span>
+                    {selectedTx.createdAt && (
+                      <span className="font-medium text-slate-400 dark:text-slate-500 text-[10px] font-mono block mt-0.5">
+                        {formatTime(selectedTx.createdAt)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Phone */}
+                {selectedTx.phoneNumber && (
+                  <div className="flex items-center justify-between py-2">
+                    <span className="font-bold text-slate-500 dark:text-slate-400 uppercase text-[9.5px] tracking-wider">{language === 'MM' ? 'ဖုန်းနံပါတ်' : 'Phone Number'}</span>
+                    <span className="font-black font-mono text-indigo-600 dark:text-sky-400 text-[13px] tracking-tight">
+                      {selectedTx.phoneNumber}
+                    </span>
+                  </div>
+                )}
+
+                {/* Account Name */}
+                {selectedTx.accountName && (
+                  <div className="flex items-center justify-between py-2">
+                    <span className="font-bold text-slate-500 dark:text-slate-400 uppercase text-[9.5px] tracking-wider">{language === 'MM' ? 'အကောင့်ပိုင်ရှင်' : 'Owner Name'}</span>
+                    <span className="font-black text-amber-600 dark:text-amber-400 uppercase tracking-wider text-[11px] font-display">
+                      {selectedTx.accountName}
+                    </span>
+                  </div>
+                )}
+
+                {/* Service Fee */}
+                <div className="flex items-center justify-between py-2">
+                  <span className="font-bold text-slate-500 dark:text-slate-400 uppercase text-[9.5px] tracking-wider">{language === 'MM' ? 'ဝန်ဆောင်ခ' : 'Service Fee'}</span>
+                  <div className="flex flex-col items-end">
+                    <span className="font-black text-emerald-600 dark:text-emerald-400 text-sm">
+                      {f(selectedTx.fee)} <span className="text-[10px] font-sans font-bold text-slate-400">Ks</span>
+                    </span>
+                    {selectedTx.feePaymentMethod === 'Wallet' && (
+                      <span className="text-[8px] font-black text-amber-605 dark:text-amber-400 uppercase tracking-normal bg-amber-50 dark:bg-amber-950/40 px-1 py-0.5 rounded border border-amber-100 dark:border-amber-900/30 mt-0.5 font-display">
+                        {language === 'MM' ? 'ပေါင်းလွှဲ' : 'Wallet'}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer Actions */}
+            <div className="px-5 py-3 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50 dark:bg-slate-900/40 flex justify-end">
+              <button
+                onClick={() => setSelectedTx(null)}
+                className="px-4 py-2 bg-slate-200 dark:bg-slate-850 hover:bg-slate-350 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-250 rounded-xl text-xs font-black uppercase tracking-wider transition-colors active:scale-95 font-display"
+              >
+                {language === 'MM' ? 'ပိတ်မည်' : 'Close'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

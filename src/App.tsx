@@ -1171,26 +1171,49 @@ export default function App() {
                   {currentView === View.DASHBOARD && (
                     <>
                       {/* Stat Cards */}
-                      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 lg:gap-4">
-                        <BalanceCards 
-                          kbz={calculatedBalances.kbz} wave={calculatedBalances.wave}
-                          aya={calculatedBalances.aya} cash={calculatedBalances.cash}
-                          uab={calculatedBalances.uab} trueMoney={calculatedBalances.trueMoney}
-                          kbzEnabled={settings?.kbzEnabled ?? true}
-                          waveEnabled={settings?.waveEnabled ?? true}
-                          ayaEnabled={settings?.ayaEnabled ?? true}
-                          uabEnabled={settings?.uabEnabled ?? true}
-                          trueEnabled={settings?.trueEnabled ?? true}
-                          cashEnabled={settings?.cashEnabled ?? true}
-                          language={language}
-                          kbzPhone={settings?.kbzPhone} wavePhone={settings?.wavePhone}
-                          ayaPhone={settings?.ayaPhone} uabPhone={settings?.uabPhone}
-                          truePhone={settings?.truePhone}
-                          kbzLogoUrl={globalSettings?.kbzLogoUrl} waveLogoUrl={globalSettings?.waveLogoUrl}
-                          ayaLogoUrl={globalSettings?.ayaLogoUrl} cashLogoUrl={globalSettings?.cashLogoUrl}
-                          uabLogoUrl={globalSettings?.uabLogoUrl} trueLogoUrl={globalSettings?.trueLogoUrl}
-                        />
-                      </div>
+                      {(() => {
+                        const activeCount = [
+                          settings?.kbzEnabled ?? true,
+                          settings?.waveEnabled ?? true,
+                          settings?.ayaEnabled ?? true,
+                          settings?.uabEnabled ?? true,
+                          settings?.trueEnabled ?? true,
+                          settings?.cashEnabled ?? true,
+                        ].filter(Boolean).length;
+
+                        const gridClass = activeCount <= 2
+                          ? "grid grid-cols-1 sm:grid-cols-2 gap-2.5 lg:gap-4"
+                          : activeCount === 3
+                          ? "grid grid-cols-2 sm:grid-cols-3 gap-2.5 lg:gap-4"
+                          : activeCount === 4
+                          ? "grid grid-cols-2 sm:grid-cols-4 gap-2.5 lg:gap-4"
+                          : activeCount === 5
+                          ? "grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-2.5 lg:gap-4"
+                          : "grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-2.5 lg:gap-4";
+
+                        return (
+                          <div className={gridClass}>
+                            <BalanceCards 
+                              kbz={calculatedBalances.kbz} wave={calculatedBalances.wave}
+                              aya={calculatedBalances.aya} cash={calculatedBalances.cash}
+                              uab={calculatedBalances.uab} trueMoney={calculatedBalances.trueMoney}
+                              kbzEnabled={settings?.kbzEnabled ?? true}
+                              waveEnabled={settings?.waveEnabled ?? true}
+                              ayaEnabled={settings?.ayaEnabled ?? true}
+                              uabEnabled={settings?.uabEnabled ?? true}
+                              trueEnabled={settings?.trueEnabled ?? true}
+                              cashEnabled={settings?.cashEnabled ?? true}
+                              language={language}
+                              kbzPhone={settings?.kbzPhone} wavePhone={settings?.wavePhone}
+                              ayaPhone={settings?.ayaPhone} uabPhone={settings?.uabPhone}
+                              truePhone={settings?.truePhone}
+                              kbzLogoUrl={globalSettings?.kbzLogoUrl} waveLogoUrl={globalSettings?.waveLogoUrl}
+                              ayaLogoUrl={globalSettings?.ayaLogoUrl} cashLogoUrl={globalSettings?.cashLogoUrl}
+                              uabLogoUrl={globalSettings?.uabLogoUrl} trueLogoUrl={globalSettings?.trueLogoUrl}
+                            />
+                          </div>
+                        );
+                      })()}
 
                       {/* Recent Transactions Table */}
                       <div className="space-y-3 lg:space-y-4">

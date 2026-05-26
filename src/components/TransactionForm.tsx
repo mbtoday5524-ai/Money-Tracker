@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Plus, Minus, Calendar, Sparkles, Coins, Wallet, History } from 'lucide-react';
 import { TransactionType, Transaction } from '../types';
 import { KBZLogo, WaveLogo, AYALogo, CashLogo, UABLogo, TrueLogo } from './Logos';
@@ -73,9 +73,11 @@ export default function TransactionForm({
   const [amount, setAmount] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [accountName, setAccountName] = useState('');
+  const [hasManuallyEditedName, setHasManuallyEditedName] = useState(false);
   const [fee, setFee] = useState('');
   const [isManualFee, setIsManualFee] = useState(false);
   const [feePaymentMethod, setFeePaymentMethod] = useState<'Cash' | 'Wallet'>('Cash');
+  const [showNumberSuggestions, setShowNumberSuggestions] = useState(false);
 
   const getCleanAmount = (val: string) => {
     return Number(val.replace(/,/g, '')) || 0;
@@ -91,6 +93,79 @@ export default function TransactionForm({
     }
   }, [amount, type, percentIn, percentOut, isManualFee]);
 
+  // Build unique contact list from history
+  const contacts = useMemo(() => {
+    const map = new Map<string, string>(); // standardized phone -> uppercase name
+    [...transactions].forEach(t => {
+      if (t.phoneNumber && t.accountName) {
+        const cleanPhone = t.phoneNumber.replace(/\D/g, '');
+        if (cleanPhone.length >= 5) {
+          map.set(cleanPhone, t.accountName.trim().toUpperCase());
+        }
+      }
+    });
+    return Array.from(map.entries()).map(([phone, name]) => ({ phone, name }));
+  }, [transactions]);
+
+  // Find name registered to phone number from previous transactions (exact match)
+  const matchedHistoryName = useMemo(() => {
+    if (!phoneNumber) return null;
+    const cleanInput = phoneNumber.replace(/\D/g, '');
+    if (cleanInput.length < 5) return null;
+    
+    // Search from most recent to oldest
+    const found = [...transactions].reverse().find(t => {
+      if (!t.phoneNumber || !t.accountName) return false;
+      const cleanTxPhone = t.phoneNumber.replace(/\D/g, '');
+      return cleanTxPhone === cleanInput;
+    });
+    return found ? found.accountName : null;
+  }, [phoneNumber, transactions]);
+
+  // Build suggestions list for partial match of phone numbers
+  const suggestedContacts = useMemo(() => {
+    const cleanInput = phoneNumber.replace(/\D/g, '');
+    if (!cleanInput) {
+      // Find the 3 most recent unique contacts with both name and phone
+      const recent: { phone: string; name: string }[] = [];
+      const seen = new Set<string>();
+      
+      for (let i = transactions.length - 1; i >= 0; i--) {
+        const tx = transactions[i];
+        if (tx.phoneNumber && tx.accountName) {
+          const cleanPhone = tx.phoneNumber.replace(/\D/g, '');
+          if (cleanPhone.length >= 5 && !seen.has(cleanPhone)) {
+            seen.add(cleanPhone);
+            recent.push({
+              phone: cleanPhone,
+              name: tx.accountName.trim().toUpperCase()
+            });
+            if (recent.length >= 3) break;
+          }
+        }
+      }
+      return recent;
+    }
+    // Filter matching contacts
+    return contacts
+      .filter(c => c.phone.includes(cleanInput))
+      .slice(0, 5);
+  }, [phoneNumber, contacts, transactions]);
+
+  // Auto-lookup account name from phone number
+  useEffect(() => {
+    if (!phoneNumber) {
+      setHasManuallyEditedName(false);
+      return;
+    }
+    
+    if (!hasManuallyEditedName && matchedHistoryName) {
+      setAccountName(matchedHistoryName);
+    } else if (!hasManuallyEditedName && !matchedHistoryName) {
+      setAccountName('');
+    }
+  }, [phoneNumber, matchedHistoryName, hasManuallyEditedName]);
+
   const handleAutoFill = () => {
     // Find the most recent transaction matching the currently selected category (wallet)
     const lastMatchingTx = transactions.find(t => t.category === categoryId);
@@ -98,6 +173,7 @@ export default function TransactionForm({
       setAmount(lastMatchingTx.amount.toString());
       setPhoneNumber(lastMatchingTx.phoneNumber || '');
       setAccountName(lastMatchingTx.accountName || '');
+      setHasManuallyEditedName(false);
       if (lastMatchingTx.feePaymentMethod && categoryId !== 'Cash') {
         setFeePaymentMethod(lastMatchingTx.feePaymentMethod);
       }
@@ -135,6 +211,7 @@ export default function TransactionForm({
     setAccountName('');
     setFee('');
     setIsManualFee(false);
+    setHasManuallyEditedName(false);
     // Keep or reset fee payment mode
   };
 
@@ -270,34 +347,85 @@ export default function TransactionForm({
               </div>
             </div>
             
-            {/* Phone Number Input */}
-            <div className="space-y-1.5">
-              <label className={`text-[10.5px] font-black uppercase px-1 flex items-center gap-2 font-display ${language === 'MM' ? 'tracking-normal text-slate-600 dark:text-slate-300 font-extrabold text-[12px]' : 'tracking-[0.20em] text-slate-450 dark:text-slate-500'}`}>
-                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                {language === 'MM' ? 'ဖုန်းနံပါတ်' : 'Phone Number'}
-              </label>
-              <div className="relative group h-12">
-                <input
-                  type="tel"
-                  value={phoneNumber}
-                  onChange={e => setPhoneNumber(e.target.value)}
-                  placeholder="09..."
-                  className="w-full h-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-800/85 transition-all group-hover:border-slate-300 dark:group-hover:border-slate-700 placeholder:text-slate-300 dark:placeholder:text-slate-650"
-                />
-              </div>
-            </div>
+             {/* Phone Number Input */}
+             <div className="space-y-1.5 relative">
+               <label className={`text-[10.5px] font-black uppercase px-1 flex items-center gap-2 font-display ${language === 'MM' ? 'tracking-normal text-slate-600 dark:text-slate-300 font-extrabold text-[12px]' : 'tracking-[0.20em] text-slate-450 dark:text-slate-500'}`}>
+                 <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                 {language === 'MM' ? 'ဖုန်းနံပါတ်' : 'Phone Number'}
+               </label>
+               <div className="relative group h-12">
+                 <input
+                   type="tel"
+                   value={phoneNumber}
+                   onChange={e => setPhoneNumber(e.target.value)}
+                   onFocus={() => setShowNumberSuggestions(true)}
+                   onBlur={() => setTimeout(() => setShowNumberSuggestions(false), 250)}
+                   placeholder="09..."
+                   className="w-full h-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-800/85 transition-all group-hover:border-slate-300 dark:group-hover:border-slate-700 placeholder:text-slate-300 dark:placeholder:text-slate-650"
+                 />
+               </div>
+
+               {/* Suggestions Dropdown */}
+               {showNumberSuggestions && suggestedContacts.length > 0 && (
+                 <div className="absolute left-0 right-0 top-[102%] mt-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl z-50 max-h-48 overflow-y-auto divide-y divide-slate-100 dark:divide-slate-800/60 animate-in fade-in slide-in-from-top-2 duration-150">
+                   <div className="px-3 py-1 bg-slate-50/50 dark:bg-slate-950/40 text-[9px] font-black uppercase text-slate-400 dark:text-slate-550 sticky top-0 tracking-widest backdrop-blur-sm z-10 border-b border-slate-105/10">
+                     {phoneNumber ? (language === 'MM' ? 'အနီးစပ်ဆုံး တိုက်ဆိုင်မှုများ' : 'Suggested Contacts') : (language === 'MM' ? 'မကြာသေးမီက ဆက်သွယ်သူများ' : 'Recent Contacts')}
+                   </div>
+                   {suggestedContacts.map((contact, idx) => (
+                     <button
+                       key={idx}
+                       type="button"
+                       onMouseDown={(e) => {
+                         e.preventDefault(); // Prevents triggers of onBlur and loses selection
+                         setPhoneNumber(contact.phone);
+                         setAccountName(contact.name);
+                         setHasManuallyEditedName(false);
+                         setShowNumberSuggestions(false);
+                       }}
+                       className="w-full text-left px-4 py-2.5 hover:bg-indigo-50/70 dark:hover:bg-indigo-950/40 flex items-center justify-between transition-colors group/item"
+                     >
+                       <div className="flex flex-col">
+                         <span className="text-xs font-bold text-slate-800 dark:text-slate-200 font-mono group-hover/item:text-indigo-600 dark:group-hover/item:text-indigo-400">
+                           {contact.phone}
+                         </span>
+                         <span className="text-[11px] font-semibold text-slate-550 dark:text-slate-450 mt-0.5">
+                           {contact.name}
+                         </span>
+                       </div>
+                       <div className="flex items-center gap-1.5 opacity-60 group-hover/item:opacity-100 transition-opacity">
+                         <span className="text-[8.5px] uppercase font-black text-slate-400 dark:text-slate-500 tracking-wider">
+                           {language === 'MM' ? 'ရွေးရန်' : 'Select'}
+                         </span>
+                         <Sparkles size={11} className="text-emerald-500" />
+                       </div>
+                     </button>
+                   ))}
+                 </div>
+               )}
+             </div>
 
             {/* Account Name Input */}
             <div className="space-y-1.5">
-              <label className={`text-[10.5px] font-black uppercase px-1 flex items-center gap-2 font-display ${language === 'MM' ? 'tracking-normal text-slate-600 dark:text-slate-300 font-extrabold text-[12px]' : 'tracking-[0.20em] text-slate-450 dark:text-slate-500'}`}>
-                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                {language === 'MM' ? 'အကောင့်အမည်' : 'Account Name'}
+              <label className={`text-[10.5px] font-black uppercase px-1 flex items-center justify-between w-full font-display ${language === 'MM' ? 'tracking-normal text-slate-600 dark:text-slate-300 font-extrabold text-[12px]' : 'tracking-[0.20em] text-slate-450 dark:text-slate-500'}`}>
+                <span className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                  {language === 'MM' ? 'အကောင့်အမည်' : 'Account Name'}
+                </span>
+                {matchedHistoryName && (
+                  <span className="text-[8.5px] sm:text-[9px] font-extrabold text-emerald-600 dark:text-emerald-400 bg-emerald-55/70 dark:bg-emerald-950/25 px-1.5 py-0.5 rounded flex items-center gap-1 animate-pulse tracking-wide select-none capitalize">
+                    <Sparkles size={8.5} className="shrink-0 text-emerald-500" />
+                    {language === 'MM' ? 'ယခင်မှတ်တမ်းတွေ့ရှိသည်' : 'From History'}
+                  </span>
+                )}
               </label>
               <div className="relative group h-12">
                 <input
                   type="text"
                   value={accountName}
-                  onChange={e => setAccountName(e.target.value.toUpperCase())}
+                  onChange={e => {
+                    setAccountName(e.target.value.toUpperCase());
+                    setHasManuallyEditedName(true);
+                  }}
                   placeholder={language === 'MM' ? 'အကောင့်ပိုင်ရှင်အမည်...' : 'Account holder name...'}
                   className="w-full h-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl px-4 text-sm font-semibold text-slate-900 dark:text-white outline-none focus:border-indigo-500 focus:bg-white dark:focus:bg-slate-800/85 transition-all group-hover:border-slate-300 dark:group-hover:border-slate-700 placeholder:text-slate-300 dark:placeholder:text-slate-650"
                 />
